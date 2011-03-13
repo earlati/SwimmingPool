@@ -12,6 +12,7 @@ find . -type f -name "*.t" -exec git add {} \;
 find . -type f -name "*.tt" -exec git add {} \;
 find . -type f -name "*.sh" -exec git add {} \;
 find . -type f -name "*.txt" -exec git add {} \;
+find . -type f -name "*.sql" -exec git add {} \;
 find . -type f -name "README" -exec git add {} \;
 
 
