@@ -1,0 +1,6 @@
+
+<ul>
+[%  FOREACH user IN users %]
+     <li>User => users.user   id => user.id
+[%  END %]
+</ul>
