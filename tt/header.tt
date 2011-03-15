@@ -1,0 +1,6 @@
+<html>
+<head>
+<title>[% stash.title %]</title>
+</head>
+
+<body bgcolor="#FF6600">

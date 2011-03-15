@@ -87,11 +87,10 @@ sub Log {
 	my ( $self, $msg ) = @_;
 
 	if ( defined $self->{logObj} ) {
-			$self->{logObj}->Log($msg) if defined $msg;
+		$self->{logObj}->Log($msg) if defined $msg;
 	}
-	else
-	{
-         warn "$msg \n" if defined $msg;		
+	else {
+		warn "$msg \n" if defined $msg;
 	}
 
 }    ## __________ sub Log
@@ -165,7 +164,8 @@ sub SetUser {
 	my ( $self, $id, $user, $pwd ) = @_;
 	my ($data) = $self->GetData();
 
-	$data->{users}->{$id}->{user} = $user;
+	$data->{users}->{$id}->{id}       = $id;
+	$data->{users}->{$id}->{name}     = $user;
 	$data->{users}->{$id}->{password} = crypt( $user, $pwd );
 
 	# $self->Log( sprintf "Dump data : %s ", Dumper($data));
@@ -217,28 +217,29 @@ sub SetEventDate {
 
 }    ## _________ sub SetEvent
 
-
-
 # =====================================
 # =====================================
 sub GetUserList {
-	my ( $self ) = @_;
-	my ( $id, $user, $pwd, $hash );
-	my ($data) = $self->GetData();
+	my ($self) = @_;
+	my ( $id, $user, $pwd, $lst );
+	my ($data)  = $self->GetData();
 	my ($users) = $data->{users};
 
-    %$hash = ();
-    foreach $id ( sort keys %$users )
-    {
-    	$hash->{$id} = $users->{$id}->{user};
-    }
+	@$lst = ();
 
-	# $self->Log( sprintf "Dump list users : %s ", Dumper($hahs));
-    return $hash;
+	foreach $id ( sort keys %$users ) {
+		$user->{id}   = $users->{$id}->{id};
+		$user->{name} = $users->{$id}->{name};
+
+		# $self->Log( sprintf "ADD user : %s ", Dumper($user));
+		# push @$lst, { name => $user->{name} , id => $user->{id}  };
+		push @$lst, { map { $_ => $user->{$_} } keys %$user };
+	}
+
+	# $self->Log( sprintf "Dump list users : %s ", Dumper($lst));
+	return $lst;
 
 }    ## _________ sub GetUserList
-
-
 
 1;
 
