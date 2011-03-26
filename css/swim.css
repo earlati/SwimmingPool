@@ -1,0 +1,106 @@
+body {
+	background: #BBBBBB;
+	background-image: url(/images/nuoto1-gray.jpg);
+	background-position: center;
+	background-attachment: fixed;
+}
+
+a:hover {
+	text-decoration: underline;
+	font-size: 140%;
+}
+
+.regular {
+	font: bold 11px "Verdana", Arial, Helvetica, sans-serif;
+	color: #000;
+}
+
+/** Header */
+#swim-header {
+	font-size: medium;
+	padding: 0.5em 0 0.5em 1em;
+	color: #8699a4;
+	background-color: #0d3349;
+	line-height: 1em;
+	font-weight: normal;
+	border-radius: 15px 15px 0 0;
+	-moz-border-radius: 15px 15px 15px 15px;
+	-webkit-border-top-right-radius: 15px;
+	-webkit-border-top-left-radius: 15px;
+	-webkit-border-bottom-right-radius: 15px;
+	-webkit-border-bottom-left-radius: 15px;
+	opacity: 0.9;
+}
+
+div#debug {
+	font-size: small;
+	background-color: #009966;
+	border: 1px solid #000033;
+	opacity: 0.7;
+	width: 90%;
+	height: 40%;
+	position: fixed;
+	bottom: 0;
+}
+
+a#mailme {
+	position: fixed;
+	top: 100%;
+	left: 100%;
+	margin-top: -100px;
+	margin-left: -90px;
+	right: 10;
+	bottom: 10;
+	display: block;
+	height: 80px;
+	width: 80px;
+	background: url(/images/3demail-2.gif) bottom right no-repeat;
+	text-indent: -98em;
+	text-decoration: none;
+}
+
+div.titolo {
+	display: block;
+	color: yellow;
+	height: 50px;
+	margin-top: 0px;
+	text-transform: none;
+	font-size: x-large;
+	font-size-adjust: none;
+	font-stretch: normal;
+	font-style: oblique;
+	font-variant: normal;
+	font-weight: bolder;
+	text-align: center;
+	text-decoration: none;
+	text-indent: inherit;
+	background: url(/images/300_marcia.gif) top left;
+}
+
+div.titolo2 {
+	text-align: center;
+	display: block;
+	color: black;
+	margin-top: 0em;
+}
+
+div.pleonastico {
+	color: grey;
+	font-size: small;
+	font-style: italic;
+	white-space: pre;
+	direction: rtl;
+}
+
+div.introduzione {
+	font-size: medium;
+	white-space: pre;
+	direction: ltr;
+}
+
+div.src_code {
+	font-size: small;
+	white-space: normal;
+	direction: ltr;
+}
+
