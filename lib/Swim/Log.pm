@@ -30,6 +30,7 @@ use strict;
 use warnings;
 use File::Basename;
 
+use Swim::GlobalData;
 use base qw( Swim::CommonParent );
 
 our $VERSION = '0.01';
@@ -130,10 +131,9 @@ sub Log {
 		print F "$msg \n";
 		close F;
 	} ## end if ( defined $log_filename...
-	    # else
-	{
-		warn "$msg \n";
-	}
+
+	warn "$msg \n";
+	
 } ## end sub log
 
 # =============================================
@@ -182,6 +182,57 @@ sub Trace {
 		redo;
 	}
 }    # end sub Trace
+
+# =============================================
+# $objLog->AddErrorMessage( $errmsg );
+# =============================================
+sub AddErrorMessage
+{
+    my ($self, $msg) = @_;
+    my ($s1, $errors );
+    $errors = ClobalData::GetError();
+
+    $s1 = "[AddErrorMessage] Add msg: $msg ";
+    $self->Log("Caller: ${\( @{[caller(1)]}[3] )} => $s1");
+    push @$errors, $msg;
+
+}    # _____ AddErrorMessage
+
+# =============================================
+# $objLog->AddWarningMessage( $warnmsg );
+# =============================================
+sub AddWarningMessage
+{
+    my ($self, $msg) = @_;
+    my ($s1, $warnings );
+    $warnings = ClobalData::GetWarning();
+
+    $s1 = "[AddWarningMessage] Add msg: $msg ";
+    $self->Log("Caller: ${\( @{[caller(1)]}[3] )} => $s1");
+    push @$warnings, $msg;
+
+}    # _____ AddWarningMessage
+
+# =============================================
+# $objLog->AddInfoMessage( $warnmsg );
+# =============================================
+sub AddInfoMessage
+{
+    my ($self, $msg) = @_;
+    my ($s1, $infos );
+    $infos = ClobalData::GetInfo();
+
+    $s1 = "[AddInfoMessage] Add msg: $msg ";
+    $self->Log("Caller: ${\( @{[caller(1)]}[3] )} => $s1");
+    push @$infos, $msg;
+
+}    # _____ AddInfoMessage
+
+
+
+
+
+
 
 1;
 
