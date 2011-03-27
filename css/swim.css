@@ -104,3 +104,16 @@ div.src_code {
 	direction: ltr;
 }
 
+span.TotalAccess {
+	background-color: red;
+	font-size: small;
+	color: #0000AA;
+	height: 50px;
+	width: 50px;
+	-moz-border-radius: 25px;
+	-webkit-border-radius: 25px;
+}
+
+
+
+
