@@ -1,22 +1,39 @@
-//==============================================
+// ==============================================
+// ==============================================
+// ==============================================
+
+// ==============================================
 function ManageDebugSection() {
 	var debug, tmp;
 	debug = $.cookie('debug');
 	Log("Debug from cookie: " + debug);
+
+	if (debug === undefined || debug === null)
+		debug = 0;
 	tmp = $.getUrlVars()['debug'];
-	Log("Debug: " + tmp);
-	if (tmp != null) {
-		if (tmp > 1)
+	Log("Debug from web: " + tmp);
+
+	if (tmp === null || tmp === undefined) {
+	} else {
+		if (tmp > 0) {
 			tmp = 1;
+			$.cookie('debug', tmp, {
+				expires : 2
+			});
+		} else {
+			tmp = 0;
+			$.cookie('debug', tmp);
+		}
 		debug = tmp;
 	}
-	$.cookie('debug', debug);
-	if (debug == 0)
+	Log("Debug: " + debug);
+	if (debug == 0) {
 		$("div#debug").hide();
-	else
+	} else {
 		$("div#debug").show();
+	}
 
-}
+} // _________ function ManageDebugSection()
 
 // ==============================================
 function Log(msg) {
@@ -27,6 +44,19 @@ function Log(msg) {
 	msgout = "<li> " + now + " " + msg + "</li>";
 
 	$("div#debug ol").prepend(msgout);
+
+}
+
+// ==============================================
+function Error(msg) {
+	var msgout, s1, dt, now;
+	dt = new Date();
+	now = Math.ceil(dt.getTime() / 1000);
+
+	msgout = "<li> " + now + " " + msg + "</li>";
+
+	$("div#error").show();
+	$("div#error ol").prepend(msgout);
 
 }
 
@@ -134,7 +164,42 @@ function QueryAjax(urlQuery, idOutput1) {
 			}
 		},
 		error : function(richiesta, stato, errori) {
-			alert("E' evvenuto un errore. Codice errore:[" + stato + "]");
+			Error("E' evvenuto un errore. Codice errore:[" + stato + "]"
+					+ errori);
 		}
+	});
+}
+
+// ================================================================
+// QueryJson("/SwimmingPool/lib/swim.pl", "TestOne");
+// ================================================================
+function QueryJson(urlQuery, idOutput1) {
+	var len, obj1, obj2, jqxhr;
+	obj1 = $("#" + idOutput1);
+
+	Log("QueryJson on url: " + urlQuery);
+
+	jqxhr = $.getJSON(urlQuery, function(data) {
+		var items = [];
+
+		$.each(data, function(key, val) {
+			items.push('<li id="' + key + '">' + key + ' : ' + val + '</li>');
+			Log("json: " + key + " : " + val);
+		});
+
+		shtml = items.join(' ');
+		obj1.html(shtml);
+		obj1.show();
+		Log( "end ... ");
+	}).success(function() {
+		Log("success " + "QueryJson on url: " + urlQuery);
+	}).error(function() {
+		Error("error " + "QueryJson on url: " + urlQuery);
+	}).complete(function() {
+		Log("complete " + "QueryJson on url: " + urlQuery);
+	});
+	
+	jqxhr.complete(function() {
+		Log("complete2 " + "QueryJson on url: " + urlQuery);
 	});
 }

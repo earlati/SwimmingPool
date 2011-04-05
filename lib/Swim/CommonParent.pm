@@ -51,28 +51,34 @@ sub GetRootPath {
     my ( $refBase ) = 'SwimmingPool';
 
 	$path     = dirname( Cwd::realpath($0) );
-	# warn("appliPath = [$path] \n");
+	warn("appliPath = [$path] \n");
 
 	$rootPath = $path;
 	$base = basename $rootPath;
+	# warn("rootPath = [$rootPath] base = [$base] \n");
 	    
 	while( $base !~ /${refBase}$/ and  $base !~ /\/$/ )
 	{
     	$base = basename $rootPath,
       	$rootPath = dirname $rootPath;
+     	# warn("rootPath = [$rootPath] base = [$base] \n");
 	}
 
     if( $rootPath  =~ /\/$/ )
     {
-    	warn "Wrong root [$rootPath] from path [$path]";
-    	die;
+    	$rootPath = '../SwimmingPool';
+    }
+    
+    if( $rootPath  =~ /^\/$/ )
+    {
+    	die "Wrong root [$rootPath] from path [$path]";
     }
     
 	# say("appliPath = [$path] \n");
 	# say("rootPath = [$rootPath] \n");
 
 	if ( !defined $rootPath ) {
-		warn "RootPath is NULL -> data=[$path] ";
+		die "RootPath is NULL -> data=[$path] ";
 	}
 
 	return $rootPath;
@@ -90,7 +96,7 @@ sub GetUntaint {
 	$msgout = $1;
 	if( $msgin ne $msgout )
 	{
-		warn "[GetUntaint] FAILED [$msgin] [$msgout] ";
+		die "[GetUntaint] FAILED [$msgin] [$msgout] ";
 	}
 	
 	return $msgout;

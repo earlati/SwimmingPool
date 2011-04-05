@@ -15,6 +15,12 @@ a:hover {
 	color: #000;
 }
 
+#TestOne  {
+	font: italic 10px "Verdana", Arial, Helvetica, sans-serif;
+	font-size: small;
+	color: #005500;
+}
+
 /** Header */
 #swim-header {
 	font-size: medium;
@@ -37,10 +43,25 @@ div#debug {
 	background-color: #009966;
 	border: 1px solid #000033;
 	opacity: 0.7;
-	width: 90%;
+	width: 98%;
 	height: 40%;
 	position: fixed;
 	bottom: 0;
+	left: 1%;
+	overflow:auto;
+}
+
+div#error {
+	font-size: small;
+	background-color: #ff0000;
+	border: 1px solid #660000;
+	opacity: 0.7;
+	width: 80%;
+	height: 40%;
+	position: fixed;
+	bottom: 30%;
+	left: 10%;
+	overflow: auto;
 }
 
 a#mailme {

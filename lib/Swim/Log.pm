@@ -30,6 +30,8 @@ use strict;
 use warnings;
 use File::Basename;
 
+use lib '.';
+use lib './Swim';
 use Swim::GlobalData;
 use base qw( Swim::CommonParent );
 

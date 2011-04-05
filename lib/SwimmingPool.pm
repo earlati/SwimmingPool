@@ -1,3 +1,6 @@
+#!/usr/bin/perl
+#
+#
 package SwimmingPool;
 
 use warnings;
@@ -39,7 +42,7 @@ sub Test1 {
 	# printf "Dump users : %s \n", Dumper($lst);
 	$s1 = $obj1->ProcessTemplate( 'UserList.tt', { users => $lst } );
 	$obj1->Log("Users html : $s1 ");
-
+	print "$s1";
 	$obj1->Log("Test End ");
 
 }    ## __________ sub Test1
@@ -72,14 +75,17 @@ sub DESTROY {
 	my ($self) = @_;
 
 	$self->Log("SwimmingPool is destroited ");
-	if ( defined $self->{cgi} ) { $self->{cgi}->end_html(); }
+
+	# if ( defined $self->{cgi} ) { print $self->{cgi}->end_html(); }
 }
 
 # ===================================
 sub Log {
 	my ( $self, $msg ) = @_;
 
-	$self->{logObj}->Log($msg);
+	if ( defined $self->{logObj} ) {
+		$self->{logObj}->Log($msg);
+	}
 
 }    ## __________ sub Log
 
@@ -97,41 +103,60 @@ sub InitProgram {
 
 	$self->{templateObj} = new Template(
 		{
-			ABSOLUTE    => 'true',
-			VARIABLES   => $vars,
-			PRE_PROCESS => "${ttPath}/header.tt"
+			ABSOLUTE     => 'true',
+			RELATIVE     => 'true',
+			VARIABLES    => $vars,
+			PRE_PROCESS  => "${ttPath}/header.tt",
+			POST_PROCESS => "${ttPath}/footer.tt"
 		}
 	);
 
-
-	$self->{cgi} = new CGI();
-	print $self->{cgi}->header( { -type => 'text/html', -expire => '+3h' } );
-	
-	
-#	<head> < title > CGI - perldoc . perl . org </title> < meta http-equiv =
-#	  "Content-Type" content =
-#	  "text/html; charset=iso-8859-1" >
-#	  <meta http-equiv="Content-Language" content="en-gb"> < link href =
-#	  "/static/css-20100830.css" rel = "stylesheet" rev = "stylesheet" type =
-#	  "text/css" media =
-#	  "screen" >
-#<link href="/static/exploreperl.css" rel="stylesheet" rev="stylesheet" type="text/css">
-#	  < /head>
-	
-    print $self-> {cgi}->start_html(  
-                -title  => "$self->{titleCgi}",
-                -author => 'enzo.arlati@aesys.it',
-                -style  => {-src => $self->{rootPath} . '/css/config_bcm.css', -media => 'screen'},
-                -script => [
-                                        {-src => '/js/jquery-1.4.2.min.js', -language => 'javascript'},
-                                        {-src => '/js/jquery.tools.min.js', -language => 'javascript'},
-                                        {-src => $self->{rootPath} . '/js/swim.js',       -language => 'javascript'}
-                                   ],
-                -bgcolor => Swim::GlobalData::Color('colorGrey1')
-            );
-    print $self-> {cgi}->h1( 'prova 123 ');
+	#  $self->{cgi} = new CGI();
+	#  $self->PrintHeaderHtml();
 
 }    ## __________ sub InitProgram
+
+# ==================================
+sub PrintHeaderHtml {
+
+	my ($self) = @_;
+	my ($sres) = "";
+
+	if ( !defined $self->{cgi} ) { $self->Log("leave ... "); return $sres; }
+
+	$sres = $self->{cgi}->header( { -type => 'text/html', -expire => '+3h' } );
+
+	$sres .= $self->{cgi}->start_html(
+		-title  => "$self->{titleCgi}",
+		-author => 'enzo.arlati@aesys.it',
+		-style  => {
+			-src   => $self->{rootPath} . '/css/config_bcm.css',
+			-media => 'screen'
+		},
+		-script => [
+			{ -src => '/js/jquery-1.4.2.min.js', -language => 'javascript' },
+			{ -src => '/js/jquery.tools.min.js', -language => 'javascript' },
+			{
+				-src      => $self->{rootPath} . '/js/swim.js',
+				-language => 'javascript'
+			}
+		],
+		-bgcolor => Swim::GlobalData::Color('colorGrey1')
+	);
+
+}    ## __________  sub PrintHeaderHtml
+
+# ==================================
+sub PrintFooterHtml {
+
+	my ($self) = @_;
+	my ($sres) = "";
+
+	if ( !defined $self->{cgi} ) { $self->Log("leave ... "); return $sres; }
+	$sres = $self->{cgi}->end_html();
+	return $sres;
+
+}    ## _________  sub PrintFooterHtml
 
 # ===================================
 sub GetUserList {
@@ -152,11 +177,11 @@ sub ProcessTemplate {
 	my ( $ttFullName, $sts, $stash );
 	my ($sres) = "";
 
-	$ttFullName = sprintf "%s/ tt /%s", $self->{rootPath}, $ttFile;
+	$ttFullName = sprintf "%s/tt/%s", $self->{rootPath}, $ttFile;
 	$self->Log("ttFullName : $ttFullName");
 
 	$stash->{title} = "User list";
-	$stash->{data} = $hash;
+	$stash->{data}  = $hash;
 
 	if ( defined $self->{templateObj} ) {
 		$self->Log("Process tt");
