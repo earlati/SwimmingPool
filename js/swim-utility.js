@@ -2,6 +2,21 @@
 // ==============================================
 // ==============================================
 
+// ======================================================
+// <script type="text/javascript" src="/js/jquery-1.4.2.min.js" ></script>
+// <script type="text/javascript" src="/js/jquery-ui.js" ></script>
+// ======================================================
+// include_js_file('\/js\/jquery-1.4.2.min.js', 'head');
+// include_js_file('\/js\/jquery-ui.js', 'head')
+// ======================================================
+function include_js_file(filename, location) {
+	var body = document.getElementsByTagName('body').item(0);
+	script = document.createElement('script');
+	script.src = filename;
+	script.type = 'text/javascript';
+	body.appendChild(script);
+}
+
 // ==============================================
 function ManageDebugSection() {
 	var debug, tmp;
@@ -171,6 +186,47 @@ function QueryAjax(urlQuery, idOutput1) {
 }
 
 // ================================================================
+// $('[id]').hover(
+// function(){ ShowHint( $("#HelpBox") ); GetHelp( $(this), $("#HelpBox") ); },
+// function(){ HideHint( $("#HelpBox") ); }
+// )
+// ================================================================
+function ShowHint(objHint) {
+	objHint.show();
+} // ________ function ShowHint()
+
+// ================================================================
+// ================================================================
+function HideHint(objHint) {
+	objHint.hide();
+
+} // ________ function ShowHint()
+
+// ================================================================
+// 
+// ================================================================
+function GetHelp(objItem, objHint) {
+
+	var obj1, uri, uri2, msg_id, title;
+	uri = "/SwimmingPool/swim-help.html";
+
+	Log("[getHelp] start : objItem => " + objItem.text());
+
+	title = $(objItem).clone().attr("title");
+	msg_id = $(objItem).clone().attr("id");
+	if (msg_id === null) {
+		msg_id = $(objItem).clone().attr("class");
+	}
+	uri2 = uri + ' #' + msg_id;
+	Log("[getHelp] uri2=" + uri2);
+	objHint.load(uri2);
+	objHint.prepend('<p>' + title + '</p>');
+
+}
+
+// ================================================================
+
+// ================================================================
 // QueryJson("/SwimmingPool/lib/swim.pl", "TestOne");
 // ================================================================
 function QueryJson(urlQuery, idOutput1) {
@@ -184,13 +240,13 @@ function QueryJson(urlQuery, idOutput1) {
 
 		$.each(data, function(key, val) {
 			items.push('<li id="' + key + '">' + key + ' : ' + val + '</li>');
-			Log("json: " + key + " : " + val);
+			Log("json: " + key + " : " + val + ' type: ' + typeof (val));
 		});
 
 		shtml = items.join(' ');
 		obj1.html(shtml);
 		obj1.show();
-		Log( "end ... ");
+		Log("end ... ");
 	}).success(function() {
 		Log("success " + "QueryJson on url: " + urlQuery);
 	}).error(function() {
@@ -198,8 +254,33 @@ function QueryJson(urlQuery, idOutput1) {
 	}).complete(function() {
 		Log("complete " + "QueryJson on url: " + urlQuery);
 	});
-	
+
+	jqxhr.success(function() {
+		Log("success2 " + "QueryJson on url: " + urlQuery);
+	});
 	jqxhr.complete(function() {
 		Log("complete2 " + "QueryJson on url: " + urlQuery);
 	});
 }
+
+// ================================================================
+// ================================================================
+function ChildBox(queryUrl, queryParam) {
+
+	var objChild, objInnerChild, fullQuery;
+	objChild = $("#ChildBox");
+	objInnerChild = $("#InnerChildBox");
+
+	Log("[ChildBox] queryUrl => " + queryUrl);
+
+	objChild.show();
+	objInnerChild.empty().html('<img src="/images/loading2.gif" /> ');
+
+	// if (queryParam.lenght > 0)
+	//	fullQuery = queryUrl + '?' + queryParam;
+	// else
+		fullQuery = queryUrl;
+	objInnerChild.load(fullQuery);
+
+} // ________ function ChildBox()
+
