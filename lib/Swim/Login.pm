@@ -123,8 +123,7 @@ sub BuildBaseHtml {
 			{
 				-src      => '/SwimmingPool/js/swim-utility.js',
 				-language => 'javascript'
-			},
-			{ -src => '/SwimmingPool/js/swim.js', -language => 'javascript' }
+			}
 		],
 		-bgcolor => '#AAAAAA'
 	);

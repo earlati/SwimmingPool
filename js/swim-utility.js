@@ -210,7 +210,7 @@ function GetHelp(objItem, objHint) {
 	var obj1, uri, uri2, msg_id, title;
 	uri = "/SwimmingPool/swim-help.html";
 
-	Log("[getHelp] start : objItem => " + objItem.text());
+	// Log("[getHelp] start : objItem => " + objItem.text());
 
 	title = $(objItem).clone().attr("title");
 	msg_id = $(objItem).clone().attr("id");
@@ -218,7 +218,7 @@ function GetHelp(objItem, objHint) {
 		msg_id = $(objItem).clone().attr("class");
 	}
 	uri2 = uri + ' #' + msg_id;
-	Log("[getHelp] uri2=" + uri2);
+	// Log("[getHelp] uri2=" + uri2);
 	objHint.load(uri2);
 	objHint.prepend('<p>' + title + '</p>');
 
