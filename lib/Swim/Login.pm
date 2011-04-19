@@ -116,12 +116,15 @@ sub BuildBaseHtml {
 	$sres .= $self->{cgiObj}->start_html(
 		-title  => " SwimminPool program  ",
 		-author => 'enzo.arlati@aesys.it',
-		-style  => { -src => '/css/swim.css', -media => 'screen' },
+		-style  => { -src => '/SwimmingPool/css/swim.css', -media => 'screen' },
 		-script => [
-			{ -src => '/js/jquery-min.js',       -language => 'javascript' },
-			{ -src => '/js/jquery.tools.min.js', -language => 'javascript' },
-			{ -src => '/js/swim-utility.js',     -language => 'javascript' },
-			{ -src => '/js/swim.js',             -language => 'javascript' }
+			{ -src => '/js/jquery.min.js',    -language => 'javascript' },
+			{ -src => '/js/jquery-ui.min.js', -language => 'javascript' },
+			{
+				-src      => '/SwimmingPool/js/swim-utility.js',
+				-language => 'javascript'
+			},
+			{ -src => '/SwimmingPool/js/swim.js', -language => 'javascript' }
 		],
 		-bgcolor => '#AAAAAA'
 	);
@@ -142,15 +145,14 @@ sub BuildHtmlLogin {
 	my ($self) = @_;
 
 	my ($lastUser) = "";
-	my ($sres)   = "";
-	my ($action) = '/SwimmingPool/lib/swim.pl?prog=savelogin';
-	
+	my ($sres)     = "";
+	my ($action)   = '/SwimmingPool/lib/swim.pl?prog=savelogin';
 
 	$lastUser = $self->{cgiObj}->cookie('last_user') || '';
 
 	$sres .= $self->{cgiObj}->h2("Login ");
 
-    # $sres .= $self->{cgiObj}->start_form( -action => "$action", -target => '#InnerChildBox');
+# $sres .= $self->{cgiObj}->start_form( -action => "$action", -target => '#InnerChildBox');
 
 	$sres .= '<p> Utente ';
 	$sres .= $self->{cgiObj}->textfield(
@@ -169,14 +171,21 @@ sub BuildHtmlLogin {
 	);
 
 	$sres .= "<p> ";
-	$sres .= $self->{cgiObj}->submit( -name => 'buttonOk', -id => 'buttonOk', -value => 'Ok' );
-	$sres .= $self->{cgiObj}->submit( -name => 'buttonCancel', -id => 'buttonCancel', -value => 'Cancel' );
+	$sres .=
+	  $self->{cgiObj}
+	  ->submit( -name => 'buttonOk', -id => 'buttonOk', -value => 'Ok' );
+	$sres .= $self->{cgiObj}->submit(
+		-name  => 'buttonCancel',
+		-id    => 'buttonCancel',
+		-value => 'Cancel'
+	);
 	$sres .= "<p> ";
 
-    # $sres .= $self->{cgiObj}->end_form();
+	# $sres .= $self->{cgiObj}->end_form();
 
 	$self->{html} .= "$sres";
 
+	$sres = "<div id=\"FormLogin\"> $sres </div>";
 	return "$sres";
 
 }    ## ___________ sub BuildHtmlLogin

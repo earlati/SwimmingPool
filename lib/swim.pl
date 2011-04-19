@@ -44,9 +44,12 @@ eval {
     $strpara =~ s/&$//;
     $cmd = "$params->{prog}";
 
+    warn "CMD => [$cmd] param=>[$strpara]\n";
+    
 	if ( $cmd eq 'login' ) {
 		my ( $obj1, $s1 );
     	
+    	warn "CMD : login \n";
 		$obj1 = new Swim::Login( $cmd, $strpara );
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
@@ -55,6 +58,7 @@ eval {
 	}
 	elsif ( $cmd eq 'register' )
 	{
+    	warn "CMD : register \n";
 
 	}
 	else {
