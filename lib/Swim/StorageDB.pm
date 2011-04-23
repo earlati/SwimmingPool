@@ -30,7 +30,8 @@ RunTest() unless caller;
 
 # =====================================
 # =====================================
-sub RunTest {
+sub RunTest
+{
 	my ( $obj1, $s1 );
 
 	$obj1 = new Swim::StorageDB();
@@ -41,10 +42,11 @@ sub RunTest {
 
 # =====================================
 # =====================================
-sub new {
+sub new
+{
 	my ($class) = shift;
 	my ($self)  = {
-		dsn => 'DBI:mysql:database=enzarl_db1;host=mysql2.freehostia.com',
+		dsn         => 'DBI:mysql:database=enzarl_db1;host=mysql2.freehostia.com',
 		servername  => 'mysql2.freehostia.com',
 		database    => "enzarl_db1",
 		user        => "enzarl_db1",
@@ -58,36 +60,40 @@ sub new {
 
 	$self->CheckLocalServer();
 	if ( $self->{localserver} eq "1" ) { $self->{servername} = 'localhost'; }
-	$self->{dsn} = sprintf "DBI:mysql:database=%s;host=%s", $self->{database},
-	  $self->{servername};
+	$self->{dsn} = sprintf "DBI:mysql:database=%s;host=%s", $self->{database}, $self->{servername};
 	$self->OpenDB();
 
 	return $self;
 }
 
 # ===================================================
-sub DESTROY {
+sub DESTROY
+{
 	my ($self) = @_;
 	$self->CloseDB();
 }
 
 # ===================================
-sub Log {
+sub Log
+{
 	my ( $self, $msg ) = @_;
 
 	warn "$msg \n" if defined $msg;
 
-	if ( defined $self->{logObj} ) {
+	if ( defined $self->{logObj} )
+	{
 		$self->{logObj}->Log($msg) if defined $msg;
 	}
-	else {
+	else
+	{
 		warn "$msg \n" if defined $msg;
 	}
 
 }    ## __________ sub Log
 
 # ===================================================
-sub CheckLocalServer {
+sub CheckLocalServer
+{
 	my ($self)  = @_;
 	my ($local) = 0;
 	if ( defined $ENV{SERVER_ADDR}
@@ -108,32 +114,29 @@ sub CheckLocalServer {
 #    database name: enzarl_db1
 #    database host: mysql2.freehostia.com
 # ===================================================
-sub OpenDB {
+sub OpenDB
+{
 	my ($self) = @_;
 	my ( $nretry, $maxretry, $serr );
 
 	$nretry   = 0;
 	$maxretry = 10;
 
-	while ( $nretry < $maxretry ) {
+	while ( $nretry < $maxretry )
+	{
 		$nretry++;
-		eval {
-			$self->{dbh} = DBI->connect(
-				$self->{dsn}, $self->{user},
-				$self->{pwd}, { 'RaiseError' => 1 }
-			);
-		};
+		eval { $self->{dbh} = DBI->connect( $self->{dsn}, $self->{user}, $self->{pwd}, { 'RaiseError' => 1 } ); };
 
-		if ($@) {
+		if ($@)
+		{
 			$serr = $@;
 			chomp $serr;
-			$self->Log(
-"[STEP=$nretry] ERRORE $serr .... RETRY CONNECTION ($self->{dsn})"
-			);
+			$self->Log("[STEP=$nretry] ERRORE $serr .... RETRY CONNECTION ($self->{dsn})");
 			$self->Log("********************************************** ");
 			sleep 3;
 		}
-		else {
+		else
+		{
 			last;
 		}
 	}
@@ -145,14 +148,16 @@ sub OpenDB {
 
 # ===================================================
 # ===================================================
-sub CloseDB {
+sub CloseDB
+{
 	my ($self) = @_;
 	$self->{dbh}->disconnect();
 
 }
 
 # ===================================================
-sub GetDumpUsers {
+sub GetDumpUsers
+{
 	my ($self) = @_;
 	my ( $sqlcmd, $sth, $numRows );
 	my ($local) = 0;
@@ -167,9 +172,11 @@ sub GetDumpUsers {
 
 	print "<p> Founded $numRows rows. <p>\n";
 
-# dt_mod => [2011-03-30 22:07:35] enabled => [1 ] id => [1  ] pwd => [ ] user => [enzo ]
-	while ( my $ref = $sth->fetchrow_hashref() ) {
-		foreach my $k ( sort keys %$ref ) {
+	# dt_mod => [2011-03-30 22:07:35] enabled => [1 ] id => [1  ] pwd => [ ] user => [enzo ]
+	while ( my $ref = $sth->fetchrow_hashref() )
+	{
+		foreach my $k ( sort keys %$ref )
+		{
 			printf " $k => [%-12s] ", $ref->{$k};
 		}
 		print "<p>\n";
@@ -181,14 +188,15 @@ sub GetDumpUsers {
 # ===================================================
 #Content-type: application/json
 #
-# { "type" : "tables" ,"num_rows" : "6" ,"time" : "54" , 
-# 	"rows" : [  {  "Tables_in_enzarl_db1" : "groups"  },  
-# 	            {  "Tables_in_enzarl_db1" : "location"  },  
-#                ......... 
+# { "type" : "tables" ,"num_rows" : "6" ,"time" : "54" ,
+# 	"rows" : [  {  "Tables_in_enzarl_db1" : "groups"  },
+# 	            {  "Tables_in_enzarl_db1" : "location"  },
+#                .........
 # 	            {  "Tables_in_enzarl_db1" : "users"  } ]  }
-# 
+#
 # ===================================================
-sub GetJsonTables {
+sub GetJsonTables
+{
 	my ($self) = @_;
 	my ( $sqlcmd, $sth, $numRows, $json, $ctxType, $row, $rows );
 	my ($local) = 0;
@@ -199,14 +207,16 @@ sub GetJsonTables {
 	$numRows = $sth->rows;
 
 	$ctxType = "Content-type: application/json\n\n";
-	$json  = sprintf "\"%s\" : \"%s\" ,", "type",     "tables";
+	$json = sprintf "\"%s\" : \"%s\" ,", "type", "tables";
 	$json .= sprintf "\"%s\" : \"%d\" ,", "num_rows", $numRows;
 	$json .= sprintf "\"%s\" : \"%d\" ,", "time",     localtime();
 
 	$rows = "";
-	while ( my $ref = $sth->fetchrow_hashref() ) {
+	while ( my $ref = $sth->fetchrow_hashref() )
+	{
 		$row = "";
-		foreach my $k ( sort keys %$ref ) {
+		foreach my $k ( sort keys %$ref )
+		{
 			$row .= sprintf " \"%s\" : \"%s\" ,", $k, $ref->{$k};
 		}
 		$row =~ s/\,$//;
@@ -218,7 +228,7 @@ sub GetJsonTables {
 	$rows = sprintf " \"rows\" : [ %s ] ", $rows;
 	$json .= $rows;
 	$json = sprintf "%s { %s }", $ctxType, $json;
-	
+
 	return $json;
 
 }    ## __________  sub GetJsonTables

@@ -18,6 +18,12 @@ function include_js_file(filename, location) {
 }
 
 // ==============================================
+$(document).ready(function() {
+	include_js_file('/SwimmingPool/js/swim-login.js', 'head');
+
+})
+
+// ==============================================
 function ManageDebugSection() {
 	var debug, tmp;
 	debug = $.cookie('debug');
@@ -32,9 +38,7 @@ function ManageDebugSection() {
 	} else {
 		if (tmp > 0) {
 			tmp = 1;
-			$.cookie('debug', tmp, {
-				expires : 2
-			});
+			$.cookie('debug', tmp, { expires : 2 });
 		} else {
 			tmp = 0;
 			$.cookie('debug', tmp);
@@ -79,22 +83,18 @@ function Error(msg) {
 // geturl.params.js
 // ===========================================
 
-$.extend({
-	getUrlVars : function() {
-		var vars = [], hash;
-		var hashes = window.location.href.slice(
-				window.location.href.indexOf('?') + 1).split('&');
-		for ( var i = 0; i < hashes.length; i++) {
-			hash = hashes[i].split('=');
-			vars.push(hash[0]);
-			vars[hash[0]] = hash[1];
-		}
-		return vars;
-	},
-	getUrlVar : function(name) {
-		return $.getUrlVars()[name];
+$.extend({ getUrlVars : function() {
+	var vars = [], hash;
+	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	for ( var i = 0; i < hashes.length; i++) {
+		hash = hashes[i].split('=');
+		vars.push(hash[0]);
+		vars[hash[0]] = hash[1];
 	}
-});
+	return vars;
+}, getUrlVar : function(name) {
+	return $.getUrlVars()[name];
+} });
 
 // ================================================================
 // sleep
@@ -146,43 +146,30 @@ function QueryAjax(urlQuery, idOutput1) {
 	var len, obj1, obj2;
 	obj1 = $("#" + idOutput1);
 
-	$.ajax({
-		url : urlQuery,
-		cache : false,
-		beforeSend : function() {
-			len = obj1.html().length;
-			obj1.css({
-				"color" : "#0000AA",
-				"font" : "30px auto"
-			});
-			if (len > 0) {
-				obj1.html('Clearing data ....');
-				obj1.fadeTo("slow", 0.3);
-				obj1.text('');
-				return false;
-			} else {
-				obj1.html('Processing request ....');
-				obj1.fadeTo("slow", 0.3);
-			}
-		},
-		success : function(data, stato) {
-			obj1.css({
-				"color" : "#006600",
-				"font" : "13px auto"
-			});
-			if (len > 0) {
-				obj1.text('');
-			} else {
-				obj1.text('');
-				obj1.html(data);
-				obj1.fadeTo("slow", 1);
-			}
-		},
-		error : function(richiesta, stato, errori) {
-			Error("E' evvenuto un errore. Codice errore:[" + stato + "]"
-					+ errori);
+	$.ajax({ url : urlQuery, cache : false, beforeSend : function() {
+		len = obj1.html().length;
+		obj1.css({ "color" : "#0000AA", "font" : "30px auto" });
+		if (len > 0) {
+			obj1.html('Clearing data ....');
+			obj1.fadeTo("slow", 0.3);
+			obj1.text('');
+			return false;
+		} else {
+			obj1.html('Processing request ....');
+			obj1.fadeTo("slow", 0.3);
 		}
-	});
+	}, success : function(data, stato) {
+		obj1.css({ "color" : "#006600", "font" : "13px auto" });
+		if (len > 0) {
+			obj1.text('');
+		} else {
+			obj1.text('');
+			obj1.html(data);
+			obj1.fadeTo("slow", 1);
+		}
+	}, error : function(richiesta, stato, errori) {
+		Error("E' evvenuto un errore. Codice errore:[" + stato + "]" + errori);
+	} });
 }
 
 // ================================================================
@@ -220,8 +207,9 @@ function GetHelp(objItem, objHint) {
 	uri2 = uri + ' #' + msg_id;
 	// Log("[getHelp] uri2=" + uri2);
 	objHint.load(uri2);
-	objHint.prepend('<p>' + title + '</p>');
-
+	objHint.prepend('<b>' + msg_id + '</b>');
+	// Log("[getHelp] text=" + objHint.text());
+    return false;
 }
 
 // ================================================================
@@ -277,9 +265,9 @@ function ChildBox(queryUrl, queryParam) {
 	objInnerChild.empty().html('<img src="/images/loading2.gif" /> ');
 
 	// if (queryParam.lenght > 0)
-	//	fullQuery = queryUrl + '?' + queryParam;
+	// fullQuery = queryUrl + '?' + queryParam;
 	// else
-		fullQuery = queryUrl;
+	fullQuery = queryUrl;
 	objInnerChild.load(fullQuery);
 
 } // ________ function ChildBox()

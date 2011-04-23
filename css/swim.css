@@ -22,7 +22,7 @@ a:hover {
 }
 
 /** Header */
-#swim-header ,#swim-footer {
+#swim-header,#swim-footer {
 	font-size: small;
 	font-weight: normal;
 	align: center;
@@ -36,19 +36,17 @@ a:hover {
 	opacity: 0.9;
 }
 
-
 #swim-footer {
 	position: fixed;
 	bottom: 0px;
 }
 
-#swim-header ul li ,#swim-footer ul li {
+#swim-header ul li,#swim-footer ul li {
 	display: inline;
 	padding: 2px 0px;
 	margin-left: auto;
 	margin-right: 0px;
-	}
-
+}
 
 div#debug {
 	font-size: small;
@@ -61,6 +59,7 @@ div#debug {
 	bottom: 0;
 	left: 1%;
 	overflow: auto;
+	z-index: 7;
 }
 
 div#error {
@@ -79,17 +78,20 @@ div#error {
 
 div#HelpBox {
 	font-size: small;
-	font-style: italic; background-color : #ffff99;
+	font-style: italic;
+	background-color: #ffff99;
 	border: 1px solid #006600;
 	opacity: 0.9;
 	width: 40%;
 	height: 20%;
 	position: absolute;
-	padding: 10px; overflow : auto;
+	padding: 10px;
+	overflow: auto;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 	overflow: auto;
 	background-color: #ffff99;
+	z-index: 9;
 }
 
 a#mailme {
@@ -155,51 +157,50 @@ div.src_code {
 
 span#TotalAccess {
 	background-color: green;
-	padding: 2px; font-size : small;
+	padding: 2px;
+	font-size: small;
 	color: #0000AA;
 	height: 20px;
 	width: 50px;
 	-moz-border-radius: 10px;
-	font-size: small; color : #0000AA; height : 20px; width : 50px;
-	-moz-border-radius : 10px;
+	font-size: small;
+	color: #0000AA;
+	height: 20px;
+	width: 50px;
+	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 }
 
-
-
 div#ChildBox {
-        background-image: url(/images/nuoto1-gray.jpg);
-        color: #000000;
-        position: fixed;
-        width: 60%;
-        height : 80%;
-        left: 20%;
-        bottom: 10%;
-        font-size: small;
-        font-color: blue;
-        opacity: 0.9;
-        border: thick groove green;   
-        -moz-border-radius: 16px;
-        -webkit-border-radius: 16px;
-         border-radius: 16px;
-        padding: 10px;
-        overflow: auto;
+	background-image: url(/images/nuoto1-gray.jpg);
+	color: #000000;
+	position: fixed;
+	width: 60%;
+	height: 80%;
+	left: 20%;
+	bottom: 10%;
+	font-size: small;
+	font-color: blue;
+	opacity: 0.9;
+	border: thick groove green;
+	-moz-border-radius: 16px;
+	-webkit-border-radius: 16px;
+	border-radius: 16px;
+	padding: 10px;
+	overflow: auto;
 }
 
 div#InnerChildBox {
-        background-image: url(/images/nuoto1-gray.jpg);
-        color: #000000;
-        position: relative;
-        width: 90%;
-        height : 90%;
-        left: 5%;
-        bottom: 5%;
-        font-size: small;
-        font-color: blue;
-        opacity: 0.9;
-        padding: 10px;
-        overflow: auto;
+	background-image: url(/images/nuoto1-gray.jpg);
+	color: #000000;
+	position: relative;
+	width: 90%;
+	height: 90%;
+	left: 5%;
+	bottom: 5%;
+	font-size: small;
+	font-color: blue;
+	opacity: 0.9;
+	padding: 10px;
+	overflow: auto;
 }
-
-
-

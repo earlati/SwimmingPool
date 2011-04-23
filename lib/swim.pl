@@ -47,12 +47,19 @@ eval {
     warn "CMD => [$cmd] param=>[$strpara]\n";
     
 	if ( $cmd eq 'login' ) {
-		my ( $obj1, $s1 );
-    	
+		my ( $obj1, $s1 );    	
     	warn "CMD : login \n";
 		$obj1 = new Swim::Login( $cmd, $strpara );
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
+		print "$s1 \n";
+
+	}
+	elsif ( $cmd eq 'checkLogin' ) {
+		my ( $obj1, $s1 );    	
+    	warn "CMD : checkLogin \n";
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$s1 = $obj1->BuildAnswerCheckLogin();
 		print "$s1 \n";
 
 	}

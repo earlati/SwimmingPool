@@ -18,7 +18,8 @@ use CGI;
 Run() unless caller();
 
 # ========================================
-sub Run {
+sub Run
+{
 	eval {
 		my ( $obj1, $s1, $params );
 
@@ -29,7 +30,8 @@ sub Run {
 		print "$s1 \n";
 	};
 
-	if ($@) {
+	if ($@)
+	{
 		print "Content-type: text/plain\n\n";
 
 		print " Error: \n";
@@ -40,7 +42,8 @@ sub Run {
 }    ## _________ sub Run
 
 # ===================================
-sub new {
+sub new
+{
 	my $class  = shift;
 	my $cmd    = shift;
 	my $params = shift;
@@ -57,10 +60,16 @@ sub new {
 	print "[NEW] params: $params \n";
 	$self->InitObject($params);
 
-	if ( $cmd eq 'login' ) {
+	if ( $cmd eq 'login' )
+	{
 		$self->BuildHtmlLogin();
 	}
-	elsif ( $cmd eq 'register' ) {
+	elsif ( $cmd eq 'checkLogin' )
+	{
+		$self->BuildAnswerCheckLogin();
+	}
+	elsif ( $cmd eq 'register' )
+	{
 		$self->BuildHtmlRegister();
 	}
 
@@ -69,13 +78,15 @@ sub new {
 }    ## __________ sub new
 
 # ===================================
-sub DESTROY {
+sub DESTROY
+{
 	my ($self) = @_;
 
 }    ## ________  sub DESTROY
 
 # ===================================
-sub InitObject {
+sub InitObject
+{
 	my ( $self, $params ) = @_;
 	my ($s1);
 
@@ -87,7 +98,8 @@ sub InitObject {
 }    ## _______  sub InitObject
 
 # ===================================
-sub EndHtml {
+sub EndHtml
+{
 	my ($self) = @_;
 	my ($html);
 
@@ -97,17 +109,17 @@ sub EndHtml {
 }    ## _______  sub EndHtml
 
 # ===================================
-sub GetHtml {
+sub GetHtml
+{
 	my ($self) = @_;
 	my ($sres) = $self->{html};
 	return $sres;
 }
 
 # ===================================
-sub BuildBaseHtml {
+sub BuildBaseHtml
+{
 	my ($self) = @_;
-
-	my ($params);
 	my ($sres) = "";
 
 	# -----------------------------------------------------
@@ -120,6 +132,7 @@ sub BuildBaseHtml {
 		-script => [
 			{ -src => '/js/jquery.min.js',    -language => 'javascript' },
 			{ -src => '/js/jquery-ui.min.js', -language => 'javascript' },
+			{ -src => '/js/jquery.cookie.js', -language => 'javascript' },
 			{
 				-src      => '/SwimmingPool/js/swim-utility.js',
 				-language => 'javascript'
@@ -128,10 +141,11 @@ sub BuildBaseHtml {
 		-bgcolor => '#AAAAAA'
 	);
 
-	$params = $self->{cgiObj}->Vars;
-	foreach my $k ( keys %$params ) {
-		$sres .= $self->{cgiObj}->h2("Params: $k  $params->{$k} ");
-	}
+	$self->{params} = $self->{cgiObj}->Vars;
+
+	# foreach my $k ( keys %$params ) {
+	#	$sres .= $self->{cgiObj}->h2("Params: $k  $params->{$k} ");
+	#}
 
 	$self->{html} .= "$sres";
 
@@ -140,18 +154,19 @@ sub BuildBaseHtml {
 }    ## _______  sub BuildBaseHtml
 
 # ===================================
-sub BuildHtmlLogin {
+sub BuildHtmlLogin
+{
 	my ($self) = @_;
 
 	my ($lastUser) = "";
 	my ($sres)     = "";
 	my ($action)   = '/SwimmingPool/lib/swim.pl?prog=savelogin';
 
-	$lastUser = $self->{cgiObj}->cookie('last_user') || '';
+	$lastUser = $self->{cgiObj}->cookie('CurrentUser') || '';
 
 	$sres .= $self->{cgiObj}->h2("Login ");
 
-# $sres .= $self->{cgiObj}->start_form( -action => "$action", -target => '#InnerChildBox');
+	# $sres .= $self->{cgiObj}->start_form( -action => "$action", -target => '#InnerChildBox');
 
 	$sres .= '<p> Utente ';
 	$sres .= $self->{cgiObj}->textfield(
@@ -170,10 +185,8 @@ sub BuildHtmlLogin {
 	);
 
 	$sres .= "<p> ";
-	$sres .=
-	  $self->{cgiObj}
-	  ->submit( -name => 'buttonOk', -id => 'buttonOk', -value => 'Ok' );
-	$sres .= $self->{cgiObj}->submit(
+	$sres .= $self->{cgiObj}->button( -name => 'buttonOk', -id => 'buttonOk', -value => 'Ok' );
+	$sres .= $self->{cgiObj}->button(
 		-name  => 'buttonCancel',
 		-id    => 'buttonCancel',
 		-value => 'Cancel'
@@ -181,16 +194,52 @@ sub BuildHtmlLogin {
 	$sres .= "<p> ";
 
 	# $sres .= $self->{cgiObj}->end_form();
-
-	$self->{html} .= "$sres";
+	$sres .= "<div id=\"StatusFormLogin\"> </div>";
 
 	$sres = "<div id=\"FormLogin\"> $sres </div>";
+	$self->{html} .= "$sres";
+
 	return "$sres";
 
 }    ## ___________ sub BuildHtmlLogin
 
 # ===================================
-sub BuildHtmlRegister {
+#Content-type: application/json
+#
+# { "user" : "pippo" ,"idSession" : "1330292" ,"crypt" : "HGF5Fccads7754", "error" : "0" }
+# ===================================
+sub BuildAnswerCheckLogin
+{
+	my ($self) = @_;
+	my ( $s1, $json );
+	my ($sres)    = "";
+	my ($ctxType) = "Content-type: application/json\n\n";
+
+	warn "BuildAnswerCheckLogin ... ";
+
+	$self->{params} = $self->{cgiObj}->Vars;
+
+	# foreach my $k ( keys %$params ) {
+	#	$sres .= $self->{cgiObj}->h2("Params: $k  $params->{$k} ");
+	#}
+
+	$json = '{ ';
+	$s1   = sprintf " \"%s\" : \"%s\" ", "user", $self->{params}->{user};
+	$json .= " $s1 , ";
+	$s1   = sprintf " \"%s\" : \"%s\" ", "error", "0";
+	$json .= " $s1 , ";
+	$s1   = sprintf " \"%s\" : \"%s\" ", "idSession", "1110";
+	$json .= " $s1 ";
+	$json .= ' } ';
+	$sres = sprintf "%s %s", $ctxType, $json;
+
+	return "$sres";
+
+}    ## ___________ sub BuildAnswerCheckLogin
+
+# ===================================
+sub BuildHtmlRegister
+{
 	my ($self) = @_;
 
 	my ($sres) = "";
