@@ -85,6 +85,9 @@ function InitPage() {
 	$('#CallLogin').click(function() {
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=login')
 	});
+	$('#CallRegister').click(function() {
+		ChildBox('/SwimmingPool/lib/swim.pl?prog=register')
+	});
 
 	Log("Start Test section");
 	TestJson();
@@ -95,7 +98,6 @@ function InitPage() {
 	Log("Current user: " + user + " IdConn=" + idconn);
 	if (idconn === undefined || idconn === null) {
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=login');
-
 	}
 
 } // ________ function InitPage()

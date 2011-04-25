@@ -24,7 +24,7 @@ sub Run
 		my ( $obj1, $s1, $params );
 
 		# $params = 'p1=aaaaa&p2=bbbbb';
-		$obj1 = new Swim::Login( 'login', $params );
+		$obj1 = new Swim::Login( 'register', $params );
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
 		print "$s1 \n";
@@ -154,19 +154,16 @@ sub BuildBaseHtml
 }    ## _______  sub BuildBaseHtml
 
 # ===================================
+# ===================================
 sub BuildHtmlLogin
 {
 	my ($self) = @_;
 
 	my ($lastUser) = "";
 	my ($sres)     = "";
-	my ($action)   = '/SwimmingPool/lib/swim.pl?prog=savelogin';
 
 	$lastUser = $self->{cgiObj}->cookie('CurrentUser') || '';
-
 	$sres .= $self->{cgiObj}->h2("Login ");
-
-	# $sres .= $self->{cgiObj}->start_form( -action => "$action", -target => '#InnerChildBox');
 
 	$sres .= '<p> Utente ';
 	$sres .= $self->{cgiObj}->textfield(
@@ -185,17 +182,20 @@ sub BuildHtmlLogin
 	);
 
 	$sres .= "<p> ";
-	$sres .= $self->{cgiObj}->button( -name => 'buttonOk', -id => 'buttonOk', -value => 'Ok' );
+	$sres .= $self->{cgiObj}->button( -name => 'buttonOk', -id => 'buttonOk', -value => 'Conferma' );
 	$sres .= $self->{cgiObj}->button(
 		-name  => 'buttonCancel',
 		-id    => 'buttonCancel',
-		-value => 'Cancel'
+		-value => 'Cancella'
+	);
+	$sres .= $self->{cgiObj}->button(
+		-name  => 'buttonRegister',
+		-id    => 'buttonRegister',
+		-value => 'Registra utente'
 	);
 	$sres .= "<p> ";
 
-	# $sres .= $self->{cgiObj}->end_form();
 	$sres .= "<div id=\"StatusFormLogin\"> </div>";
-
 	$sres = "<div id=\"FormLogin\"> $sres </div>";
 	$self->{html} .= "$sres";
 
@@ -204,9 +204,22 @@ sub BuildHtmlLogin
 }    ## ___________ sub BuildHtmlLogin
 
 # ===================================
+# UrlQuery : /SwimmingPool/lib/swim.pl?prog=checkLogin { 'user' : 'dddd22', 'password' : 'pwdxxxxx' }
+#
 #Content-type: application/json
 #
 # { "user" : "pippo" ,"idSession" : "1330292" ,"crypt" : "HGF5Fccads7754", "error" : "0" }
+# ===================================
+#Table session_connect
+#=====================
+#id, date, id_user, hash_code, dt_mod
+#---------------------
+#id               int(11) PK
+#date             datetime
+#id_user          int(11)
+#hash_code        varchar(45)
+#dt_mod           timestamp
+#
 # ===================================
 sub BuildAnswerCheckLogin
 {
@@ -224,11 +237,11 @@ sub BuildAnswerCheckLogin
 	#}
 
 	$json = '{ ';
-	$s1   = sprintf " \"%s\" : \"%s\" ", "user", $self->{params}->{user};
+	$s1 = sprintf " \"%s\" : \"%s\" ", "user", $self->{params}->{user};
 	$json .= " $s1 , ";
-	$s1   = sprintf " \"%s\" : \"%s\" ", "error", "0";
+	$s1 = sprintf " \"%s\" : \"%s\" ", "error", "0";
 	$json .= " $s1 , ";
-	$s1   = sprintf " \"%s\" : \"%s\" ", "idSession", "1110";
+	$s1 = sprintf " \"%s\" : \"%s\" ", "idSession", "1110";
 	$json .= " $s1 ";
 	$json .= ' } ';
 	$sres = sprintf "%s %s", $ctxType, $json;
@@ -238,15 +251,103 @@ sub BuildAnswerCheckLogin
 }    ## ___________ sub BuildAnswerCheckLogin
 
 # ===================================
+#Table users
+#===========
+#id, user, pwd, enabled, dt_mod, email
+#-----------
+#id               int(11) PK
+#user             varchar(20)
+#pwd              varchar(30)
+#enabled          tinyint(1)
+#dt_mod           timestamp
+#email            varchar(90)
+
+# ===================================
 sub BuildHtmlRegister
 {
 	my ($self) = @_;
-
 	my ($sres) = "";
+
 	$sres .= $self->{cgiObj}->h2("Register");
+
+	$sres .= '<p> Utente ';
+	$sres .= $self->{cgiObj}->textfield(
+		-name      => "user_name",
+		-value     => "",
+		-size      => 20,
+		-maxlength => 30
+	);
+
+	$sres .= '<p> Enabled ';
+	$sres .= $self->{cgiObj}->checkbox(-name=>'enabled_user',
+      -checked=>1,
+      -value=>'ON',
+      -label=>'Enable user');
+
+	$sres .= '<p> Password ';
+	$sres .= $self->{cgiObj}->password_field(
+		-name      => 'password',
+		-value     => '',
+		-size      => 20,
+		-maxlength => 30
+	);
+
+	$sres .= '<p> E-mail ';
+	$sres .= $self->{cgiObj}->textfield(
+		-name      => 'email',
+		-value     => '',
+		-size      => 20,
+		-maxlength => 90
+	);
+
+	$sres .= "<p> ";
+	$sres .= $self->{cgiObj}->button( -name => 'buttonOk', -id => 'buttonOk', -value => 'Ok' );
+	$sres .= $self->{cgiObj}->button(
+		-name  => 'buttonCancel',
+		-id    => 'buttonCancel',
+		-value => 'Cancel'
+	);
+	$sres .= "<p> ";
+
+	$sres .= "<div id=\"StatusFormRegister\"> </div>";
+	$sres = "<div id=\"FormRegister\"> $sres </div>";
 	$self->{html} .= "$sres";
 
 	return "$sres";
+	
 
 }    ## ___________ sub BuildHtmlRegister
+
+
+
+# ===================================
+# ===================================
+sub BuildAnswerStoreRegister
+{
+	my ($self) = @_;
+	my ( $s1, $json );
+	my ($sres)    = "";
+	my ($ctxType) = "Content-type: application/json\n\n";
+
+	warn "BuildAnswerStoreRegister ... ";
+
+	$self->{params} = $self->{cgiObj}->Vars;
+
+	# foreach my $k ( keys %$params ) {
+	#	$sres .= $self->{cgiObj}->h2("Params: $k  $params->{$k} ");
+	#}
+
+	$json = '{ ';
+	$s1 = sprintf " \"%s\" : \"%s\" ", "user", $self->{params}->{user};
+	$json .= " $s1 , ";
+	$s1 = sprintf " \"%s\" : \"%s\" ", "error", "0";
+	$json .= " $s1 , ";
+	$s1 = sprintf " \"%s\" : \"%s\" ", "idUser", "10";
+	$json .= " $s1 ";
+	$json .= ' } ';
+	$sres = sprintf "%s %s", $ctxType, $json;
+
+	return "$sres";
+
+}    ## ___________ sub BuildAnswerStoreRegister
 

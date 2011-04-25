@@ -65,7 +65,20 @@ eval {
 	}
 	elsif ( $cmd eq 'register' )
 	{
+		my ( $obj1, $s1 );    	
     	warn "CMD : register \n";
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$obj1->EndHtml();
+		$s1 = $obj1->GetHtml();
+		print "$s1 \n";
+
+	}
+	elsif ( $cmd eq 'storeRegister' ) {
+		my ( $obj1, $s1 );    	
+    	warn "CMD : storeRegister \n";
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$s1 = $obj1->BuildAnswerStoreRegister();
+		print "$s1 \n";
 
 	}
 	else {
