@@ -20,7 +20,7 @@ use Swim::Login;
 
 eval {
 	my ( $obj1, $s1, $qstring, $cmd );
-    my ( $params, $strpara, $k, $v, $ll, $ll2 );
+    my ( $params, $strpara, $hjson, $k, $v, $ll, $ll2 );
 
 	# env QUERY_STRING : prog=login&user=enzo
 	$qstring = $ENV{QUERY_STRING};
@@ -30,7 +30,7 @@ eval {
     	@$ll2 = split( '=', $s1 );
     	$k = @$ll2[0];
     	$v = @$ll2[1];
-    	$params->{$k} = "$v";
+    	$params->{$k} = "$v" if defined $k;
     }
 
 	# print "Content-type: text/plain\n\n";
@@ -40,6 +40,7 @@ eval {
     {
     	if( "$k" eq "prog ") { next; };
     	$strpara .= sprintf "%s=%s&", $k, $params->{$k},
+    	warn "Param [$k] => [$params->{$k}]";
     }
     $strpara =~ s/&$//;
     $cmd = "$params->{prog}";

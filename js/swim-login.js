@@ -56,11 +56,13 @@ function InitLogin()
 		*************************************/
 		
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
-		urlData  = "{ 'user' : '" + user + "', ";
-		urlData += " 'password' : '" + pwd + "' }";
+		// urlData  = "{ 'user' : '" + user + "', ";
+		// urlData += " 'password' : '" + pwd + "' }";
+		urlData  = "user=" + user;
+		urlData += "&password=" + pwd;
         Log( "UrlQuery : " + urlQuery + ' ' + urlData );
 
-        jqxhr = $.getJSON(urlQuery, function(data) {
+        jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
 				Log("json: " + key + " : " + val + ' type: ' + typeof (val));
 			});
@@ -87,6 +89,11 @@ function InitRegister()
 		return false;
 	});
 
+	$('#FormRegister #buttonLogin').click(function() {
+		Log('Pressed buttonLogin ');
+		ChildBox('/SwimmingPool/lib/swim.pl?prog=login')
+		return false;
+	});
 	
 	$('#FormRegister #buttonOk').click(function() {
         var jqxhr, urlQuery, urlData;
@@ -99,7 +106,7 @@ function InitRegister()
 		Log('Pressed button OK user=' + user + '  pwd=' + pwd + ' enabled=' + enabled + ' email=' + email );
 
 		/**********************************
-		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister';
 		urlData  = "&user=" + user;
 		urlData += "&password=" + pwd;
         Log( "UrlQuery : " + urlQuery + ' ' + urlData );
@@ -108,13 +115,18 @@ function InitRegister()
 		*************************************/
 		
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister';
-		urlData  = "{ 'user' : '" + user + "', ";
-		urlData += " 'password' : '" + pwd + "' }";
-		urlData += " 'enabled_user' : '" + enabled + "' }";
-		urlData += " 'email' : '" + email + "' }";
+		// urlData  = "{ 'user' : '" + user + "', ";
+		// urlData += " 'password' : '" + pwd + "' }";
+		// urlData += " 'enabled_user' : '" + enabled + "' }";
+		// urlData += " 'email' : '" + email + "' }";
+		urlData  = "user=" + user;
+		urlData += "&password=" + pwd;
+		urlData += "&enabled_user=" + enabled;
+		urlData += "&email=" + email;
+		
         Log( "UrlQuery : " + urlQuery + ' ' + urlData );
 
-        jqxhr = $.getJSON(urlQuery, function(data) {
+        jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
 				Log("json: " + key + " : " + val + ' type: ' + typeof (val));
 			});

@@ -233,5 +233,73 @@ sub GetJsonTables
 
 }    ## __________  sub GetJsonTables
 
+# ===================================================
+#Table users
+#===========
+#id, user, pwd, enabled, dt_mod, email
+#-----------
+#id               int(11) PK
+#user             varchar(20)
+#pwd              varchar(30)
+#enabled          tinyint(1)
+#dt_mod           timestamp
+#email            varchar(90)
+#
+# ===================================================
+sub GetUser
+{
+	my ( $self, $username ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $ref );
+	my ($rslt) = ();
+
+	$sqlcmd = sprintf "select users where user = '%s'", $username;
+	$sth = $self->{dbh}->prepare("$sqlcmd");
+	$sth->execute;
+	$numRows         = $sth->rows;
+	$rslt->{numrows} = $numRows;
+	$ref             = $sth->fetchrow_hashref();
+
+	foreach my $k ( keys %$ref )
+	{
+		$rslt->{$k} = $ref->{$k};
+	}
+
+	$sth->finish;
+
+	return $rslt;
+
+}    ## _________  sub GetUser
+
+
+# ===================================================
+# ===================================================
+sub StoreUser
+{
+	my ( $self, $param ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $ref );
+	my ($rslt) = ();
+
+
+    $sqlcmd = "INSERT INTO 'users' ( user, pwd, enabled, email, dt_mod ) values (?,?,?,?,'current_timestamp')";
+
+
+	$sth->execute( $param->{user},$param->{pwd},$param->{enabled},$param->{email} );
+	$numRows         = $sth->rows;
+	$rslt->{numrows} = $numRows;
+	$ref             = $sth->fetchrow_hashref();
+
+	foreach my $k ( keys %$ref )
+	{
+		$rslt->{$k} = $ref->{$k};
+	}
+
+	$sth->finish;
+
+	return $rslt;
+
+}    ## _________  sub StoreUser
+
+
+
 1;
 

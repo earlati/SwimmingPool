@@ -273,7 +273,7 @@ sub BuildHtmlRegister
 	$sres .= '<p> Utente ';
 	$sres .= $self->{cgiObj}->textfield(
 		-name      => "user_name",
-		-value     => "",
+		-value     => "test1",
 		-size      => 20,
 		-maxlength => 30
 	);
@@ -287,7 +287,7 @@ sub BuildHtmlRegister
 	$sres .= '<p> Password ';
 	$sres .= $self->{cgiObj}->password_field(
 		-name      => 'password',
-		-value     => '',
+		-value     => 'pwd1',
 		-size      => 20,
 		-maxlength => 30
 	);
@@ -295,7 +295,7 @@ sub BuildHtmlRegister
 	$sres .= '<p> E-mail ';
 	$sres .= $self->{cgiObj}->textfield(
 		-name      => 'email',
-		-value     => '',
+		-value     => 'test.tost@libero.it',
 		-size      => 20,
 		-maxlength => 90
 	);
@@ -306,6 +306,11 @@ sub BuildHtmlRegister
 		-name  => 'buttonCancel',
 		-id    => 'buttonCancel',
 		-value => 'Cancel'
+	);
+	$sres .= $self->{cgiObj}->button(
+		-name  => 'buttonLogin',
+		-id    => 'buttonLogin',
+		-value => 'Login utente'
 	);
 	$sres .= "<p> ";
 
@@ -325,20 +330,21 @@ sub BuildHtmlRegister
 sub BuildAnswerStoreRegister
 {
 	my ($self) = @_;
-	my ( $s1, $json );
+	my ( $s1, $json, $params );
 	my ($sres)    = "";
 	my ($ctxType) = "Content-type: application/json\n\n";
 
 	warn "BuildAnswerStoreRegister ... ";
 
 	$self->{params} = $self->{cgiObj}->Vars;
-
-	# foreach my $k ( keys %$params ) {
-	#	$sres .= $self->{cgiObj}->h2("Params: $k  $params->{$k} ");
-	#}
+    $params = $self->{params};
+	foreach my $k ( keys %$params ) {
+		 $s1 = sprintf "<p> Params: %s : %s", $k, $params->{$k};
+	     warn "[StoreRegister] $s1 ";
+	}
 
 	$json = '{ ';
-	$s1 = sprintf " \"%s\" : \"%s\" ", "user", $self->{params}->{user};
+	$s1 = sprintf " \"%s\" : \"%s\" ", "user", "";
 	$json .= " $s1 , ";
 	$s1 = sprintf " \"%s\" : \"%s\" ", "error", "0";
 	$json .= " $s1 , ";
