@@ -25,13 +25,13 @@ function InitLogin()
 	var user, pwd;
 
 	$('#FormLogin #buttonCancel').click(function() {
-		Log('Pressed buttonCancel ');
+		Log('[Login] Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');
 		return false;
 	});
 
 	$('#FormLogin #buttonRegister').click(function() {
-		Log('Pressed buttonRegister ');
+		Log('[Login] Pressed buttonRegister ');
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=register')
 		return false;
 	});
@@ -41,7 +41,7 @@ function InitLogin()
 	
 		user = $('#FormLogin input[name="user_name"]').attr('value');
 		pwd = $('#FormLogin input[name="password"]').attr('value');
-		Log('Pressed button OK user=' + user + '  pwd=' + pwd);
+		Log('[Login] Pressed OK user=' + user + '  pwd=' + pwd);
 		$.cookie('CurrentUser', user, {
 			espires : 20
 		});
@@ -59,8 +59,8 @@ function InitLogin()
 		// urlData  = "{ 'user' : '" + user + "', ";
 		// urlData += " 'password' : '" + pwd + "' }";
 		urlData  = "user=" + user;
-		urlData += "&password=" + pwd;
-        Log( "UrlQuery : " + urlQuery + ' ' + urlData );
+		urlData += "&pwd=" + pwd;
+        Log( "[Login] UrlQuery : " + urlQuery + ' ' + urlData );
 
         jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
@@ -69,7 +69,7 @@ function InitLogin()
         });
 			
     	jqxhr.error(function() {
-    		Error("error " + "QueryJson on url: " + urlQuery);
+    		Error("[Login] error " + "QueryJson on url: " + urlQuery);
     	});
 
 		return false;
@@ -84,26 +84,27 @@ function InitRegister()
 {
 	var user, pwd, enabled, email;
 	$('#FormRegister #buttonCancel').click(function() {
-		Log('Pressed buttonCancel ');
+		Log('[Register] Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');
 		return false;
 	});
 
 	$('#FormRegister #buttonLogin').click(function() {
-		Log('Pressed buttonLogin ');
+		Log('[Register] Pressed buttonLogin ');
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=login')
 		return false;
 	});
 	
 	$('#FormRegister #buttonOk').click(function() {
         var jqxhr, urlQuery, urlData;
+        var param = new Array();
 	
 		user = $('#FormRegister input[name="user_name"]').attr('value');
 		pwd = $('#FormRegister input[name="password"]').attr('value');
 		enabled = $('#FormRegister input[name="enabled_user"]').attr('value');
 		email = $('#FormRegister input[name="email"]').attr('value');
 
-		Log('Pressed button OK user=' + user + '  pwd=' + pwd + ' enabled=' + enabled + ' email=' + email );
+		Log('[Register] Pressed OK : user=' + user + ' email=' + email );
 
 		/**********************************
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister';
@@ -115,25 +116,28 @@ function InitRegister()
 		*************************************/
 		
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister';
-		// urlData  = "{ 'user' : '" + user + "', ";
-		// urlData += " 'password' : '" + pwd + "' }";
-		// urlData += " 'enabled_user' : '" + enabled + "' }";
-		// urlData += " 'email' : '" + email + "' }";
 		urlData  = "user=" + user;
-		urlData += "&password=" + pwd;
-		urlData += "&enabled_user=" + enabled;
+		urlData += "&pwd=" + pwd;
+		urlData += "&enabled=" + enabled;
 		urlData += "&email=" + email;
 		
-        Log( "UrlQuery : " + urlQuery + ' ' + urlData );
+        Log( "[Register] UrlQuery : " + urlQuery   );
 
         jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
-				Log("json: " + key + " : " + val + ' type: ' + typeof (val));
+				Log("[Register] key=" + key + " : val=" + val );
+				param[key] = val;
 			});
         });
 			
     	jqxhr.error(function() {
-    		Error("error " + "QueryJson on url: " + urlQuery);
+    		Error("[Register] error " + "QueryJson on url: " + urlQuery);
+    	});
+
+    	jqxhr.complete(function() {
+    		Log("[Register] complete info: " + param['info']);
+    		Log("[Register] complete error: " + param['error']);
+    		$('#StatusFormRegister').html( '<p>' + param['info']);
     	});
 
 		return false;

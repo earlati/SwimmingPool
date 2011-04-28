@@ -15,6 +15,8 @@ use warnings;
 use Data::Dumper;
 use CGI;
 
+use Swim::StorageDB;
+
 Run() unless caller();
 
 # ========================================
@@ -279,10 +281,12 @@ sub BuildHtmlRegister
 	);
 
 	$sres .= '<p> Enabled ';
-	$sres .= $self->{cgiObj}->checkbox(-name=>'enabled_user',
-      -checked=>1,
-      -value=>'ON',
-      -label=>'Enable user');
+	$sres .= $self->{cgiObj}->checkbox(
+		-name    => 'enabled_user',
+		-checked => 1,
+		-value   => 'ON',
+		-label   => 'Enable user'
+	);
 
 	$sres .= '<p> Password ';
 	$sres .= $self->{cgiObj}->password_field(
@@ -319,38 +323,75 @@ sub BuildHtmlRegister
 	$self->{html} .= "$sres";
 
 	return "$sres";
-	
 
 }    ## ___________ sub BuildHtmlRegister
 
-
-
 # ===================================
+
+=head2 sub BuildAnswerStoreRegister
+
+	$obj1 = new Swim::StorageDB();
+
+	$param->{user}    = 'user2';
+	$param->{pwd}     = 'password1';
+	$param->{enabled} = '1';
+	$param->{email}   = 'user1@swimming.it';
+	$sres             = $obj1->StoreUser($param);
+	print "Dump res: " . Dumper($sres) . " \n";
+	
+  Dump res: $VAR1 = {
+          'info' => 'Creato nuovo utente user2 id=14 ',
+          'error' => 0,
+          'data' => {
+                      'email' => 'user1@swimming.it',
+                      'pwd' => 'usjRS48E8ZADM',
+                      'numrows' => '1',
+                      'dt_mod' => '2011-04-28 20:27:12',
+                      'user' => 'user2',
+                      'id' => '14',
+                      'enabled' => '1'
+                    }
+        };
+
+=head3 Dump of result returned when the user already exists
+
+  Dump res: $VAR1 = {
+          'info' => 'L\' utente user2 esiste gia\' ',
+          'error' => 2
+        };	
+=cut
+
 # ===================================
 sub BuildAnswerStoreRegister
 {
 	my ($self) = @_;
-	my ( $s1, $json, $params );
+	my ( $s1, $json, $params, $objStore, $dataStore, $resStore );
 	my ($sres)    = "";
 	my ($ctxType) = "Content-type: application/json\n\n";
 
-	warn "BuildAnswerStoreRegister ... ";
-
 	$self->{params} = $self->{cgiObj}->Vars;
-    $params = $self->{params};
-	foreach my $k ( keys %$params ) {
-		 $s1 = sprintf "<p> Params: %s : %s", $k, $params->{$k};
-	     warn "[StoreRegister] $s1 ";
+	$params = $self->{params};
+	foreach my $k ( keys %$params )
+	{
+		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
+		warn "[StoreRegister] $s1 ";
+		$dataStore->{$k} = "$params->{$k}";
 	}
 
-	$json = '{ ';
-	$s1 = sprintf " \"%s\" : \"%s\" ", "user", "";
-	$json .= " $s1 , ";
-	$s1 = sprintf " \"%s\" : \"%s\" ", "error", "0";
-	$json .= " $s1 , ";
-	$s1 = sprintf " \"%s\" : \"%s\" ", "idUser", "10";
-	$json .= " $s1 ";
-	$json .= ' } ';
+	$objStore = new Swim::StorageDB();
+	$resStore = $objStore->StoreUser($dataStore);
+
+	$json = ' ';
+	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resStore->{error}";
+	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resStore->{info}";
+	if ( $resStore->{error} == 0 )
+	{
+		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resStore->{data}->{user}" if defined $resStore->{data}->{user};
+		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resStore->{data}->{id}"
+		  if defined $resStore->{data}->{id};
+	}
+    $json =~ s/\, *$//;
+	$json = sprintf " { %s } ", $json;
 	$sres = sprintf "%s %s", $ctxType, $json;
 
 	return "$sres";

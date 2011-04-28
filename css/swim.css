@@ -66,7 +66,7 @@ div#error {
 	font-size: small;
 	background-color: #ff0000;
 	border: 1px solid #660000;
-	opacity: 0.7;
+	opacity: 0.9;
 	width: 80%;
 	height: 40%;
 	position: fixed;
@@ -163,11 +163,6 @@ span#TotalAccess {
 	height: 20px;
 	width: 50px;
 	-moz-border-radius: 10px;
-	font-size: small;
-	color: #0000AA;
-	height: 20px;
-	width: 50px;
-	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 }
 
@@ -203,4 +198,10 @@ div#InnerChildBox {
 	opacity: 0.9;
 	padding: 10px;
 	overflow: auto;
+}
+
+#StatusFormRegister, #StatusFormLogin {
+    text-align: center;
+    text-decoration: underline ;
+	font-color: blue;
 }

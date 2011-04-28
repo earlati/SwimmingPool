@@ -1,3 +1,5 @@
+#!/bin/perl
+# ----------------------------------------------------------
 # FILE : StorageDB.pm
 # ----------------------------------------------------------
 # perltidy -l=120 -gnu -b program.pl
@@ -32,11 +34,19 @@ RunTest() unless caller;
 # =====================================
 sub RunTest
 {
-	my ( $obj1, $s1 );
+	my ( $obj1, $sres, $param );
 
 	$obj1 = new Swim::StorageDB();
-	$s1   = $obj1->GetDumpUsers();
-	print "$s1 \n";
+
+	$param->{user}    = 'user2';
+	$param->{pwd}     = 'password1';
+	$param->{enabled} = '1';
+	$param->{email}   = 'user1@swimming.it';
+	$sres             = $obj1->StoreUser($param);
+	print "Dump res: " . Dumper($sres) . " \n";
+
+	$sres = $obj1->GetDumpUsers();
+	print "$sres \n";
 
 }    # ______ sub RunTest
 
@@ -53,7 +63,7 @@ sub new
 		pwd         => "22006829",
 		logObj      => undef,
 		localserver => "0",
-		lastUpdate  => '03.04.2011'
+		lastUpdate  => '28.04.2011'
 	};
 
 	bless $self, $class;
@@ -175,9 +185,9 @@ sub GetDumpUsers
 	# dt_mod => [2011-03-30 22:07:35] enabled => [1 ] id => [1  ] pwd => [ ] user => [enzo ]
 	while ( my $ref = $sth->fetchrow_hashref() )
 	{
-		foreach my $k ( sort keys %$ref )
+		foreach my $k ( keys %$ref )
 		{
-			printf " $k => [%-12s] ", $ref->{$k};
+			printf " $k => [%-10s] ", $ref->{$k} if defined $k and defined $ref->{$k};
 		}
 		print "<p>\n";
 	}
@@ -252,54 +262,122 @@ sub GetUser
 	my ( $sqlcmd, $sth, $numRows, $ref );
 	my ($rslt) = ();
 
-	$sqlcmd = sprintf "select users where user = '%s'", $username;
-	$sth = $self->{dbh}->prepare("$sqlcmd");
-	$sth->execute;
-	$numRows         = $sth->rows;
-	$rslt->{numrows} = $numRows;
-	$ref             = $sth->fetchrow_hashref();
+	eval {
 
-	foreach my $k ( keys %$ref )
+		$sqlcmd = "select * from users where user = ? ";
+		$sth    = $self->{dbh}->prepare("$sqlcmd");
+		$sth->execute("$username");
+		$numRows         = $sth->rows;
+		$rslt->{numrows} = $numRows;
+		$ref             = $sth->fetchrow_hashref();
+
+		foreach my $k ( keys %$ref )
+		{
+			$rslt->{$k} = $ref->{$k};
+		}
+
+		$sth->finish;
+	};
+	if ($@)
 	{
-		$rslt->{$k} = $ref->{$k};
+		warn "[StoreUser] error $@ ";
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
 	}
-
-	$sth->finish;
 
 	return $rslt;
 
 }    ## _________  sub GetUser
 
-
 # ===================================================
+=head2 sub StoreUser 
+
+	$obj1 = new Swim::StorageDB();
+
+	$param->{user}    = 'user2';
+	$param->{pwd}     = 'password1';
+	$param->{enabled} = '1';
+	$param->{email}   = 'user1@swimming.it';
+	$sres             = $obj1->StoreUser($param);
+	print "Dump res: " . Dumper($sres) . " \n";
+	
+	
+=head3 dump of input data
+	
+  Dump input $VAR1 = {
+          'email' => 'user1@swimming.it',
+          'pwd' => 'password1',
+          'user' => 'user2',
+          'enabled' => '1'
+        };	
+        
+=head3 Dump of result returned after the creation of a new user
+
+  Dump res: $VAR1 = {
+          'info' => 'Creato nuovo utente user2 id=14 ',
+          'error' => 0,
+          'data' => {
+                      'email' => 'user1@swimming.it',
+                      'pwd' => 'usjRS48E8ZADM',
+                      'numrows' => '1',
+                      'dt_mod' => '2011-04-28 20:27:12',
+                      'user' => 'user2',
+                      'id' => '14',
+                      'enabled' => '1'
+                    }
+        };
+
+=head3 Dump of result returned when the user already exists
+
+  Dump res: $VAR1 = {
+          'info' => 'L\' utente user2 esiste gia\' ',
+          'error' => 2
+        };
+
+=cut
 # ===================================================
 sub StoreUser
 {
 	my ( $self, $param ) = @_;
-	my ( $sqlcmd, $sth, $numRows, $ref );
+	my ( $sqlcmd, $sth, $numRows, $ref, $crypwd );
 	my ($rslt) = ();
 
+	eval {
 
-    $sqlcmd = "INSERT INTO 'users' ( user, pwd, enabled, email, dt_mod ) values (?,?,?,?,'current_timestamp')";
+		$ref = $self->GetUser("$param->{user}");
+		if ( $ref->{numrows} == 0 )
+		{
+			$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
+			$sqlcmd = "insert into users ( user, pwd, enabled, email ) values (?,?,?,?)";
+			$sth    = $self->{dbh}->prepare("$sqlcmd");
+			$sth->execute( "$param->{user}", "$crypwd", "$param->{enabled}", "$param->{email}" );
+			$sth->finish;
+			$ref = $self->GetUser("$param->{user}");
+			foreach my $k ( keys %$ref )
+			{
+				$rslt->{data}->{$k} = $ref->{$k};
+			}
+			$rslt->{error} = 0;
+			$rslt->{info}  = "Creato nuovo utente $rslt->{data}->{user} id=$rslt->{data}->{id} ";
+		}
+		else
+		{
+			$rslt->{error} = 2;
+			$rslt->{info} = "L' utente $param->{user} esiste gia' ";
+		}
 
+	};
 
-	$sth->execute( $param->{user},$param->{pwd},$param->{enabled},$param->{email} );
-	$numRows         = $sth->rows;
-	$rslt->{numrows} = $numRows;
-	$ref             = $sth->fetchrow_hashref();
-
-	foreach my $k ( keys %$ref )
+	if ($@)
 	{
-		$rslt->{$k} = $ref->{$k};
+		warn "[StoreUser] error $@ ";
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
 	}
-
-	$sth->finish;
 
 	return $rslt;
 
 }    ## _________  sub StoreUser
-
-
 
 1;
 
