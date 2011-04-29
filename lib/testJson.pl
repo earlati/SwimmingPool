@@ -7,7 +7,7 @@ use Data::Dumper;
 
 use lib '.';
 use lib './lib';
-use Swim::StorageDB;
+use Swim::DBCommon;
 
 eval {
 	my ( $obj1, $s1 );

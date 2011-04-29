@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # ----------------------------------------------------------
-# FILE : Storage.pm
+# FILE : Login.pm
 # ----------------------------------------------------------
 # perltidy -l=120 -gnu -b program.pl
 # ----------------------------------------------------------
@@ -15,7 +15,8 @@ use warnings;
 use Data::Dumper;
 use CGI;
 
-use Swim::StorageDB;
+use Swim::DBUser;
+use base qw( Swim::BaseCgi );
 
 Run() unless caller();
 
@@ -27,6 +28,7 @@ sub Run
 
 		# $params = 'p1=aaaaa&p2=bbbbb';
 		$obj1 = new Swim::Login( 'register', $params );
+		$obj1->SelectCommand();
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
 		print "$s1 \n";
@@ -35,7 +37,6 @@ sub Run
 	if ($@)
 	{
 		print "Content-type: text/plain\n\n";
-
 		print " Error: \n";
 		print " $@ \n";
 		print "INC:  @INC  \n";
@@ -44,116 +45,27 @@ sub Run
 }    ## _________ sub Run
 
 # ===================================
-sub new
+# ===================================
+sub SelectCommand
 {
-	my $class  = shift;
-	my $cmd    = shift;
-	my $params = shift;
-	my $self   = {
-		cgiObj     => undef,
-		dbObj      => undef,
-		cmd        => "$cmd",
-		params     => "$params",
-		html       => '',
-		lastUpdate => '17.04.2011'
-	};
-
-	bless $self, $class;
-	print "[NEW] params: $params \n";
-	$self->InitObject($params);
-
-	if ( $cmd eq 'login' )
+	my ( $self ) = @_;
+	
+	if ( Command() eq 'login' )
 	{
 		$self->BuildHtmlLogin();
 	}
-	elsif ( $cmd eq 'checkLogin' )
+	elsif ( Command() eq 'checkLogin' )
 	{
 		$self->BuildAnswerCheckLogin();
 	}
-	elsif ( $cmd eq 'register' )
+	elsif ( Command() eq 'register' )
 	{
 		$self->BuildHtmlRegister();
 	}
+	
+}  ## ______ sub SelectCommand
 
-	return $self;
 
-}    ## __________ sub new
-
-# ===================================
-sub DESTROY
-{
-	my ($self) = @_;
-
-}    ## ________  sub DESTROY
-
-# ===================================
-sub InitObject
-{
-	my ( $self, $params ) = @_;
-	my ($s1);
-
-	$self->{cgiObj} = new CGI($params);
-	$s1 = $self->BuildBaseHtml();
-
-	# print "[InitObject] : $s1 \n";
-
-}    ## _______  sub InitObject
-
-# ===================================
-sub EndHtml
-{
-	my ($self) = @_;
-	my ($html);
-
-	$html = $self->{cgiObj}->end_html();
-	$self->{html} .= "$html";
-
-}    ## _______  sub EndHtml
-
-# ===================================
-sub GetHtml
-{
-	my ($self) = @_;
-	my ($sres) = $self->{html};
-	return $sres;
-}
-
-# ===================================
-sub BuildBaseHtml
-{
-	my ($self) = @_;
-	my ($sres) = "";
-
-	# -----------------------------------------------------
-	$sres .= $self->{cgiObj}->header( -type => 'text/html' );
-
-	$sres .= $self->{cgiObj}->start_html(
-		-title  => " SwimminPool program  ",
-		-author => 'enzo.arlati@aesys.it',
-		-style  => { -src => '/SwimmingPool/css/swim.css', -media => 'screen' },
-		-script => [
-			{ -src => '/js/jquery.min.js',    -language => 'javascript' },
-			{ -src => '/js/jquery-ui.min.js', -language => 'javascript' },
-			{ -src => '/js/jquery.cookie.js', -language => 'javascript' },
-			{
-				-src      => '/SwimmingPool/js/swim-utility.js',
-				-language => 'javascript'
-			}
-		],
-		-bgcolor => '#AAAAAA'
-	);
-
-	$self->{params} = $self->{cgiObj}->Vars;
-
-	# foreach my $k ( keys %$params ) {
-	#	$sres .= $self->{cgiObj}->h2("Params: $k  $params->{$k} ");
-	#}
-
-	$self->{html} .= "$sres";
-
-	return $sres;
-
-}    ## _______  sub BuildBaseHtml
 
 # ===================================
 # ===================================
@@ -378,7 +290,7 @@ sub BuildAnswerStoreRegister
 		$dataStore->{$k} = "$params->{$k}";
 	}
 
-	$objStore = new Swim::StorageDB();
+	$objStore = new Swim::DBUser();
 	$resStore = $objStore->StoreUser($dataStore);
 
 	$json = ' ';
@@ -397,4 +309,9 @@ sub BuildAnswerStoreRegister
 	return "$sres";
 
 }    ## ___________ sub BuildAnswerStoreRegister
+
+
+
+1;
+
 

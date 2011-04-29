@@ -89,9 +89,9 @@ function InitPage() {
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=register')
 	});
 
-	Log("Start Test section");
-	TestJson();
-	Log("End test section");
+	// Log("Start Test section");
+	// TestJson();
+	// Log("End test section");
 
 	var user = $.cookie('CurrentUser');
 	var idconn = $.cookie('IdConnection');

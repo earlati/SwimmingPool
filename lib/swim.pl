@@ -15,7 +15,7 @@ use Data::Dumper;
 
 use lib '.';
 use lib './lib';
-use Swim::StorageDB;
+use Swim::DBCommon;
 use Swim::Login;
 
 eval {
@@ -51,6 +51,7 @@ eval {
 		my ( $obj1, $s1 );    	
     	warn "CMD : login \n";
 		$obj1 = new Swim::Login( $cmd, $strpara );
+		$obj1->BuildHtmlLogin();
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
 		print "$s1 \n";
@@ -69,6 +70,7 @@ eval {
 		my ( $obj1, $s1 );    	
     	warn "CMD : register \n";
 		$obj1 = new Swim::Login( $cmd, $strpara );
+		$obj1->BuildHtmlRegister();
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
 		print "$s1 \n";
