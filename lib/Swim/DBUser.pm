@@ -185,6 +185,11 @@ sub StoreUser
 		$ref = $self->GetUser("$param->{user}");
 		if ( $ref->{numrows} == 0 )
 		{
+			if( $param->{checked} eq "true" ) { $param->{enabled} = 1; }
+			else  { $param->{enabled} = 0; }
+			
+			warn sprintf "[StoreUser] user=%s enabled=[%s] checked=[%s]", 
+			                $param->{user}, $param->{enabled}, $param->{checked};  
 			$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
 			$sqlcmd = "insert into users ( user, pwd, enabled, email ) values (?,?,?,?)";
 			$sth    = $self->{dbh}->prepare("$sqlcmd");

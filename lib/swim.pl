@@ -12,6 +12,7 @@ use strict;
 use warnings;
 use LWP::Simple;
 use Data::Dumper;
+use File::Basename;
 
 use lib '.';
 use lib './lib';
@@ -21,6 +22,7 @@ use Swim::Login;
 eval {
 	my ( $obj1, $s1, $qstring, $cmd );
     my ( $params, $strpara, $hjson, $k, $v, $ll, $ll2 );
+    my ( $base ) = basename $0;
 
 	# env QUERY_STRING : prog=login&user=enzo
 	$qstring = $ENV{QUERY_STRING};
@@ -40,7 +42,7 @@ eval {
     {
     	if( "$k" eq "prog ") { next; };
     	$strpara .= sprintf "%s=%s&", $k, $params->{$k},
-    	warn "Param [$k] => [$params->{$k}]";
+    	warn "[$base] Param [$k] => [$params->{$k}]";
     }
     $strpara =~ s/&$//;
     $cmd = "$params->{prog}";

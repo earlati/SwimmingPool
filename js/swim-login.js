@@ -3,25 +3,19 @@ $(document).ready(function() {
 
 	Log("swim-login loading .... ");
 
-	Log( "check login " + $('#FormLogin').length );
-	Log( "check register " + $('#FormRegister').length );
-	
-	if(  $('#FormLogin').length > 0 )
-		{
-		  InitLogin();
-		}
-	else if(  $('#FormRegister').length > 0 )
-	{
-	    InitRegister();
+	Log("check login " + $('#FormLogin').length);
+	Log("check register " + $('#FormRegister').length);
+
+	if ($('#FormLogin').length > 0) {
+		InitLogin();
+	} else if ($('#FormRegister').length > 0) {
+		InitRegister();
 	}
-	
 
 })
 
-
-//==============================================
-function InitLogin()
-{
+// ==============================================
+function InitLogin() {
 	var user, pwd;
 
 	$('#FormLogin #buttonCancel').click(function() {
@@ -37,51 +31,44 @@ function InitLogin()
 	});
 
 	$('#FormLogin #buttonOk').click(function() {
-        var jqxhr, urlQuery, urlData;
-	
+		var jqxhr, urlQuery, urlData;
+
 		user = $('#FormLogin input[name="user_name"]').attr('value');
 		pwd = $('#FormLogin input[name="password"]').attr('value');
 		Log('[Login] Pressed OK user=' + user + '  pwd=' + pwd);
-		$.cookie('CurrentUser', user, {
-			espires : 20
-		});
+		$.cookie('CurrentUser', user, { espires : 20 });
 
-		/**********************************
+		/***********************************************************************
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin'; urlData =
+		 * "&user=" + user; urlData += "&password=" + pwd; Log( "UrlQuery : " +
+		 * urlQuery + ' ' + urlData ); $('#HelpBox').load(urlQuery + urlData );
+		 * $('#HelpBox').show();
+		 **********************************************************************/
+
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
-		urlData  = "&user=" + user;
-		urlData += "&password=" + pwd;
-        Log( "UrlQuery : " + urlQuery + ' ' + urlData );
-    	$('#HelpBox').load(urlQuery + urlData );
-    	$('#HelpBox').show();
-		*************************************/
-		
-		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
-		// urlData  = "{ 'user' : '" + user + "', ";
+		// urlData = "{ 'user' : '" + user + "', ";
 		// urlData += " 'password' : '" + pwd + "' }";
-		urlData  = "user=" + user;
+		urlData = "user=" + user;
 		urlData += "&pwd=" + pwd;
-        Log( "[Login] UrlQuery : " + urlQuery + ' ' + urlData );
+		Log("[Login] UrlQuery : " + urlQuery + ' ' + urlData);
 
-        jqxhr = $.getJSON(urlQuery, urlData, function(data) {
+		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
 				Log("json: " + key + " : " + val + ' type: ' + typeof (val));
 			});
-        });
-			
-    	jqxhr.error(function() {
-    		Error("[Login] error " + "QueryJson on url: " + urlQuery);
-    	});
+		});
+
+		jqxhr.error(function() {
+			Error("[Login] error " + "QueryJson on url: " + urlQuery);
+		});
 
 		return false;
 	});
-	
-}    // ________  function InitLogin()
 
+} // ________ function InitLogin()
 
-
-//==============================================
-function InitRegister()
-{
+// ==============================================
+function InitRegister() {
 	var user, pwd, enabled, email;
 	$('#FormRegister #buttonCancel').click(function() {
 		Log('[Register] Pressed buttonCancel ');
@@ -94,57 +81,52 @@ function InitRegister()
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=login')
 		return false;
 	});
-	
+
 	$('#FormRegister #buttonOk').click(function() {
-        var jqxhr, urlQuery, urlData;
-        var param = new Array();
-	
+		var jqxhr, urlQuery, urlData;
+		var param = new Array();
+
 		user = $('#FormRegister input[name="user_name"]').attr('value');
 		pwd = $('#FormRegister input[name="password"]').attr('value');
-		enabled = $('#FormRegister input[name="enabled_user"]').attr('value');
+		checked = $('#FormRegister input[name="enabled_user"]').attr('checked');
 		email = $('#FormRegister input[name="email"]').attr('value');
 
-		Log('[Register] Pressed OK : user=' + user + ' email=' + email );
+		Log('[Register] Pressed OK : user=' + user + ' email=' + email);
 
-		/**********************************
+		/***********************************************************************
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister'; urlData =
+		 * "&user=" + user; urlData += "&password=" + pwd; Log( "UrlQuery : " +
+		 * urlQuery + ' ' + urlData ); $('#HelpBox').load(urlQuery + urlData );
+		 * $('#HelpBox').show();
+		 **********************************************************************/
+
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister';
-		urlData  = "&user=" + user;
-		urlData += "&password=" + pwd;
-        Log( "UrlQuery : " + urlQuery + ' ' + urlData );
-    	$('#HelpBox').load(urlQuery + urlData );
-    	$('#HelpBox').show();
-		*************************************/
-		
-		urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister';
-		urlData  = "user=" + user;
+		urlData = "user=" + user;
 		urlData += "&pwd=" + pwd;
-		urlData += "&enabled=" + enabled;
+		urlData += "&checked=" + checked;
 		urlData += "&email=" + email;
-		
-        Log( "[Register] UrlQuery : " + urlQuery   );
 
-        jqxhr = $.getJSON(urlQuery, urlData, function(data) {
+		Log("[Register] UrlQuery : " + urlQuery);
+
+		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
-				Log("[Register] key=" + key + " : val=" + val );
+				Log("[Register] key=" + key + " : val=" + val);
 				param[key] = val;
 			});
-        });
-			
-    	jqxhr.error(function() {
-    		Error("[Register] error " + "QueryJson on url: " + urlQuery);
-    	});
+		});
 
-    	jqxhr.complete(function() {
-    		Log("[Register] complete info: " + param['info']);
-    		Log("[Register] complete error: " + param['error']);
-    		$('#StatusFormRegister').html( '<p>' + param['info']);
-    	});
+		jqxhr.error(function() {
+			Error("[Register] error " + "QueryJson on url: " + urlQuery);
+		});
+
+		jqxhr.complete(function() {
+			Log("[Register] complete info: " + param['info']);
+			Log("[Register] complete error: " + param['error']);
+			$('#StatusFormRegister').html('<p>' + param['info']);
+		});
 
 		return false;
 	});
-	
-}    // ________  function InitRegister()
 
-
-
+} // ________ function InitRegister()
 

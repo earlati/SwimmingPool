@@ -1,6 +1,6 @@
 body {
 	background: #BBBBBB;
-	background-image: url(/images/nuoto1-gray.jpg);
+	background-image: url(../images/nuoto1-gray.jpg);
 	background-position: center;
 	background-attachment: fixed;
 }
@@ -167,7 +167,7 @@ span#TotalAccess {
 }
 
 div#ChildBox {
-	background-image: url(/images/nuoto1-gray.jpg);
+	background-image: url(../images/nuoto1.jpg);
 	color: #000000;
 	position: fixed;
 	width: 60%;
@@ -186,7 +186,7 @@ div#ChildBox {
 }
 
 div#InnerChildBox {
-	background-image: url(/images/nuoto1-gray.jpg);
+	background-image: url(../images/nuoto1.jpg);
 	color: #000000;
 	position: relative;
 	width: 90%;
