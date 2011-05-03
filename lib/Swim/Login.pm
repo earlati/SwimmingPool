@@ -18,20 +18,22 @@ use CGI;
 use Swim::DBUser;
 use base qw( Swim::BaseCgi );
 
-Run() unless caller();
+RunTest() unless caller();
 
 # ========================================
-sub Run
+
+=head2 sub RunTest
+
+     TestRegister();
+     TestCheckLogin();
+     
+=cut
+
+# ========================================
+sub RunTest
 {
 	eval {
-		my ( $obj1, $s1, $params );
-
-		# $params = 'p1=aaaaa&p2=bbbbb';
-		$obj1 = new Swim::Login( 'register', $params );
-		$obj1->SelectCommand();
-		$obj1->EndHtml();
-		$s1 = $obj1->GetHtml();
-		print "$s1 \n";
+		TestCheckLogin();
 	};
 
 	if ($@)
@@ -44,21 +46,45 @@ sub Run
 
 }    ## _________ sub Run
 
+
 # ===================================
+sub TestRegister
+{
+		my ( $obj1, $s1, $params );
+
+		$params = 'p1=aaaaa&p2=bbbbb';
+		$obj1 = new Swim::Login( 'register', $params );
+		$obj1->SelectCommand();
+		$obj1->EndHtml();
+		$s1 = $obj1->GetHtml();
+		print "$s1 \n";	
+}
+# ===================================
+sub TestCheckLogin
+{
+		my ( $obj1, $s1, $params );
+
+		$params = 'user=pippo&pwd=pluto';
+		$obj1 = new Swim::Login( 'checkLogin', $params );
+		$s1 = $obj1->BuildAnswerCheckLogin();
+		print "$s1 \n";	
+}
+
+
 # ===================================
 sub SelectCommand
 {
 	my ( $self ) = @_;
 	
-	if ( Command() eq 'login' )
+	if ( $self->Command() eq 'login' )
 	{
 		$self->BuildHtmlLogin();
 	}
-	elsif ( Command() eq 'checkLogin' )
+	elsif ( $self->Command() eq 'checkLogin' )
 	{
 		$self->BuildAnswerCheckLogin();
 	}
-	elsif ( Command() eq 'register' )
+	elsif ( $self->Command() eq 'register' )
 	{
 		$self->BuildHtmlRegister();
 	}
@@ -90,7 +116,7 @@ sub BuildHtmlLogin
 	$sres .= '<p> Password ';
 	$sres .= $self->{cgiObj}->password_field(
 		-name      => 'password',
-		-value     => 'pwdxxxxx',
+		-value     => 'test',
 		-size      => 20,
 		-maxlength => 30
 	);
@@ -138,27 +164,47 @@ sub BuildHtmlLogin
 sub BuildAnswerCheckLogin
 {
 	my ($self) = @_;
-	my ( $s1, $json );
+	my ( $s1, $json, $params, $objUser, $dataUser, $resUser );
 	my ($sres)    = "";
-	my ($ctxType) = "Content-type: application/json\n\n";
+	my ($ctxType) = $self->GetContentJson();
 
 	warn "BuildAnswerCheckLogin ... ";
 
 	$self->{params} = $self->{cgiObj}->Vars;
+	$params = $self->{params};
+	foreach my $k ( keys %$params )
+	{
+		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
+		warn "[CheckLogin] $s1 ";
+		$dataUser->{$k} = "$params->{$k}";
+	}
+#	$json = '{ ';
+#	$s1 = sprintf " \"%s\" : \"%s\" ", "user", $self->{params}->{user};
+#	$json .= " $s1 , ";
+#	$s1 = sprintf " \"%s\" : \"%s\" ", "error", "0";
+#	$json .= " $s1 , ";
+#	$s1 = sprintf " \"%s\" : \"%s\" ", "idSession", "1110";
+#	$json .= " $s1 ";
+#	$json .= ' } ';
+#	$sres = sprintf "%s %s", $ctxType, $json;
 
-	# foreach my $k ( keys %$params ) {
-	#	$sres .= $self->{cgiObj}->h2("Params: $k  $params->{$k} ");
-	#}
+	$objUser = new Swim::DBUser();
+	$resUser = $objUser->CheckLogin($dataUser);
 
-	$json = '{ ';
-	$s1 = sprintf " \"%s\" : \"%s\" ", "user", $self->{params}->{user};
-	$json .= " $s1 , ";
-	$s1 = sprintf " \"%s\" : \"%s\" ", "error", "0";
-	$json .= " $s1 , ";
-	$s1 = sprintf " \"%s\" : \"%s\" ", "idSession", "1110";
-	$json .= " $s1 ";
-	$json .= ' } ';
+
+	$json = ' ';
+	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resUser->{error}";
+	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resUser->{info}";
+	if ( $resUser->{error} == 0 )
+	{
+		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resUser->{data}->{user}" if defined $resUser->{data}->{user};
+		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resUser->{data}->{id}"
+		  if defined $resUser->{data}->{id};
+	}
+    $json =~ s/\, *$//;
+	$json = sprintf " { %s } ", $json;
 	$sres = sprintf "%s %s", $ctxType, $json;
+
 
 	return "$sres";
 
@@ -279,7 +325,7 @@ sub BuildAnswerStoreRegister
 	my ($self) = @_;
 	my ( $s1, $json, $params, $objStore, $dataStore, $resStore );
 	my ($sres)    = "";
-	my ($ctxType) = "Content-type: application/json\n\n";
+	my ($ctxType) = $self->GetContentJson();
 
 	$self->{params} = $self->{cgiObj}->Vars;
 	$params = $self->{params};

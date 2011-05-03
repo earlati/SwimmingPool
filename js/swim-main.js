@@ -81,26 +81,39 @@ function InitPage() {
 		HideHint(objHelp);
 	})
 
-	// $('#buttonCancel').click( function(){ $("#ChildBox").hide('slow'); } )
-	$('#CallLogin').click(function() {
-		ChildBox('/SwimmingPool/lib/swim.pl?prog=login')
-	});
-	$('#CallRegister').click(function() {
-		ChildBox('/SwimmingPool/lib/swim.pl?prog=register')
-	});
 
-	// Log("Start Test section");
-	// TestJson();
-	// Log("End test section");
+	InitPageSwimLogin();
 
+} // ________ function InitPage()
+
+
+
+//==============================================
+function InitPageSwimLogin() {
+	
 	var user = $.cookie('CurrentUser');
 	var idconn = $.cookie('IdConnection');
+	
+	// $('#buttonCancel').click( function(){ $("#ChildBox").hide('slow'); } )
+	$('#CallLogin').click(function() {
+		var idconn = $.cookie('IdConnection');
+		if (idconn === undefined || idconn === null) {
+			ChildBox('/SwimmingPool/lib/swim.pl?prog=login');
+
+		} else {
+			$.cookie('IdConnection', null);
+		}
+	});
+	$('#CallRegister').click(function() {
+		ChildBox('/SwimmingPool/lib/swim.pl?prog=register');
+	});	
+	
 	Log("Current user: " + user + " IdConn=" + idconn);
 	if (idconn === undefined || idconn === null) {
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=login');
-	}
-
-} // ________ function InitPage()
+	}	
+	
+}
 
 // ================================================================
 function AggiornaListaModuliPerl() {

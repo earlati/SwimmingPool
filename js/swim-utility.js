@@ -207,7 +207,7 @@ function GetHelp(objItem, objHint) {
 	uri2 = uri + ' #' + msg_id;
 	// Log("[getHelp] uri2=" + uri2);
 	objHint.load(uri2);
-	objHint.prepend('<b>' + msg_id + '</b>');
+	// objHint.prepend('<b>' + msg_id + '</b>');
 	// Log("[getHelp] text=" + objHint.text());
     return false;
 }

@@ -60,7 +60,7 @@ sub new
 	};
 
 	bless $self, $class;
-	print "[NEW] params: $params \n";
+	warn "[BaseCgi.NEW] params: $params \n";
 	$self->InitObject($params);
 
 	return $self;
@@ -153,6 +153,14 @@ sub BuildBaseHtml
 	return $sres;
 
 }    ## _______  sub BuildBaseHtml
+
+# ===================================
+sub GetContentJson
+{
+	my ($self) = @_;
+ 	my ($ctxType) = "Content-type: application/json\n\n";
+ 	return $ctxType;
+}
 
 
 1;

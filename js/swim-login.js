@@ -3,6 +3,7 @@ $(document).ready(function() {
 
 	Log("swim-login loading .... ");
 
+	
 	Log("check login " + $('#FormLogin').length);
 	Log("check register " + $('#FormRegister').length);
 
@@ -13,6 +14,8 @@ $(document).ready(function() {
 	}
 
 })
+
+
 
 // ==============================================
 function InitLogin() {
@@ -54,7 +57,7 @@ function InitLogin() {
 
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
-				Log("json: " + key + " : " + val + ' type: ' + typeof (val));
+				Log("[Login] json: " + key + " : " + val + ' type: ' + typeof (val));
 			});
 		});
 

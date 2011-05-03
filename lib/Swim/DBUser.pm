@@ -20,15 +20,28 @@ use Data::Dumper;
 use DBI;
 use POSIX 'WNOHANG';
 
-
 use base qw( Swim::DBCommon );
-
 
 RunTest() unless caller;
 
 # =====================================
+
+=head sub RunTest
+
+	TestStoreUser();
+	TestCheckLogin();
+	TestIdSession();
+
+=cut
+
 # =====================================
 sub RunTest
+{
+	TestCheckLogin();
+}
+
+# =====================================
+sub TestStoreUser
 {
 	my ( $obj1, $sres, $param );
 
@@ -36,7 +49,7 @@ sub RunTest
 
 	$param->{user}    = 'user2';
 	$param->{pwd}     = 'password1';
-	$param->{enabled} = '1';
+	$param->{checked} = 'true';
 	$param->{email}   = 'user1@swimming.it';
 	$sres             = $obj1->StoreUser($param);
 	print "Dump res: " . Dumper($sres) . " \n";
@@ -44,9 +57,25 @@ sub RunTest
 	$sres = $obj1->GetDumpUsers();
 	print "$sres \n";
 
+}    # ______ sub TestStoreUser
 
-}    # ______ sub RunTest
+# =====================================
+sub TestCheckLogin
+{
+	my ( $obj1, $sres, $param );
 
+	$obj1 = new Swim::DBUser();
+
+	$param->{user} = 'pippo';
+	$param->{pwd}  = 'pluto';
+	print "Dump input: " . Dumper($param) . " \n";
+	$sres = $obj1->CheckLogin($param);
+	print "Dump result: " . Dumper($sres) . " \n";
+
+	$sres = $obj1->GetDumpUsers();
+	print "$sres \n";
+
+}    # ______ sub TestCheckLogin
 
 # ===================================================
 # ===================================================
@@ -78,8 +107,6 @@ sub GetDumpUsers
 	$sth->finish();
 
 }    ## __________  sub GetDumpUsers
-
-
 
 # ===================================================
 #Table users
@@ -128,13 +155,14 @@ sub GetUser
 }    ## _________  sub GetUser
 
 # ===================================================
+
 =head2 sub StoreUser 
 
 	$obj1 = new Swim::StorageDB();
 
 	$param->{user}    = 'user2';
 	$param->{pwd}     = 'password1';
-	$param->{enabled} = '1';
+	$param->{checked} = 'true';
 	$param->{email}   = 'user1@swimming.it';
 	$sres             = $obj1->StoreUser($param);
 	print "Dump res: " . Dumper($sres) . " \n";
@@ -146,7 +174,7 @@ sub GetUser
           'email' => 'user1@swimming.it',
           'pwd' => 'password1',
           'user' => 'user2',
-          'enabled' => '1'
+          'checked' => 'true'
         };	
         
 =head3 Dump of result returned after the creation of a new user
@@ -173,6 +201,7 @@ sub GetUser
         };
 
 =cut
+
 # ===================================================
 sub StoreUser
 {
@@ -185,6 +214,77 @@ sub StoreUser
 		$ref = $self->GetUser("$param->{user}");
 		if ( $ref->{numrows} == 0 )
 		{
+			if   ( $param->{checked} eq "true" ) { $param->{enabled} = 1; }
+			else                                 { $param->{enabled} = 0; }
+
+			warn sprintf "[StoreUser] user=%s enabled=[%s] checked=[%s]",
+			  $param->{user}, $param->{enabled}, $param->{checked};
+			$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
+			$sqlcmd = "insert into users ( user, pwd, enabled, email ) values (?,?,?,?)";
+			$sth    = $self->{dbh}->prepare("$sqlcmd");
+			$sth->execute( "$param->{user}", "$crypwd", "$param->{enabled}", "$param->{email}" );
+			$sth->finish;
+			$ref = $self->GetUser("$param->{user}");
+			foreach my $k ( keys %$ref )
+			{
+				$rslt->{data}->{$k} = $ref->{$k};
+			}
+			$rslt->{error} = 0;
+			$rslt->{info}  = "Creato nuovo utente $rslt->{data}->{user} id=$rslt->{data}->{id} ";
+		}
+		else
+		{
+			$rslt->{error} = 2;
+			$rslt->{info}  = "L' utente $param->{user} esiste gia' ";
+		}
+
+	};
+
+	if ($@)
+	{
+		warn "[StoreUser] error $@ ";
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	return $rslt;
+
+}    ## _________  sub StoreUser
+
+# ===================================================
+
+=head sub CheckLogin
+
+
+   Dump input: $VAR1 = {
+          'pwd' => 'password1',
+          'user' => 'user2'
+        };
+        
+        
+   Dump user: $VAR1 = {
+          'email' => 'user1@swimming.it',
+          'pwd' => 'usjRS48E8ZADM',
+          'dt_mod' => '2011-05-03 21:58:55',
+          'numrows' => 1,
+          'user' => 'user2',
+          'id' => '36',
+          'enabled' => '0'
+        };
+ 
+
+ 
+   Dump result: $VAR1 = {
+          'info' => 'L\' utente user20 non esiste  ',
+          'error' => 3
+        };
+   Dump result: $VAR1 = {
+          'info' => 'L\' utente user2 non e\' abilitato  ',
+          'error' => 4
+        };        
+        
+        
+        
 			if( $param->{checked} eq "true" ) { $param->{enabled} = 1; }
 			else  { $param->{enabled} = 0; }
 			
@@ -202,25 +302,142 @@ sub StoreUser
 			}
 			$rslt->{error} = 0;
 			$rslt->{info}  = "Creato nuovo utente $rslt->{data}->{user} id=$rslt->{data}->{id} ";
+
+
+
+=cut
+
+# ===================================================
+sub CheckLogin
+{
+	my ( $self, $param ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd );
+	my ($rslt) = ();
+
+	eval {
+		$rslt->{data}->{user}      = "";
+		$rslt->{data}->{id}        = "0";
+		$rslt->{data}->{idsession} = "0";
+
+		$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
+		$refUser = $self->GetUser("$param->{user}");
+		if ( $refUser->{numrows} == 0 )
+		{
+			$rslt->{error} = 3;
+			$rslt->{info}  = "L' utente $param->{user} non esiste  ";
+
+		}
+		elsif ( $refUser->{enabled} ne "1" )
+		{
+			$rslt->{error} = 4;
+			$rslt->{info}  = "L' utente $param->{user} non e' abilitato  ";
+
+		}
+		elsif ( $refUser->{pwd} ne "$crypwd" )
+		{
+			$rslt->{error} = 5;
+			$rslt->{info}  = "Utente $param->{user} : password non valida  ";
+
 		}
 		else
 		{
-			$rslt->{error} = 2;
-			$rslt->{info} = "L' utente $param->{user} esiste gia' ";
+			# print "Dump user: " . Dumper($refUser) . " \n";
+	    	$rslt->{data}->{user}      = $refUser->{user};
+		    $rslt->{data}->{id}        = $refUser->{id};
+
+			$rslt->{error} = 0;
+			$rslt->{info}  = "Utente $param->{user} connesso ";
+
+			# crea un id di sessione
+			# idsession = crypt( iduser, "user + localtime")
+			my( $paramSession, $rsltSession );
+			$paramSession->{id_user} = $rslt->{data}->{id};
+			
+			# $rslt->{data}->{idsession} = "0";
+			 
 		}
 
 	};
 
 	if ($@)
 	{
-		warn "[StoreUser] error $@ ";
+		warn "[CheckLogin] error $@ ";
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
 
 	return $rslt;
 
-}    ## _________  sub StoreUser
+}    ## _________  sub CheckLogin
+
+
+
+
+# ===================================================
+
+=head2
+
+	Table session_connect
+	=====================
+	id, date, id_user, hash_code, dt_mod
+	---------------------
+	id               int(11) PK
+	date             datetime
+	id_user          int(11)
+	hash_code        varchar(45)
+	dt_mod           timestamp
+
+
+=cut
+
+# ===================================================
+sub NewSessionConnection
+{
+	my ( $self, $param ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd );
+	my ($rslt) = ();
+
+	eval {
+
+	};
+
+	if ($@)
+	{
+		warn "[NewSessionConnection] error $@ ";
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	return $rslt;
+
+}    ## _________  sub NewSessionConnection
+
+
+
+
+
+# ===================================================
+sub Template
+{
+	my ( $self, $param ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd );
+	my ($rslt) = ();
+
+	eval {
+
+	};
+
+	if ($@)
+	{
+		warn "[Template] error $@ ";
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	return $rslt;
+
+}    ## _________  sub Template
+
 
 
 1;
