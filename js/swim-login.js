@@ -57,7 +57,7 @@ function InitLogin() {
 
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
-				Log("[Login] json: " + key + " : " + val + ' type: ' + typeof (val));
+				Log("[Login] json: " + key + " : " + val );
 			});
 		});
 

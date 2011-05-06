@@ -15,6 +15,10 @@ a:hover {
 	color: #000;
 }
 
+#CallLogin, #CallRegister, #TotalAccess {
+	cursor:pointer;
+	}
+	
 #TestOne {
 	font: italic 10px "Verdana", Arial, Helvetica, sans-serif;
 	font-size: small;
@@ -60,6 +64,30 @@ div#debug {
 	left: 1%;
 	overflow: auto;
 	z-index: 7;
+}
+
+div#debug .BtnMinimize {
+	background-image: url(../images/arrowDown4.jpg );
+	position: absolute;
+	right: 1px;
+    top: 1px;	
+    width: 20px;
+    height: 20px;
+    cursor:pointer;
+}
+
+div#debug .BtnClose {
+    top: 21px;	
+}
+
+.BtnClose {
+	background-image: url(../images/close3.jpg );
+	position: absolute;
+	right: 1px;
+    top: 1px;	
+    width: 20px;
+    height: 20px;
+    cursor:pointer;
 }
 
 div#error {
@@ -169,11 +197,11 @@ span#TotalAccess {
 div#ChildBox {
 	background-image: url(../images/nuoto1.jpg);
 	color: #000000;
-	position: fixed;
-	width: 60%;
-	height: 80%;
-	left: 20%;
-	bottom: 10%;
+	position: relative;
+	width: 300px;
+	height: 300px;
+	margin-left: auto;
+	margin-right: auto;
 	font-size: small;
 	font-color: blue;
 	opacity: 0.9;

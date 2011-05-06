@@ -39,14 +39,16 @@ function InitPage() {
 		$('#TotalAccess').text('Visits:' + s1);
 	} })
 
-	$('div#error').dblclick(function() {
-		$(this).hide('slow');
+	$('.BtnClose').click(function() {
+		$(this).parent().hide('slow');
 	})
-	$('div#debug').click(function() {
-		if ($(this).height() > '11') {
-			$(this).animate({ 'height' : '10px' });
+	$('div#debug .BtnMinimize').click(function() {
+		if ($(this).parent().height() > '21') {
+			$(this).parent().animate({ 'height' : '20px' });
+			$(this).css({ 'background-image' : "url(/SwimmingPool/images/arrowUp4.jpg)" });
 		} else {
-			$(this).animate({ 'height' : '40%' });
+			$(this).parent().animate({ 'height' : '40%' });
+			$(this).css({ 'background-image' : "url(/SwimmingPool/images/arrowDown4.jpg)" });
 		}
 
 	})
@@ -83,6 +85,7 @@ function InitPage() {
 
 
 	InitPageSwimLogin();
+	
 
 } // ________ function InitPage()
 

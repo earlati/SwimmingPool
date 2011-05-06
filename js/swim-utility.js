@@ -228,7 +228,7 @@ function QueryJson(urlQuery, idOutput1) {
 
 		$.each(data, function(key, val) {
 			items.push('<li id="' + key + '">' + key + ' : ' + val + '</li>');
-			Log("json: " + key + " : " + val + ' type: ' + typeof (val));
+			Log("json: " + key + " : " + val );
 		});
 
 		shtml = items.join(' ');
