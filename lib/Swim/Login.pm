@@ -46,7 +46,22 @@ sub RunTest
 
 }    ## _________ sub Run
 
+# =====================================
+sub mylog
+{
+	my ($msg) = @_;
+	my ( $s1, $ll );
+	my @call = caller(1);
+	if ( "$call[3]" eq "(eval)" )
+	{
+		@call = caller(2);
+	}
 
+	# print "Dumer call: " . Dumper( \@call ) . "\n";
+	$s1 = sprintf "[%s] %s", $call[3], $msg;
+	warn sprintf "$s1 \n";
+
+}
 # ===================================
 sub TestRegister
 {
@@ -57,7 +72,7 @@ sub TestRegister
 		$obj1->SelectCommand();
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
-		print "$s1 \n";	
+		mylog "$s1 \n";	
 }
 # ===================================
 sub TestCheckLogin
@@ -67,7 +82,7 @@ sub TestCheckLogin
 		$params = 'user=pippo&pwd=pluto';
 		$obj1 = new Swim::Login( 'checkLogin', $params );
 		$s1 = $obj1->BuildAnswerCheckLogin();
-		print "$s1 \n";	
+		mylog "$s1 \n";	
 }
 
 
@@ -105,6 +120,7 @@ sub BuildHtmlLogin
 	$lastUser = $self->{cgiObj}->cookie('CurrentUser') || '';
 	$sres .= $self->{cgiObj}->h2("Login ");
 
+    mylog "User : $lastUser ";
 	$sres .= '<p> Utente ';
 	$sres .= $self->{cgiObj}->textfield(
 		-name      => "user_name",
@@ -188,6 +204,10 @@ sub BuildAnswerCheckLogin
 #	$json .= ' } ';
 #	$sres = sprintf "%s %s", $ctxType, $json;
 
+    $s1 = "$self->{params}->{user}" || "";
+	$self->{cgiObj}->cookie( -name=> 'CurrentUser', -value=> "$s1" ) ;
+	mylog " ****  TestUser: $s1 => " . $self->{cgiObj}->cookie( -name=> 'CurrentUser' ) ;
+
 	$objUser = new Swim::DBUser();
 	$resUser = $objUser->CheckLogin($dataUser);
 
@@ -249,7 +269,7 @@ sub BuildHtmlRegister
 	$sres .= '<p> Password ';
 	$sres .= $self->{cgiObj}->password_field(
 		-name      => 'password',
-		-value     => 'pwd1',
+		-value     => 'test',
 		-size      => 20,
 		-maxlength => 30
 	);
@@ -294,7 +314,7 @@ sub BuildHtmlRegister
 	$param->{pwd}     = 'password1';
 	$param->{enabled} = '1';
 	$param->{email}   = 'user1@swimming.it';
-	$sres             = $obj1->StoreUser($param);
+	$sres             = $obj1->SaveUser($param);
 	print "Dump res: " . Dumper($sres) . " \n";
 	
   Dump res: $VAR1 = {
@@ -337,7 +357,7 @@ sub BuildAnswerStoreRegister
 	}
 
 	$objStore = new Swim::DBUser();
-	$resStore = $objStore->StoreUser($dataStore);
+	$resStore = $objStore->SaveUser($dataStore);
 
 	$json = ' ';
 	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resStore->{error}";

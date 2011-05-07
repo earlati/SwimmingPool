@@ -2,7 +2,6 @@
 $(document).ready(function() {
 
 	Log("swim-login loading .... ");
-
 	
 	Log("check login " + $('#FormLogin').length);
 	Log("check register " + $('#FormRegister').length);
@@ -13,7 +12,7 @@ $(document).ready(function() {
 		InitRegister();
 	}
 
-})
+})  // ________  $(document).ready(function()
 
 
 

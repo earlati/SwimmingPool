@@ -28,7 +28,7 @@ RunTest() unless caller;
 
 =head sub RunTest
 
-	TestStoreUser();
+	TestSaveUser();
 	TestCheckLogin();
 	TestIdSession();
 
@@ -39,24 +39,26 @@ sub RunTest
 {
 	TestCheckLogin();
 }
+
 # =====================================
 sub mylog
 {
-	my ( $msg ) = @_;
+	my ($msg) = @_;
 	my ( $s1, $ll );
-	return;
-    my @call = caller(1);
-    if( "$call[3]" eq "(eval)" ) 
-    {
-    	@call = caller(2);
-    }
-    # print "Dumer call: " . Dumper( \@call ) . "\n";  
+	my @call = caller(1);
+	if ( "$call[3]" eq "(eval)" )
+	{
+		@call = caller(2);
+	}
+
+	# print "Dumer call: " . Dumper( \@call ) . "\n";
 	$s1 = sprintf "[%s] %s", $call[3], $msg;
-	printf "$s1 \n"; 
-	
+	warn sprintf "$s1 \n";
+
 }
+
 # =====================================
-sub TestStoreUser
+sub TestSaveUser
 {
 	my ( $obj1, $sres, $param );
 
@@ -66,13 +68,13 @@ sub TestStoreUser
 	$param->{pwd}     = 'password1';
 	$param->{checked} = 'true';
 	$param->{email}   = 'user1@swimming.it';
-	$sres             = $obj1->StoreUser($param);
+	$sres             = $obj1->SaveUser($param);
 	mylog "Dump res: " . Dumper($sres) . " \n";
 
 	$sres = $obj1->GetDumpUsers();
 	mylog "$sres \n";
 
-}    # ______ sub TestStoreUser
+}    # ______ sub TestSaveUser
 
 # =====================================
 sub TestCheckLogin
@@ -81,10 +83,10 @@ sub TestCheckLogin
 
 	$obj1 = new Swim::DBUser();
 
-	$param->{user} = 'pippo';
-	$param->{pwd}  = 'pluto';
-	$param->{idSession}  = '';
-	mylog "Dump input: " . Dumper($param) ;
+	$param->{user}      = 'pippo';
+	$param->{pwd}       = 'pluto';
+	$param->{idSession} = '';
+	mylog "Dump input: " . Dumper($param);
 	$sres = $obj1->CheckLogin($param);
 	mylog "Dump result: " . Dumper($sres);
 
@@ -161,7 +163,7 @@ sub GetUser
 	};
 	if ($@)
 	{
-		warn "[StoreUser] error $@ ";
+		warn "[GetUser] error $@ ";
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
@@ -172,7 +174,7 @@ sub GetUser
 
 # ===================================================
 
-=head2 sub StoreUser 
+=head2 sub SaveUser 
 
 	$obj1 = new Swim::StorageDB();
 
@@ -180,7 +182,7 @@ sub GetUser
 	$param->{pwd}     = 'password1';
 	$param->{checked} = 'true';
 	$param->{email}   = 'user1@swimming.it';
-	$sres             = $obj1->StoreUser($param);
+	$sres             = $obj1->SaveUser($param);
 	print "Dump res: " . Dumper($sres) . " \n";
 	
 	
@@ -219,7 +221,7 @@ sub GetUser
 =cut
 
 # ===================================================
-sub StoreUser
+sub SaveUser
 {
 	my ( $self, $param ) = @_;
 	my ( $sqlcmd, $sth, $numRows, $ref, $crypwd );
@@ -233,9 +235,9 @@ sub StoreUser
 			if   ( $param->{checked} eq "true" ) { $param->{enabled} = 1; }
 			else                                 { $param->{enabled} = 0; }
 
-			warn sprintf "[StoreUser] user=%s enabled=[%s] checked=[%s]",
+			warn sprintf "[SaveUser] user=%s enabled=[%s] checked=[%s]",
 			  $param->{user}, $param->{enabled}, $param->{checked};
-			$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
+				$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
 			$sqlcmd = "insert into users ( user, pwd, enabled, email ) values (?,?,?,?)";
 			$sth    = $self->{dbh}->prepare("$sqlcmd");
 			$sth->execute( "$param->{user}", "$crypwd", "$param->{enabled}", "$param->{email}" );
@@ -258,25 +260,24 @@ sub StoreUser
 
 	if ($@)
 	{
-		warn "[StoreUser] error $@ ";
+		warn "[SaveUser] error $@ ";
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
 
 	return $rslt;
 
-}    ## _________  sub StoreUser
+}    ## _________  sub SaveUser
 
 # ===================================================
 
 =head sub CheckLogin
 
-
-   Dump input: $VAR1 = {
-          'pwd' => 'password1',
-          'user' => 'user2'
-        };
-        
+   [Swim::DBUser::TestCheckLogin] Dump input: $VAR1 = {
+          'pwd' => 'pluto',
+          'idSession' => '',
+          'user' => 'pippo'
+        };     
         
    Dump user: $VAR1 = {
           'email' => 'user1@swimming.it',
@@ -300,25 +301,17 @@ sub StoreUser
         };        
         
         
-        
-			if( $param->{checked} eq "true" ) { $param->{enabled} = 1; }
-			else  { $param->{enabled} = 0; }
-			
-			warn sprintf "[StoreUser] user=%s enabled=[%s] checked=[%s]", 
-			                $param->{user}, $param->{enabled}, $param->{checked};  
-			$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
-			$sqlcmd = "insert into users ( user, pwd, enabled, email ) values (?,?,?,?)";
-			$sth    = $self->{dbh}->prepare("$sqlcmd");
-			$sth->execute( "$param->{user}", "$crypwd", "$param->{enabled}", "$param->{email}" );
-			$sth->finish;
-			$ref = $self->GetUser("$param->{user}");
-			foreach my $k ( keys %$ref )
-			{
-				$rslt->{data}->{$k} = $ref->{$k};
-			}
-			$rslt->{error} = 0;
-			$rslt->{info}  = "Creato nuovo utente $rslt->{data}->{user} id=$rslt->{data}->{id} ";
-
+   [Swim::DBUser::CheckLogin] Dump rslt $VAR1 = {
+          'info' => 'Utente pippo connesso ',
+          'error' => 0,
+          'data' => {
+                      'pwd' => 'pilstH2iw/zY.',
+                      'idSession' => '37 pippo piIzbflOaDn1Q',
+                      'user' => 'pippo',
+                      'id' => '37'
+                    }
+        };
+         
 
 
 =cut
@@ -327,13 +320,13 @@ sub StoreUser
 sub CheckLogin
 {
 	my ( $self, $param ) = @_;
-	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd );
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $rsltSess );
 	my ($rslt) = ();
 
 	eval {
 		$rslt->{data}->{user}      = "";
 		$rslt->{data}->{id}        = "0";
-		$rslt->{data}->{idsession} = "0";
+		$rslt->{data}->{idSession} = "0";
 
 		$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
 		$refUser = $self->GetUser("$param->{user}");
@@ -357,24 +350,27 @@ sub CheckLogin
 		}
 		else
 		{
+
 			# print "Dump user: " . Dumper($refUser) . " \n";
-	    	$rslt->{data}->{user}      = "$refUser->{user}";
-		    $rslt->{data}->{id}        = "$refUser->{id}";
-		    $rslt->{data}->{pwd}       = "$refUser->{pwd}";
+			$rslt->{data}->{user} = "$refUser->{user}";
+			$rslt->{data}->{id}   = "$refUser->{id}";
+			$rslt->{data}->{pwd}  = "$refUser->{pwd}";
 
 			$rslt->{error} = 0;
 			$rslt->{info}  = "Utente $param->{user} connesso ";
 
 			# crea un id di sessione
 			# idsession = crypt( iduser, "user + localtime")
-			my( $paramSession, $rsltSession );
-			$paramSession->{idUser} = "$rslt->{data}->{id}";
+			my ( $paramSession, $rsltSession );
+			$paramSession->{idUser}   = "$rslt->{data}->{id}";
 			$paramSession->{userName} = "$rslt->{data}->{user}";
-			$paramSession->{pwd} = "$rslt->{data}->{pwd}";
-			
-			mylog "Dump paramSession " . Dumper( $paramSession );
-			$rslt->{data}->{idsession} = $self->BuildIdSession( $paramSession );
-			 
+			$paramSession->{pwd}      = "$rslt->{data}->{pwd}";
+
+			mylog "Dump paramSession " . Dumper($paramSession);
+			$rsltSess = $self->BuildIdSession($paramSession);
+			$rslt->{data}->{idSession} = $rsltSess->{idSession};
+			mylog sprintf "IdSession: [%s] ", $rslt->{data}->{idSession};
+
 		}
 
 	};
@@ -386,13 +382,13 @@ sub CheckLogin
 		$rslt->{error}     = 1;
 	}
 
+	mylog "Dump rslt " . Dumper($rslt);
 	return $rslt;
 
 }    ## _________  sub CheckLogin
 
-
-
 # ===================================================
+
 =head2 sub BuildIdSession
 
   build an IdConnection string based on idUser, userName and password
@@ -405,9 +401,10 @@ sub CheckLogin
           'userName' => 'pippo'
         };
         
+        
    [Swim::DBUser::BuildIdSession] DUMP RSLT :$VAR1 = {
           'pwd' => 'pilstH2iw/zY.',
-          'idSession' => 'piIzbflOaDn1Q',
+          'idSession' => '37 pippo piIzbflOaDn1Q',
           'idUser' => '37',
           'userName' => 'pippo'
         };     
@@ -417,34 +414,34 @@ sub CheckLogin
 # ===================================================
 sub BuildIdSession
 {
-	my( $self, $params ) = @_;
+	my ( $self, $params ) = @_;
 	my ( $rslt, $crypt, $k );
-	
+
 	eval {
-		# mylog  "DUMP INP :" . Dumper( $params ); 
-		%$rslt = (); 
+
+		# mylog  "DUMP INP :" . Dumper( $params );
+		%$rslt = ();
 		foreach $k ( keys %$params ) { $rslt->{$k} = "$params->{$k}"; }
 		$crypt = crypt( "$params->{idUser}", "$params->{userName}" . "$params->{pwd}" );
-		$rslt->{idSession} = "$crypt";
+		$rslt->{idSession} = sprintf "%s %s %s", "$params->{idUser}", "$params->{userName}", "$crypt";
 	};
-	
+
 	if ($@)
 	{
 		warn "[BuildIdConnection] error $@ ";
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
-	
-			# mylog  "DUMP RSLT :" . Dumper( $rslt ); 
-	
-	return $rslt;
-	
-}  # ________  sub BuildIdSession
 
+	# mylog  "DUMP RSLT :" . Dumper( $rslt );
+
+	return $rslt;
+
+}    # ________  sub BuildIdSession
 
 # ===================================================
 
-=head2
+=head2 sub SaveSessionConnection
 
 	Table session_connect
 	=====================
@@ -460,7 +457,35 @@ sub BuildIdSession
 =cut
 
 # ===================================================
-sub NewSessionConnection
+sub SaveSessionConnection
+{
+	my ( $self, $param ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd );
+	my ($rslt) = ();
+
+	eval {
+
+	};
+
+	if ($@)
+	{
+		warn "[SaveSessionConnection] error $@ ";
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	return $rslt;
+
+}    ## _________  sub SaveSessionConnection
+
+
+# ===================================================
+=head2 sub GetIdSession
+
+=cut
+
+# ===================================================
+sub GetIdSession
 {
 	my ( $self, $param ) = @_;
 	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd );
@@ -479,11 +504,7 @@ sub NewSessionConnection
 
 	return $rslt;
 
-}    ## _________  sub NewSessionConnection
-
-
-
-
+}    ## _________  sub GetIdSession
 
 # ===================================================
 sub Template
@@ -506,7 +527,5 @@ sub Template
 	return $rslt;
 
 }    ## _________  sub Template
-
-
 
 1;
