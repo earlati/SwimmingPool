@@ -220,6 +220,8 @@ sub BuildAnswerCheckLogin
 		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resUser->{data}->{user}" if defined $resUser->{data}->{user};
 		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resUser->{data}->{id}"
 		  if defined $resUser->{data}->{id};
+		$json .= sprintf " \"%s\" : \"%s\" ,", "idsession", "$resUser->{data}->{idSession}"
+		  if defined $resUser->{data}->{idSession};
 	}
     $json =~ s/\, *$//;
 	$json = sprintf " { %s } ", $json;

@@ -34,6 +34,7 @@ function InitLogin() {
 
 	$('#FormLogin #buttonOk').click(function() {
 		var jqxhr, urlQuery, urlData;
+		var param = new Array();
 
 		user = $('#FormLogin input[name="user_name"]').attr('value');
 		pwd = $('#FormLogin input[name="password"]').attr('value');
@@ -57,11 +58,21 @@ function InitLogin() {
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
 				Log("[Login] json: " + key + " : " + val );
+				param[key] = val;
 			});
 		});
 
 		jqxhr.error(function() {
 			Error("[Login] error " + "QueryJson on url: " + urlQuery);
+		});
+
+		jqxhr.complete(function() {
+			Log("[Login] complete info: " + param['info']);
+			Log("[Login] complete error: " + param['error']);
+			Log("[Login] idsession: " + param['idsession']);
+			$('#StatusFormLogin').html('<p>' + param['info']);
+			$.cookie('IdConnection', param['idsession'], { espires : 20 } );
+
 		});
 
 		return false;

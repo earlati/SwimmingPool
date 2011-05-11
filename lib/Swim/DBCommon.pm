@@ -29,6 +29,7 @@ use POSIX 'WNOHANG';
 our $VERSION = '0.01';
 require Exporter;
 our @ISA = qw( Exporter );
+
 # our %EXPORT_TAGS = ( 'all' => [qw( )] );
 # our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 # our @EXPORT = qw(  );
@@ -39,11 +40,16 @@ RunTest() unless caller;
 # =====================================
 sub RunTest
 {
-	my ( $obj1, $sres, $param );
+	my ( $obj1, $sres, $params, $rslt, $sqlcmd );
 
 	$obj1 = new Swim::DBCommon();
-    $sres = $obj1->GetJsonTables();
-    print "jsonTables: $sres \n";
+	$sres = $obj1->GetJsonTables();
+	print "jsonTables: $sres \n";
+
+	$sqlcmd = "select * from users where user like ? and enabled like ? ";
+	@$params = ( "test%", "1" );
+	$rslt   = $obj1->ExecuteSelectCommand( $sqlcmd, $params );
+	print "RSLT: " . Dumper($rslt);
 
 }    # ______ sub RunTest
 
@@ -209,6 +215,91 @@ sub GetJsonTables
 	return $json;
 
 }    ## __________  sub GetJsonTables
+
+# ===================================================
+
+=head2 sub ExecuteSelectCommand
+
+   		$sqlcmd = "select * from users where user like ? and enabled like ? ";
+   		@$params = ( "test%", "1" );
+   		$rslt = $self->ExecSelectCommand( $sqlCmd, $params );
+   		
+=head3   Result sample : founded 2 records
+		
+   RSLT: $VAR1 = {
+          'numrows' => '2',
+          'error' => 0,
+          'errordata' => '',
+          'rows' => {
+                      '1' => {
+                               'email' => 'test.tost@libero.it',
+                               'pwd' => 'telZwaovBltHM',
+                               'dt_mod' => '2011-05-03 23:28:04',
+                               'user' => 'test1',
+                               'id' => '38',
+                               'enabled' => '1'
+                             },
+                      '2' => {
+                               'email' => 'test.tost@libero.it',
+                               'pwd' => 'teH0wLIpW0gyQ',
+                               'dt_mod' => '2011-05-11 21:48:00',
+                               'user' => 'test2',
+                               'id' => '39',
+                               'enabled' => '1'
+                             }
+                    }
+        };   
+
+=head3  Simulated error using a wrong table name
+
+   RSLT: $VAR1 = {
+          'error' => 1,
+          'errordata' => 'DBD::mysql::st execute failed: Table \'enzarl_db1.userss\' doesn\'t exist at /home/enzo/ENZO/MYWEB/SwimmingPool/lib/Swim/DBCommon.pm line 267.
+ '
+        };
+
+=cut
+
+# ===================================================
+sub ExecuteSelectCommand
+{
+	my ( $self, $sqlCmd, $params ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $ref, $idrow );
+	my ($rslt) = ();
+
+	eval {
+		
+		$rslt->{errordata} = "";
+		$rslt->{error}     = 0;
+
+		$sth = $self->{dbh}->prepare("$sqlCmd");
+		$sth->execute(@$params);
+		$numRows         = $sth->rows;
+		$rslt->{numrows} = $numRows;
+		$idrow           = 1;
+		while ( my $ref = $sth->fetchrow_hashref() )
+		{
+			foreach my $k ( keys %$ref )
+			{
+				$rslt->{rows}->{$idrow}->{$k} = $ref->{$k};
+			}
+			$idrow += 1;
+		}
+
+		$sth->finish;
+
+	};
+
+	if ($@)
+	{
+		warn " [ExecuteSelectCommand] error $@ sqlcmd = ${sqlCmd} ";
+		$rslt->{errordata} = "$@ ";
+		$rslt->{error}     = 1;
+	}
+
+	return $rslt;
+
+}    ## _________  sub ExecuteSelectCommand
 
 1;
 

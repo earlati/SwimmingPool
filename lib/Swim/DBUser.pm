@@ -37,7 +37,14 @@ RunTest() unless caller;
 # =====================================
 sub RunTest
 {
+	my ( $obj1, $sres, $param );
+
+	# $obj1 = new Swim::DBUser();
+	# $sres = $obj1->GetUser( "test1c" );
+	# mylog ( "Dump result: " . Dumper($sres) );
+
 	TestCheckLogin();
+
 }
 
 # =====================================
@@ -127,39 +134,78 @@ sub GetDumpUsers
 }    ## __________  sub GetDumpUsers
 
 # ===================================================
-#Table users
-#===========
-#id, user, pwd, enabled, dt_mod, email
-#-----------
-#id               int(11) PK
-#user             varchar(20)
-#pwd              varchar(30)
-#enabled          tinyint(1)
-#dt_mod           timestamp
-#email            varchar(90)
-#
+
+=head2 sub GetUser
+
+    Table users
+	===========
+	id               int(11) PK
+	user             varchar(20)
+	pwd              varchar(30)
+	enabled          tinyint(1)
+	dt_mod           timestamp
+	email            varchar(90)
+	
+
+ Sample result : found user
+ 
+  RSLT : $VAR1 = {
+          'email' => 'test.tost@libero.it',
+          'pwd' => 'telZwaovBltHM',
+          'dt_mod' => '2011-05-03 23:28:04',
+          'numrows' => '1',
+          'user' => 'test1',
+          'error' => 0,
+          'errordata' => '',
+          'id' => '38',
+          'enabled' => '1'
+        };
+
+ 
+ Sample result : user not found
+  
+  RSLT : $VAR1 = {
+          'numrows' => '0',
+          'error' => 0,
+          'errordata' => ''
+        };
+        
+ Sample result : report error
+
+   RSLT : $VAR1 = {
+          'numrows' => undef,
+          'error' => 1,
+          'errordata' => 'DBD::mysql::st execute failed: Table \'enzarl_db1.userss\' doesn\'t exist at /home/enzo/ENZO/MYWEB/SwimmingPool/lib/Swim/DBCommon.pm line 276.
+ '
+        };
+
+=cut
+
 # ===================================================
 sub GetUser
 {
 	my ( $self, $username ) = @_;
-	my ( $sqlcmd, $sth, $numRows, $ref );
+	my ( $sqlcmd, $params, $rsltTmp, $htmp );
 	my ($rslt) = ();
 
 	eval {
 
-		$sqlcmd = "select * from users where user = ? ";
-		$sth    = $self->{dbh}->prepare("$sqlcmd");
-		$sth->execute("$username");
-		$numRows         = $sth->rows;
-		$rslt->{numrows} = $numRows;
-		$ref             = $sth->fetchrow_hashref();
+		$sqlcmd  = "select * from users where user = ? ";
+		@$params = ("$username");
+		$rsltTmp = $self->ExecuteSelectCommand( $sqlcmd, $params );
 
-		foreach my $k ( keys %$ref )
+		$rslt->{numrows}   = $rsltTmp->{numrows};
+		$rslt->{errordata} = $rsltTmp->{errordata};
+		$rslt->{error}     = $rsltTmp->{error};
+		if ( $rsltTmp->{numrows} == 1 )
 		{
-			$rslt->{$k} = $ref->{$k};
-		}
+			$htmp = $rsltTmp->{rows}->{1};
+			foreach my $k ( keys %$htmp )
+			{
+				$rslt->{$k} = $htmp->{$k};
+			}
 
-		$sth->finish;
+		}
 	};
 	if ($@)
 	{
@@ -237,7 +283,7 @@ sub SaveUser
 
 			warn sprintf "[SaveUser] user=%s enabled=[%s] checked=[%s]",
 			  $param->{user}, $param->{enabled}, $param->{checked};
-				$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
+			$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
 			$sqlcmd = "insert into users ( user, pwd, enabled, email ) values (?,?,?,?)";
 			$sth    = $self->{dbh}->prepare("$sqlcmd");
 			$sth->execute( "$param->{user}", "$crypwd", "$param->{enabled}", "$param->{email}" );
@@ -342,7 +388,7 @@ sub CheckLogin
 			$rslt->{info}  = "L' utente $param->{user} non e' abilitato  ";
 
 		}
-		elsif ( "$refUser->{pwd}" ne "$crypwd" )
+		elsif ( "$refUser->{pwd}" ne "$crypwd" && "$refUser->{pwd}" ne "" )
 		{
 			$rslt->{error} = 5;
 			$rslt->{info}  = "Utente $param->{user} : password non valida  ";
@@ -366,11 +412,13 @@ sub CheckLogin
 			$paramSession->{userName} = "$rslt->{data}->{user}";
 			$paramSession->{pwd}      = "$rslt->{data}->{pwd}";
 
-			mylog "Dump paramSession " . Dumper($paramSession);
+			# mylog "Dump paramSession " . Dumper($paramSession);
 			$rsltSess = $self->BuildIdSession($paramSession);
+			# mylog "Dump rsltSession " . Dumper($rsltSess);
+
 			$rslt->{data}->{idSession} = $rsltSess->{idSession};
 			mylog sprintf "IdSession: [%s] ", $rslt->{data}->{idSession};
-
+            $rslt->{info} = sprintf "Connesso utente %s Id=%s ", "$rslt->{data}->{user}","$rslt->{data}->{id}";
 		}
 
 	};
@@ -378,7 +426,7 @@ sub CheckLogin
 	if ($@)
 	{
 		warn "[CheckLogin] error $@ ";
-		$rslt->{errordata} = "$@";
+		$rslt->{info} = "$@";
 		$rslt->{error}     = 1;
 	}
 
@@ -478,8 +526,8 @@ sub SaveSessionConnection
 
 }    ## _________  sub SaveSessionConnection
 
-
 # ===================================================
+
 =head2 sub GetIdSession
 
 =cut
