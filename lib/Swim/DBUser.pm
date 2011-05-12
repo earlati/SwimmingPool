@@ -93,6 +93,11 @@ sub TestCheckLogin
 	$param->{user}      = 'pippo';
 	$param->{pwd}       = 'pluto';
 	$param->{idSession} = '';
+
+	# $param->{idSession} = '37 pippo piIzbflOaDn1Q';
+	# $param->{user}      = '';
+	# $param->{pwd}       = '';
+
 	mylog "Dump input: " . Dumper($param);
 	$sres = $obj1->CheckLogin($param);
 	mylog "Dump result: " . Dumper($sres);
@@ -366,7 +371,7 @@ sub SaveUser
 sub CheckLogin
 {
 	my ( $self, $param ) = @_;
-	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $rsltSess );
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $rsltSess, $paramTmp, $rsltTmp );
 	my ($rslt) = ();
 
 	eval {
@@ -414,11 +419,15 @@ sub CheckLogin
 
 			# mylog "Dump paramSession " . Dumper($paramSession);
 			$rsltSess = $self->BuildIdSession($paramSession);
+
 			# mylog "Dump rsltSession " . Dumper($rsltSess);
 
 			$rslt->{data}->{idSession} = $rsltSess->{idSession};
 			mylog sprintf "IdSession: [%s] ", $rslt->{data}->{idSession};
-            $rslt->{info} = sprintf "Connesso utente %s Id=%s ", "$rslt->{data}->{user}","$rslt->{data}->{id}";
+			$rslt->{info} = sprintf "Connesso utente %s Id=%s ", "$rslt->{data}->{user}", "$rslt->{data}->{id}";
+
+			$paramSession->{idSession} = $rslt->{data}->{idSession};
+			$rsltTmp = $self->SaveSessionConnection($paramSession);
 		}
 
 	};
@@ -426,11 +435,11 @@ sub CheckLogin
 	if ($@)
 	{
 		warn "[CheckLogin] error $@ ";
-		$rslt->{info} = "$@";
-		$rslt->{error}     = 1;
+		$rslt->{info}  = "$@";
+		$rslt->{error} = 1;
 	}
 
-	mylog "Dump rslt " . Dumper($rslt);
+	# mylog "Dump rslt " . Dumper($rslt);
 	return $rslt;
 
 }    ## _________  sub CheckLogin
@@ -501,18 +510,33 @@ sub BuildIdSession
 	hash_code        varchar(45)
 	dt_mod           timestamp
 
+    ALTER TABLE session_connect CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT  ;
+    ALTER TABLE session_connect ADD UNIQUE INDEX `hash_code_UNIQUE` (`hash_code` ASC) ;
+    
+	$paramSession->{idUser}   = "$rslt->{data}->{id}";
+	$paramSession->{idSession} = $rslt->{data}->{idSession}; 
+	$rsltTmp = $self->SaveSessionConnection( $paramSession );
 
 =cut
 
 # ===================================================
 sub SaveSessionConnection
 {
-	my ( $self, $param ) = @_;
-	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd );
+	my ( $self, $params ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $paramTmp );
 	my ($rslt) = ();
 
 	eval {
 
+		$rslt = $self->GetIdSession($params);
+		if ( $rslt->{numrows} == 0 )
+		{
+			$sqlcmd = " insert into session_connect ( date, id_user, hash_code  ) ";
+			$sqlcmd .= " values ( current_timestamp, ?, ? ) ";
+			$sth = $self->{dbh}->prepare("$sqlcmd");
+			$sth->execute( "$params->{idUser}", "$params->{idSession}" );
+			$sth->finish;
+		}
 	};
 
 	if ($@)
@@ -535,12 +559,27 @@ sub SaveSessionConnection
 # ===================================================
 sub GetIdSession
 {
-	my ( $self, $param ) = @_;
-	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd );
+	my ( $self, $params ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $paramTmp, $rsltTmp, $htmp );
 	my ($rslt) = ();
 
 	eval {
 
+		$sqlcmd    = "select * from session_connect where hash_code like ? ";
+		@$paramTmp = ("$params->{idSession}");
+		$rsltTmp   = $self->ExecuteSelectCommand( $sqlcmd, $paramTmp );
+
+		$rslt->{numrows}   = $rsltTmp->{numrows};
+		$rslt->{errordata} = $rsltTmp->{errordata};
+		$rslt->{error}     = $rsltTmp->{error};
+		if ( $rsltTmp->{numrows} == 1 )
+		{
+			$htmp = $rsltTmp->{rows}->{1};
+			foreach my $k ( keys %$htmp )
+			{
+				$rslt->{$k} = $htmp->{$k};
+			}
+		}
 	};
 
 	if ($@)

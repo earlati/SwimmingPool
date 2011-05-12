@@ -83,20 +83,16 @@ function InitPage() {
 		HideHint(objHelp);
 	})
 
-
 	InitPageSwimLogin();
-	
 
 } // ________ function InitPage()
 
-
-
-//==============================================
+// ==============================================
 function InitPageSwimLogin() {
-	
+
 	var user = $.cookie('CurrentUser');
 	var idconn = $.cookie('IdConnection');
-	
+
 	// $('#buttonCancel').click( function(){ $("#ChildBox").hide('slow'); } )
 	$('#CallLogin').click(function() {
 		var idconn = $.cookie('IdConnection');
@@ -109,14 +105,63 @@ function InitPageSwimLogin() {
 	});
 	$('#CallRegister').click(function() {
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=register');
-	});	
-	
+	});
+
+	Log("Calling LoginProcedure ..... ");
+	LoginProcedure();
+
+} // ________ function InitPageSwimLogin()
+
+// ==============================================
+function LoginProcedure() {
+	var jqxhr, urlQuery, urlData;
+	var param = new Array();
+	var user = $.cookie('CurrentUser');
+	var idconn = $.cookie('IdConnection');
+
 	Log("Current user=" + user + " IdConn=" + idconn);
+
 	if (idconn === undefined || idconn === null) {
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=login');
-	}	
-	
-}
+	} else {
+		// if idconn has a value query the server for check its validity
+
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
+		urlData = "idsession=" + idconn;
+
+		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
+			$.each(data, function(key, val) {
+				param[key] = val;
+			});
+		});
+
+		jqxhr.error(function() {
+			Error("[Login] error " + "QueryJson on url: " + urlQuery);
+		});
+
+		jqxhr.complete(function() {
+			Log("[checkIdConn] complete info: " + param['info']);
+			Log("[checkIdConn] complete error: " + param['error']);
+			Log("[checkIdConn] idsession: " + param['idsession']);
+
+			$.cookie('IdConnection', param['idsession'], { espires : 20 });
+			$.cookie('CurrentUser', param['user'], { espires : 20 });
+
+			idsess = $.cookie('IdConnection');
+			user = $.cookie('CurrentUser');
+
+			if (window.idsess != undefined) {
+				Log("[checkIdConn] idsession: " + idsess);
+				$('#swim-header ul').html('<li>' + user + '</li>');
+				$('#CallLogin').html('Logout');
+			} else {
+				$('#CallLogin').html('Login');
+
+			}
+		});
+	}
+
+} // ________ function LoginProcedure()
 
 // ================================================================
 function AggiornaListaModuliPerl() {

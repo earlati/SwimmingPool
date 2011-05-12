@@ -2,7 +2,7 @@
 $(document).ready(function() {
 
 	Log("swim-login loading .... ");
-	
+
 	Log("check login " + $('#FormLogin').length);
 	Log("check register " + $('#FormRegister').length);
 
@@ -12,13 +12,12 @@ $(document).ready(function() {
 		InitRegister();
 	}
 
-})  // ________  $(document).ready(function()
-
-
+})
+// ________ $(document).ready(function()
 
 // ==============================================
 function InitLogin() {
-	var user, pwd;
+	var user, pwd, idsess;
 
 	$('#FormLogin #buttonCancel').click(function() {
 		Log('[Login] Pressed buttonCancel ');
@@ -49,15 +48,13 @@ function InitLogin() {
 		 **********************************************************************/
 
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
-		// urlData = "{ 'user' : '" + user + "', ";
-		// urlData += " 'password' : '" + pwd + "' }";
 		urlData = "user=" + user;
 		urlData += "&pwd=" + pwd;
 		Log("[Login] UrlQuery : " + urlQuery + ' ' + urlData);
 
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
-				Log("[Login] json: " + key + " : " + val );
+				Log("[Login] json: " + key + " : " + val);
 				param[key] = val;
 			});
 		});
@@ -71,7 +68,11 @@ function InitLogin() {
 			Log("[Login] complete error: " + param['error']);
 			Log("[Login] idsession: " + param['idsession']);
 			$('#StatusFormLogin').html('<p>' + param['info']);
-			$.cookie('IdConnection', param['idsession'], { espires : 20 } );
+			$.cookie('IdConnection', param['idsession'], { espires : 20 });
+			idsess = $.cookie('IdConnection');
+			if (window.idsess != undefined) {
+				location.reload;
+			}
 
 		});
 
