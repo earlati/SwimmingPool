@@ -135,7 +135,7 @@ sub BuildBaseHtml
 			{ -src => '/js/jquery-ui.min.js', -language => 'javascript' },
 			{ -src => '/js/jquery.cookie.js', -language => 'javascript' },
 			{
-				-src      => '/SwimmingPool/js/swim-utility.js',
+				-src      => '/SwimmingPool/js/swimUtility.js',
 				-language => 'javascript'
 			}
 		],
