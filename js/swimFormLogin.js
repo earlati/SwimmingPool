@@ -67,7 +67,7 @@ function InitLogin() {
 			$('#StatusFormLogin').html('<p> ' + param['info']);
 			$.cookie('IdConnection', param['idSession'], { espires : 20 });
 			idsess = $.cookie('IdConnection');
-			if ( idsess != undefined) {
+			if (idsess != undefined) {
 				$("#ChildBox").hide('slow');
 				window.location.reload();
 			}
@@ -82,7 +82,7 @@ function InitLogin() {
 // ==============================================
 function InitRegister() {
 	var user, pwd, enabled, email;
-	
+
 	$('#FormRegister #buttonCancel').click(function() {
 		Log('[Register] Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');
