@@ -117,7 +117,6 @@ sub BuildHtmlLogin
 	my ($lastUser) = "";
 	my ($sres)     = "";
 
-	$lastUser = $self->{cgiObj}->cookie('CurrentUser') || '';
 	$sres .= $self->{cgiObj}->h2("Login ");
 
     mylog "User : $lastUser ";
@@ -184,32 +183,22 @@ sub BuildAnswerCheckLogin
 	my ($sres)    = "";
 	my ($ctxType) = $self->GetContentJson();
 
-	warn "BuildAnswerCheckLogin ... ";
+	mylog( "BuildAnswerCheckLogin ... " );
 
 	$self->{params} = $self->{cgiObj}->Vars;
 	$params = $self->{params};
 	foreach my $k ( keys %$params )
 	{
 		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
-		warn "[CheckLogin] $s1 ";
+		mylog ("$s1 ");
 		$dataUser->{$k} = "$params->{$k}";
 	}
-#	$json = '{ ';
-#	$s1 = sprintf " \"%s\" : \"%s\" ", "user", $self->{params}->{user};
-#	$json .= " $s1 , ";
-#	$s1 = sprintf " \"%s\" : \"%s\" ", "error", "0";
-#	$json .= " $s1 , ";
-#	$s1 = sprintf " \"%s\" : \"%s\" ", "idSession", "1110";
-#	$json .= " $s1 ";
-#	$json .= ' } ';
-#	$sres = sprintf "%s %s", $ctxType, $json;
 
     $s1 = "$self->{params}->{user}" || "";
-	$self->{cgiObj}->cookie( -name=> 'CurrentUser', -value=> "$s1" ) ;
-	mylog " ****  TestUser: $s1 => " . $self->{cgiObj}->cookie( -name=> 'CurrentUser' ) ;
-
 	$objUser = new Swim::DBUser();
+	warn( "dataUser : " . Dumper( $dataUser ));
 	$resUser = $objUser->CheckLogin($dataUser);
+	warn( "resUser : " . Dumper( $resUser ));
 
 
 	$json = ' ';
@@ -220,7 +209,7 @@ sub BuildAnswerCheckLogin
 		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resUser->{data}->{user}" if defined $resUser->{data}->{user};
 		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resUser->{data}->{id}"
 		  if defined $resUser->{data}->{id};
-		$json .= sprintf " \"%s\" : \"%s\" ,", "idsession", "$resUser->{data}->{idSession}"
+		$json .= sprintf " \"%s\" : \"%s\" ,", "idSession", "$resUser->{data}->{idSession}"
 		  if defined $resUser->{data}->{idSession};
 	}
     $json =~ s/\, *$//;

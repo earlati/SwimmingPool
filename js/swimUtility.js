@@ -19,7 +19,7 @@ function include_js_file(filename, location) {
 
 // ==============================================
 $(document).ready(function() {
-	include_js_file('/SwimmingPool/js/swim-login.js', 'head');
+	include_js_file('/SwimmingPool/js/swimFormLogin.js', 'head');
 
 })
 

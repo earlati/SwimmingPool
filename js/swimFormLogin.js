@@ -64,14 +64,12 @@ function InitLogin() {
 		});
 
 		jqxhr.complete(function() {
-			Log("[Login] complete info: " + param['info']);
-			Log("[Login] complete error: " + param['error']);
-			Log("[Login] idsession: " + param['idsession']);
-			$('#StatusFormLogin').html('<p>' + param['info']);
-			$.cookie('IdConnection', param['idsession'], { espires : 20 });
+			$('#StatusFormLogin').html('<p> ' + param['info']);
+			$.cookie('IdConnection', param['idSession'], { espires : 20 });
 			idsess = $.cookie('IdConnection');
-			if (window.idsess != undefined) {
-				location.reload;
+			if ( idsess != undefined) {
+				$("#ChildBox").hide('slow');
+				window.location.reload();
 			}
 
 		});
@@ -84,6 +82,7 @@ function InitLogin() {
 // ==============================================
 function InitRegister() {
 	var user, pwd, enabled, email;
+	
 	$('#FormRegister #buttonCancel').click(function() {
 		Log('[Register] Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');

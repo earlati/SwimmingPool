@@ -25,6 +25,8 @@ eval {
 
 	# env QUERY_STRING : prog=login&user=enzo
 	$qstring = $ENV{QUERY_STRING};
+    warn( "$base : query => $qstring ");
+    
 	@$ll = split( '&', $qstring );
 	foreach $s1 (@$ll)
 	{

@@ -1,8 +1,22 @@
-// ==============================================
+// ================================================================
 // FILE: swim.js -- rev. 1.001 18.03.2011
-// ==============================================
+// ================================================================
 // use as: <script src="/js/swim.js" type="text/javascript"></script>
-// ==============================================
+// ================================================================
+
+// ================================================================
+// include_js_file('\/js\/jquery-1.4.2.min.js', 'head');
+// include_js_file('\/js\/jquery-ui.js', 'head')
+// ================================================================
+function include_js_file(filename, location) {
+	var body = document.getElementsByTagName('body').item(0);
+	script = document.createElement('script');
+	script.src = filename;
+	script.type = 'text/javascript';
+	body.appendChild(script);
+}
+//================================================================
+//================================================================
 
 var userid, userkey;
 
@@ -75,7 +89,6 @@ function InitPage() {
 			posx = posx - objHelp.width();
 		if (posy > cy)
 			posy = posy - objHelp.height();
-		// Log( "Position-2 Left=" + posx + " Top=" + posy );
 		objHelp.css({ 'left' : posx + 'px', 'top' : posy + 'px' });
 		ShowHint(objHelp);
 	}, function() {
@@ -98,9 +111,11 @@ function InitPageSwimLogin() {
 		var idconn = $.cookie('IdConnection');
 		if (idconn === undefined || idconn === null) {
 			ChildBox('/SwimmingPool/lib/swim.pl?prog=login');
-
+            // window.location.reload();
 		} else {
 			$.cookie('IdConnection', null);
+			$('#CallLogin').html('Login');
+			window.location.reload();
 		}
 	});
 	$('#CallRegister').click(function() {
@@ -119,7 +134,7 @@ function LoginProcedure() {
 	var user = $.cookie('CurrentUser');
 	var idconn = $.cookie('IdConnection');
 
-	Log("Current user=" + user + " IdConn=" + idconn);
+	Log("[LoginProcedure] Current user=" + user + " IdConn=" + idconn);
 
 	if (idconn === undefined || idconn === null) {
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=login');
@@ -127,7 +142,7 @@ function LoginProcedure() {
 		// if idconn has a value query the server for check its validity
 
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
-		urlData = "idsession=" + idconn;
+		urlData = "idSession=" + idconn;
 
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
@@ -136,27 +151,26 @@ function LoginProcedure() {
 		});
 
 		jqxhr.error(function() {
-			Error("[Login] error " + "QueryJson on url: " + urlQuery);
+			Error("[LoginProcedure] error " + "QueryJson on url: " + urlQuery);
 		});
 
 		jqxhr.complete(function() {
-			Log("[checkIdConn] complete info: " + param['info']);
-			Log("[checkIdConn] complete error: " + param['error']);
-			Log("[checkIdConn] idsession: " + param['idsession']);
+			Log("[LoginProcedure.checkIdConn] complete info: " + param['info']);
+			Log("[LoginProcedure.checkIdConn] complete error: " + param['error']);
+			Log("[LoginProcedure.checkIdConn] idSession: " + param['idSession']);
 
-			$.cookie('IdConnection', param['idsession'], { espires : 20 });
+			$.cookie('IdConnection', param['idSession'], { espires : 20 });
 			$.cookie('CurrentUser', param['user'], { espires : 20 });
 
 			idsess = $.cookie('IdConnection');
 			user = $.cookie('CurrentUser');
 
 			if (window.idsess != undefined) {
-				Log("[checkIdConn] idsession: " + idsess);
-				$('#swim-header ul').html('<li>' + user + '</li>');
+				Log("[LoginProcedure] idSession: " + idsess);
+				$('#swim-header ul').append('<li> user:' + user + '</li>');
 				$('#CallLogin').html('Logout');
 			} else {
 				$('#CallLogin').html('Login');
-
 			}
 		});
 	}

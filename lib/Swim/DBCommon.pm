@@ -46,9 +46,9 @@ sub RunTest
 	$sres = $obj1->GetJsonTables();
 	print "jsonTables: $sres \n";
 
-	$sqlcmd = "select * from users where user like ? and enabled like ? ";
+	$sqlcmd  = "select * from users where user like ? and enabled like ? ";
 	@$params = ( "test%", "1" );
-	$rslt   = $obj1->ExecuteSelectCommand( $sqlcmd, $params );
+	$rslt    = $obj1->ExecuteSelectCommand( $sqlcmd, $params );
 	print "RSLT: " . Dumper($rslt);
 
 }    # ______ sub RunTest
@@ -154,10 +154,9 @@ sub OpenDB
 		}
 	}
 
-	# mylog( "[OPEN_CONNECTION]  " );
-
 	return $self->{dbh};
-}
+	
+}   ## ___________ sub OpenDB
 
 # ===================================================
 # ===================================================
@@ -166,7 +165,7 @@ sub CloseDB
 	my ($self) = @_;
 	$self->{dbh}->disconnect();
 
-}
+}   ## _______ sub CloseDB
 
 # ===================================================
 #Content-type: application/json
@@ -268,7 +267,7 @@ sub ExecuteSelectCommand
 	my ($rslt) = ();
 
 	eval {
-		
+
 		$rslt->{errordata} = "";
 		$rslt->{error}     = 0;
 
@@ -285,11 +284,8 @@ sub ExecuteSelectCommand
 			}
 			$idrow += 1;
 		}
-
 		$sth->finish;
-
 	};
-
 	if ($@)
 	{
 		warn " [ExecuteSelectCommand] error $@ sqlcmd = ${sqlCmd} ";

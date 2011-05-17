@@ -94,9 +94,9 @@ sub TestCheckLogin
 	$param->{pwd}       = 'pluto';
 	$param->{idSession} = '';
 
-	# $param->{idSession} = '37 pippo piIzbflOaDn1Q';
-	# $param->{user}      = '';
-	# $param->{pwd}       = '';
+	$param->{idSession} = '37 pippo piIzbflOaDn1Q';
+	$param->{user}      = '';
+	$param->{pwd}       = '';
 
 	mylog "Dump input: " . Dumper($param);
 	$sres = $obj1->CheckLogin($param);
@@ -222,6 +222,43 @@ sub GetUser
 	return $rslt;
 
 }    ## _________  sub GetUser
+
+# ===================================================
+sub GetUserById
+{
+	my ( $self, $iduser ) = @_;
+	my ( $sqlcmd, $params, $rsltTmp, $htmp );
+	my ($rslt) = ();
+
+	eval {
+
+		$sqlcmd  = "select * from users where id = ? ";
+		@$params = ("$iduser");
+		$rsltTmp = $self->ExecuteSelectCommand( $sqlcmd, $params );
+
+		$rslt->{numrows}   = $rsltTmp->{numrows};
+		$rslt->{errordata} = $rsltTmp->{errordata};
+		$rslt->{error}     = $rsltTmp->{error};
+		if ( $rsltTmp->{numrows} == 1 )
+		{
+			$htmp = $rsltTmp->{rows}->{1};
+			foreach my $k ( keys %$htmp )
+			{
+				$rslt->{$k} = $htmp->{$k};
+			}
+
+		}
+	};
+	if ($@)
+	{
+		warn "[GetUser] error $@ ";
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	return $rslt;
+
+}    ## _________  sub GetUserById
 
 # ===================================================
 
@@ -370,45 +407,54 @@ sub SaveUser
 # ===================================================
 sub CheckLogin
 {
-	my ( $self, $param ) = @_;
+	my ( $self, $params ) = @_;
 	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $rsltSess, $paramTmp, $rsltTmp );
 	my ($rslt) = ();
 
 	eval {
+
 		$rslt->{data}->{user}      = "";
 		$rslt->{data}->{id}        = "0";
 		$rslt->{data}->{idSession} = "0";
 
-		$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
-		$refUser = $self->GetUser("$param->{user}");
+		if ( defined $params->{idSession} )
+		{
+			$rsltTmp = $self->GetIdSession($params);
+			if ( defined $rsltTmp->{id_user} )
+			{
+				$params->{id_user} = $rsltTmp->{id_user};
+				$refUser = $self->GetUserById("$params->{id_user}");
+				$crypwd = "$refUser->{pwd}" if defined "$refUser->{pwd}";
+			}
+		}
+		else
+		{
+			$crypwd = crypt( "$params->{pwd}", "$params->{user}" );
+			$refUser = $self->GetUser("$params->{user}");
+		}
 		if ( $refUser->{numrows} == 0 )
 		{
 			$rslt->{error} = 3;
-			$rslt->{info}  = "L' utente $param->{user} non esiste  ";
-
+			$rslt->{info}  = "L' utente $params->{user} non esiste  ";
 		}
 		elsif ( $refUser->{enabled} ne "1" )
 		{
 			$rslt->{error} = 4;
-			$rslt->{info}  = "L' utente $param->{user} non e' abilitato  ";
-
+			$rslt->{info}  = "L' utente $params->{user} non e' abilitato  ";
 		}
 		elsif ( "$refUser->{pwd}" ne "$crypwd" && "$refUser->{pwd}" ne "" )
 		{
 			$rslt->{error} = 5;
-			$rslt->{info}  = "Utente $param->{user} : password non valida  ";
-
+			$rslt->{info}  = "Utente $params->{user} : password non valida  ";
 		}
 		else
 		{
-
-			# print "Dump user: " . Dumper($refUser) . " \n";
 			$rslt->{data}->{user} = "$refUser->{user}";
 			$rslt->{data}->{id}   = "$refUser->{id}";
 			$rslt->{data}->{pwd}  = "$refUser->{pwd}";
 
 			$rslt->{error} = 0;
-			$rslt->{info}  = "Utente $param->{user} connesso ";
+			$rslt->{info}  = "Utente $params->{user} connesso ";
 
 			# crea un id di sessione
 			# idsession = crypt( iduser, "user + localtime")
@@ -417,13 +463,9 @@ sub CheckLogin
 			$paramSession->{userName} = "$rslt->{data}->{user}";
 			$paramSession->{pwd}      = "$rslt->{data}->{pwd}";
 
-			# mylog "Dump paramSession " . Dumper($paramSession);
 			$rsltSess = $self->BuildIdSession($paramSession);
 
-			# mylog "Dump rsltSession " . Dumper($rsltSess);
-
 			$rslt->{data}->{idSession} = $rsltSess->{idSession};
-			mylog sprintf "IdSession: [%s] ", $rslt->{data}->{idSession};
 			$rslt->{info} = sprintf "Connesso utente %s Id=%s ", "$rslt->{data}->{user}", "$rslt->{data}->{id}";
 
 			$paramSession->{idSession} = $rslt->{data}->{idSession};
@@ -527,7 +569,6 @@ sub SaveSessionConnection
 	my ($rslt) = ();
 
 	eval {
-
 		$rslt = $self->GetIdSession($params);
 		if ( $rslt->{numrows} == 0 )
 		{
@@ -554,6 +595,37 @@ sub SaveSessionConnection
 
 =head2 sub GetIdSession
 
+  Sample input param
+  
+  [Swim::DBUser::GetIdSession] Dump ParamInp : $VAR1 = {
+          'pwd' => 'pilstH2iw/zY.',
+          'idSession' => '37 pippo piIzbflOaDn1Q',
+          'idUser' => '37',
+          'userName' => 'pippo'
+        };
+
+
+   Sample result for existent user
+
+   [Swim::DBUser::GetIdSession] Dump RSLT : $VAR1 = {
+          'id_user' => '37',
+          'hash_code' => '37 pippo piIzbflOaDn1Q',
+          'dt_mod' => '2011-05-12 22:55:07',
+          'numrows' => '1',
+          'date' => '2011-05-12 22:55:07',
+          'error' => 0,
+          'errordata' => '',
+          'id' => '2'
+        };
+   
+   Sample result for invalid idSession/hash_code
+        
+   [Swim::DBUser::GetIdSession] Dump RSLT : $VAR1 = {
+          'numrows' => '0',
+          'error' => 0,
+          'errordata' => ''
+        };        
+        
 =cut
 
 # ===================================================
@@ -564,7 +636,6 @@ sub GetIdSession
 	my ($rslt) = ();
 
 	eval {
-
 		$sqlcmd    = "select * from session_connect where hash_code like ? ";
 		@$paramTmp = ("$params->{idSession}");
 		$rsltTmp   = $self->ExecuteSelectCommand( $sqlcmd, $paramTmp );
@@ -589,6 +660,7 @@ sub GetIdSession
 		$rslt->{error}     = 1;
 	}
 
+	#mylog( "Dump RSLT : " . Dumper($rslt) );
 	return $rslt;
 
 }    ## _________  sub GetIdSession
