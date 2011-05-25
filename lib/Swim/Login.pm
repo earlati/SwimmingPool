@@ -117,6 +117,7 @@ sub BuildHtmlLogin
 	my ($lastUser) = "";
 	my ($sres)     = "";
 
+    $sres .= $self->GetLoadingDiv();
 	$sres .= $self->{cgiObj}->h2("Login ");
 
     mylog "User : $lastUser ";
@@ -239,6 +240,7 @@ sub BuildHtmlRegister
 	my ($self) = @_;
 	my ($sres) = "";
 
+    $sres .= $self->GetLoadingDiv();
 	$sres .= $self->{cgiObj}->h2("Register");
 
 	$sres .= '<p> Utente ';

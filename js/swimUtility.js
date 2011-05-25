@@ -264,9 +264,6 @@ function ChildBox(queryUrl, queryParam) {
 	objChild.show();
 	objInnerChild.empty().html('<img src="/images/loading2.gif" /> ');
 
-	// if (queryParam.lenght > 0)
-	// fullQuery = queryUrl + '?' + queryParam;
-	// else
 	fullQuery = queryUrl;
 	objInnerChild.load(fullQuery);
 

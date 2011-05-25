@@ -54,16 +54,27 @@ sub RunTest
 }    # ______ sub RunTest
 
 # =====================================
+#		dsn         => 'DBI:mysql:database=enzarl_db1;host=mysql2.freehostia.com',
+# =====================================
+#		servername  => 'mysql2.freehostia.com',
+#		database    => "enzarl_db1",
+#		user        => "enzarl_db1",
+#		pwd         => "22006829",
+# =====================================
+#		servername  => 'mysql0.freehostia.com',
+#		database    => "enzarl7_swim",
+#		user        => "enzarl7_swim",
+#		pwd         => "davidone",
 # =====================================
 sub new
 {
 	my ($class) = shift;
 	my ($self)  = {
-		dsn         => 'DBI:mysql:database=enzarl_db1;host=mysql2.freehostia.com',
-		servername  => 'mysql2.freehostia.com',
-		database    => "enzarl_db1",
-		user        => "enzarl_db1",
-		pwd         => "22006829",
+		dsn         => '',
+		servername  => 'mysql0.freehostia.com',
+		database    => "enzarl7_swim",
+		user        => "enzarl7_swim",
+		pwd         => "davidone",
 		logObj      => undef,
 		localserver => "0",
 		lastUpdate  => '28.04.2011'

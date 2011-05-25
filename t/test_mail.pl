@@ -1,45 +1,39 @@
 #!/usr/bin/perl
-# ------------------------------------------
+# ================================================
+# $ curl http://earlati.com/SwimmingPool/t/test_mail.pl
+# ================================================
 use Mail::Sender;
 use Data::Dumper;
 
-my ( $to, $from, $subject, $message, $sender, $smtp );
+my ( $to, $from, $subject, $message, $sender, $smtp, $s1 );
 
 print "Content-type: text/plain\n\n";
 
-$from      = 'swimmingpool@earlati.freehostia.com';
-$fake_from = 'SwimmingPool@Una.Bracciata.Dopo.L.Altra';
-
-$to      = 'enzo.arlati@gmail.com';
+$smtp    = 'mbox.freehostia.com';
+$from    = 'swimmingpool@earlati.com';
 $to      = 'enzo.arlati@libero.it';
-$cc      = '';
-$bcc     = '';
-$subject = "Letterina personalissima dal tuo sito di allenamento peferito " . localtime;
+$s1      = localtime();
+$subject = "[$s1] Letterina personalissima dal tuo sito di allenamento peferito ";
 $message = "
-
-Test SwimmingPool
-___________________________________________________________________________________________
-
+=====================
+= Test SwimmingPool =
+=====================
 ";
+$message .= sprintf "Messaggio inviato il %s ", join '.', localtime;
 
-foreach my $k ( keys %ENV ) { $message .= sprintf "[%s] => [%s] \n", "$k", "$ENV{$k}"; }
+# foreach my $k ( keys %ENV ) { $message .= sprintf "[%s] => [%s] \n", "$k", "$ENV{$k}"; }
 
-$message .= "\n ______________________________________________________________ \n ";
+$message .= "\n =========================================== \n ";
 
-$smtp = 'mail.libero.it';
-$smtp = 'mbox.freehostia.com';
 $sender = new Mail::Sender { smtp => "$smtp", from => "$from" }
   or die "Error creating Mail-Sender $! \n";
 
 $sender->MailMsg(
 	{
-		from      => $from,
-		fake_from => $fake_from,
-		to        => $to,
-		cc        => $cc,
-		bcc       => $bcc,
-		subject   => $subject,
-		msg       => "$message"
+		from    => "$from",
+		to      => "$to",
+		subject => "$subject",
+		msg     => "$message"
 	}
 ) or warn "Error sendind mail $! \n";
 

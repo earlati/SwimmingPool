@@ -16,17 +16,8 @@ use feature qw( say );
 use Data::Dumper;
 use Config::General;
 
-use lib './';
-use lib './lib/';
-use CommonParent;
-
 our $VERSION = '0.01';
 
-# printf "DUMPER %s \n",  Dumper(\%INC);
-
-# our @ISA = qw( CommonParent );
-# require CommonParent;
-use base qw( CommonParent );
 
 RunTest() unless caller;
 
@@ -70,7 +61,7 @@ sub new {
 	};
 	bless $self, $class;
 
-	$self->{rootPath} = $self->GetRootPath();
+	$self->{rootPath} = '';
 
 	if ( defined $fname ) { $self->{configFilename} = "$fname"; }
 	
@@ -209,6 +200,25 @@ sub Save {
 	$confObj->save_file( $fconfigname, \%{ $self->{configData} } );
 	return 1;
 }    # ___________  sub Save
+
+
+# ======================================
+# ======================================
+sub GetUntaint {
+	my ( $self, $msgin ) = @_;
+	my ($msgout);
+	unless ( $msgin =~ m/^(\S+)$/ ) {
+		die("Tainted => [$msgin]");
+	}
+	$msgout = $1;
+	if( $msgin ne $msgout )
+	{
+		die "[GetUntaint] FAILED [$msgin] [$msgout] ";
+	}
+	
+	return $msgout;
+}
+
 
 1;
 

@@ -102,9 +102,7 @@ eval {
 	{
 		print "Content-type: text/plain\n\n";
 		print "ERRORE : Query string : $qstring : CMD = [$cmd] sconosciuto \n";
-
 	}
-
 };
 
 if ($@)

@@ -17,10 +17,7 @@ use feature qw( say );
 use Cwd;
 
 our $VERSION = '0.01';
-
 require Exporter;
-
-# use AutoLoader qw(AUTOLOAD);
 our @ISA = qw( Exporter );
 
 our %EXPORT_TAGS = ( 'all' => [qw( GetRootPath GetUntaint )] );

@@ -111,7 +111,6 @@ function InitPageSwimLogin() {
 		var idconn = $.cookie('IdConnection');
 		if (idconn === undefined || idconn === null) {
 			ChildBox('/SwimmingPool/lib/swim.pl?prog=login');
-            // window.location.reload();
 		} else {
 			$.cookie('IdConnection', null);
 			$('#CallLogin').html('Login');

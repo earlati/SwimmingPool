@@ -12,6 +12,7 @@ $(document).ready(function() {
 		InitRegister();
 	}
 
+	$('.Loading').hide('slow');
 })
 // ________ $(document).ready(function()
 
@@ -71,7 +72,6 @@ function InitLogin() {
 				$("#ChildBox").hide('slow');
 				window.location.reload();
 			}
-
 		});
 
 		return false;

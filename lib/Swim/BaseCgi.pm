@@ -162,6 +162,12 @@ sub GetContentJson
  	return $ctxType;
 }
 
-
+# ===================================
+sub GetLoadingDiv
+{
+	my ($self) = @_;
+ 	my ($html) = '<div class="Loading" > <img src="/images/loading2.gif" /> </div>';
+ 	return $html;
+}
 1;
 
