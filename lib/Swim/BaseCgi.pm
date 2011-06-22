@@ -109,23 +109,12 @@ sub GetHtml
 # ===================================
 sub Command
 {
-<<<<<<< HEAD
 	my ( $self, $cmd ) = @_;
 	$self->{cmd} = $cmd if defined $cmd;
 	return $self->{cmd};
 
 }    ## _______  sub Command
 
-=======
-	my ($self, $cmd ) = @_;
-	$self->{cmd} = $cmd if defined $cmd;
-    return $self->{cmd};
-    
-}    ## _______  sub Command
-
-
-
->>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 # ===================================
 sub BuildBaseHtml
 {
@@ -166,22 +155,15 @@ sub BuildBaseHtml
 # ===================================
 sub GetContentJson
 {
-<<<<<<< HEAD
 	my ($self)    = @_;
 	my ($ctxType) = "Content-type: application/json\n\n";
 	return $ctxType;
-=======
-	my ($self) = @_;
- 	my ($ctxType) = "Content-type: application/json\n\n";
- 	return $ctxType;
->>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 }
 
 # ===================================
 sub GetLoadingDiv
 {
 	my ($self) = @_;
-<<<<<<< HEAD
 	my ($html) = '<div class="Loading" > <img src="/images/loading2.gif" /> </div>';
 	return $html;
 }
@@ -261,10 +243,5 @@ sub BuildHtmlWrapLabel
 
 
 
-=======
- 	my ($html) = '<div class="Loading" > <img src="/images/loading2.gif" /> </div>';
- 	return $html;
-}
->>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 1;
 
