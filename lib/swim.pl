@@ -19,15 +19,23 @@ use Swim::DBCommon;
 use Swim::Login;
 
 eval {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	my ( $obj1,   $s1,      $qstring, $cmd );
 	my ( $params, $strpara, $hjson,   $k, $v, $ll, $ll2 );
 	my ($base) = basename $0;
 
 	# env QUERY_STRING : prog=login&user=enzo
 	$qstring = $ENV{QUERY_STRING};
+<<<<<<< HEAD
 	warn("$base : query => $qstring ");
 
+=======
+    warn( "$base : query => $qstring ");
+    
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	@$ll = split( '&', $qstring );
 	foreach $s1 (@$ll)
 	{

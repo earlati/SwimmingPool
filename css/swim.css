@@ -10,6 +10,11 @@ a:hover {
 	font-size: 140%;
 }
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 .regular {
 	font: bold 11px "Verdana", Arial, Helvetica, sans-serif;
 	color: #000;
@@ -59,15 +64,25 @@ a:hover {
 }
 
 #swim-header ul li:hover {
+<<<<<<< HEAD
 	color: yellow;
 	font-weight: normal;
 }
 
+=======
+	color:yellow;
+	font-weight:normal;	
+}
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 #swim-header ul li:first-child:hover {
 	color: green;
 	font-weight: normal;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 div#debug {
 	font-size: small;
 	background-color: #009966;
@@ -214,12 +229,21 @@ div#ChildBox {
 	background-image: url(../images/nuoto1.jpg);
 	color: #000000;
 	position: relative;
+<<<<<<< HEAD
 	width: 400px;
 	height: 350px;
 	margin-left: auto;
 	margin-right: auto;
 	font-size: small;
 	color: blue;
+=======
+	width: 300px;
+	height: 300px;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: small;
+	font-color: blue;
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	opacity: 0.9;
 	border: thick groove green;
 	-moz-border-radius: 16px;
@@ -231,18 +255,27 @@ div#ChildBox {
 
 div#InnerChildBox {
 	background-image: url(../images/nuoto1.jpg);
+<<<<<<< HEAD
 	color: black;
+=======
+	color: #000000;
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	position: relative;
 	width: 90%;
 	height: 90%;
 	left: 5%;
 	bottom: 5%;
 	font-size: small;
+<<<<<<< HEAD
+=======
+	font-color: blue;
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	opacity: 0.9;
 	padding: 10px;
 	overflow: auto;
 }
 
+<<<<<<< HEAD
 div#InnerChildBox label {
    width : 200px;
    /* border: thick solid olive; */
@@ -254,3 +287,10 @@ div#InnerChildBox label {
 	text-decoration: underline;
 	color: blue;
 }
+=======
+#StatusFormRegister,#StatusFormLogin {
+	text-align: center;
+	text-decoration: underline;
+	font-color: blue;
+}
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1

@@ -75,7 +75,10 @@ sub TestSaveUser
 	$param->{pwd}     = 'password1';
 	$param->{checked} = 'true';
 	$param->{email}   = 'user1@swimming.it';
+<<<<<<< HEAD
 	$param->{email2}   = 'user1@polonord.it';
+=======
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	$sres             = $obj1->SaveUser($param);
 	mylog "Dump res: " . Dumper($sres) . " \n";
 
@@ -151,14 +154,21 @@ sub GetDumpUsers
 	enabled          tinyint(1)
 	dt_mod           timestamp
 	email            varchar(90)
+<<<<<<< HEAD
 	email2           varchar(90)
+=======
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	
 
  Sample result : found user
  
   RSLT : $VAR1 = {
+<<<<<<< HEAD
           'email'  => 'test.tost@libero.it',
           'email2' => 'test.tost@ibm.it',
+=======
+          'email' => 'test.tost@libero.it',
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
           'pwd' => 'telZwaovBltHM',
           'dt_mod' => '2011-05-03 23:28:04',
           'numrows' => '1',
@@ -273,7 +283,10 @@ sub GetUserById
 	$param->{pwd}     = 'password1';
 	$param->{checked} = 'true';
 	$param->{email}   = 'user1@swimming.it';
+<<<<<<< HEAD
 	$param->{email2}  = 'user1@swimming.it';
+=======
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	$sres             = $obj1->SaveUser($param);
 	print "Dump res: " . Dumper($sres) . " \n";
 	
@@ -330,10 +343,16 @@ sub SaveUser
 			warn sprintf "[SaveUser] user=%s enabled=[%s] checked=[%s]",
 			  $param->{user}, $param->{enabled}, $param->{checked};
 			$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
+<<<<<<< HEAD
 			$sqlcmd = "insert into users ( user, pwd, enabled, email, email2 ) values (?,?,?,?,?)";
 			$sth    = $self->{dbh}->prepare("$sqlcmd");
 			$sth->execute( "$param->{user}", "$crypwd", "$param->{enabled}", 
 			               "$param->{email}", "$param->{email2}" );
+=======
+			$sqlcmd = "insert into users ( user, pwd, enabled, email ) values (?,?,?,?)";
+			$sth    = $self->{dbh}->prepare("$sqlcmd");
+			$sth->execute( "$param->{user}", "$crypwd", "$param->{enabled}", "$param->{email}" );
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 			$sth->finish;
 			$ref = $self->GetUser("$param->{user}");
 			foreach my $k ( keys %$ref )

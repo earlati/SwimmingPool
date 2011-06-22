@@ -81,7 +81,11 @@ function InitLogin() {
 
 // ==============================================
 function InitRegister() {
+<<<<<<< HEAD
 	var user, pwd, enabled, email, email2;
+=======
+	var user, pwd, enabled, email;
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 	$('#FormRegister #buttonCancel').click(function() {
 		Log('[Register] Pressed buttonCancel ');
@@ -103,7 +107,10 @@ function InitRegister() {
 		pwd = $('#FormRegister input[name="password"]').attr('value');
 		checked = $('#FormRegister input[name="enabled_user"]').attr('checked');
 		email = $('#FormRegister input[name="email"]').attr('value');
+<<<<<<< HEAD
 		email2 = $('#FormRegister input[name="email2"]').attr('value');
+=======
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 		Log('[Register] Pressed OK : user=' + user + ' email=' + email);
 
@@ -119,7 +126,10 @@ function InitRegister() {
 		urlData += "&pwd=" + pwd;
 		urlData += "&checked=" + checked;
 		urlData += "&email=" + email;
+<<<<<<< HEAD
 		urlData += "&email2=" + email2;
+=======
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 		Log("[Register] UrlQuery : " + urlQuery);
 

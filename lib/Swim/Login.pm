@@ -32,7 +32,13 @@ RunTest() unless caller();
 # ========================================
 sub RunTest
 {
+<<<<<<< HEAD
 	eval { TestCheckLogin(); };
+=======
+	eval {
+		TestCheckLogin();
+	};
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 	if ($@)
 	{
@@ -60,6 +66,7 @@ sub mylog
 	warn sprintf "$s1 \n";
 
 }
+<<<<<<< HEAD
 
 # ===================================
 sub TestRegister
@@ -90,6 +97,37 @@ sub SelectCommand
 {
 	my ($self) = @_;
 
+=======
+# ===================================
+sub TestRegister
+{
+		my ( $obj1, $s1, $params );
+
+		$params = 'p1=aaaaa&p2=bbbbb';
+		$obj1 = new Swim::Login( 'register', $params );
+		$obj1->SelectCommand();
+		$obj1->EndHtml();
+		$s1 = $obj1->GetHtml();
+		mylog "$s1 \n";	
+}
+# ===================================
+sub TestCheckLogin
+{
+		my ( $obj1, $s1, $params );
+
+		$params = 'user=pippo&pwd=pluto';
+		$obj1 = new Swim::Login( 'checkLogin', $params );
+		$s1 = $obj1->BuildAnswerCheckLogin();
+		mylog "$s1 \n";	
+}
+
+
+# ===================================
+sub SelectCommand
+{
+	my ( $self ) = @_;
+	
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	if ( $self->Command() eq 'login' )
 	{
 		$self->BuildHtmlLogin();
@@ -102,8 +140,15 @@ sub SelectCommand
 	{
 		$self->BuildHtmlRegister();
 	}
+<<<<<<< HEAD
 
 }    ## ______ sub SelectCommand
+=======
+	
+}  ## ______ sub SelectCommand
+
+
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 # ===================================
 # ===================================
@@ -111,6 +156,7 @@ sub BuildHtmlLogin
 {
 	my ($self) = @_;
 
+<<<<<<< HEAD
 	my ($currUser) = "";
 	my ($currPwd)  = "";
 	my ($sres)     = "";
@@ -130,6 +176,43 @@ sub BuildHtmlLogin
 	$sres .= "<p> ";
 	$sres .= $self->BuildHtmlBtnResetPassword();
 	$sres .= $self->BuildHtmlBtnRegister();
+=======
+	my ($lastUser) = "";
+	my ($sres)     = "";
+
+    $sres .= $self->GetLoadingDiv();
+	$sres .= $self->{cgiObj}->h2("Login ");
+
+    mylog "User : $lastUser ";
+	$sres .= '<p> Utente ';
+	$sres .= $self->{cgiObj}->textfield(
+		-name      => "user_name",
+		-value     => "$lastUser",
+		-size      => 20,
+		-maxlength => 30
+	);
+
+	$sres .= '<p> Password ';
+	$sres .= $self->{cgiObj}->password_field(
+		-name      => 'password',
+		-value     => 'test',
+		-size      => 20,
+		-maxlength => 30
+	);
+
+	$sres .= "<p> ";
+	$sres .= $self->{cgiObj}->button( -name => 'buttonOk', -id => 'buttonOk', -value => 'Conferma' );
+	$sres .= $self->{cgiObj}->button(
+		-name  => 'buttonCancel',
+		-id    => 'buttonCancel',
+		-value => 'Cancella'
+	);
+	$sres .= $self->{cgiObj}->button(
+		-name  => 'buttonRegister',
+		-id    => 'buttonRegister',
+		-value => 'Registra utente'
+	);
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	$sres .= "<p> ";
 
 	$sres .= "<div id=\"StatusFormLogin\"> </div>";
@@ -165,13 +248,18 @@ sub BuildAnswerCheckLogin
 	my ($sres)    = "";
 	my ($ctxType) = $self->GetContentJson();
 
+<<<<<<< HEAD
 	mylog("BuildAnswerCheckLogin ... ");
+=======
+	mylog( "BuildAnswerCheckLogin ... " );
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 	$self->{params} = $self->{cgiObj}->Vars;
 	$params = $self->{params};
 	foreach my $k ( keys %$params )
 	{
 		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
+<<<<<<< HEAD
 		mylog("$s1 ");
 		$dataUser->{$k} = "$params->{$k}";
 	}
@@ -181,6 +269,18 @@ sub BuildAnswerCheckLogin
 	warn( "dataUser : " . Dumper($dataUser) );
 	$resUser = $objUser->CheckLogin($dataUser);
 	warn( "resUser : " . Dumper($resUser) );
+=======
+		mylog ("$s1 ");
+		$dataUser->{$k} = "$params->{$k}";
+	}
+
+    $s1 = "$self->{params}->{user}" || "";
+	$objUser = new Swim::DBUser();
+	warn( "dataUser : " . Dumper( $dataUser ));
+	$resUser = $objUser->CheckLogin($dataUser);
+	warn( "resUser : " . Dumper( $resUser ));
+
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 	$json = ' ';
 	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resUser->{error}";
@@ -193,10 +293,18 @@ sub BuildAnswerCheckLogin
 		$json .= sprintf " \"%s\" : \"%s\" ,", "idSession", "$resUser->{data}->{idSession}"
 		  if defined $resUser->{data}->{idSession};
 	}
+<<<<<<< HEAD
 	$json =~ s/\, *$//;
 	$json = sprintf " { %s } ", $json;
 	$sres = sprintf "%s %s", $ctxType, $json;
 
+=======
+    $json =~ s/\, *$//;
+	$json = sprintf " { %s } ", $json;
+	$sres = sprintf "%s %s", $ctxType, $json;
+
+
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	return "$sres";
 
 }    ## ___________ sub BuildAnswerCheckLogin
@@ -212,11 +320,15 @@ sub BuildAnswerCheckLogin
 #enabled          tinyint(1)
 #dt_mod           timestamp
 #email            varchar(90)
+<<<<<<< HEAD
 #email2            varchar(90)
+=======
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 # ===================================
 sub BuildHtmlRegister
 {
+<<<<<<< HEAD
 	my ($self)      = @_;
 	my ($sres)      = "";
 	my ($currUser)  = "";
@@ -341,6 +453,67 @@ sub BuildHtmlEditUser
 
 
 
+=======
+	my ($self) = @_;
+	my ($sres) = "";
+
+    $sres .= $self->GetLoadingDiv();
+	$sres .= $self->{cgiObj}->h2("Register");
+
+	$sres .= '<p> Utente ';
+	$sres .= $self->{cgiObj}->textfield(
+		-name      => "user_name",
+		-value     => "test1",
+		-size      => 20,
+		-maxlength => 30
+	);
+
+	$sres .= '<p> Enabled ';
+	$sres .= $self->{cgiObj}->checkbox(
+		-name    => 'enabled_user',
+		-checked => 1,
+		-value   => 'ON',
+		-label   => 'Enable user'
+	);
+
+	$sres .= '<p> Password ';
+	$sres .= $self->{cgiObj}->password_field(
+		-name      => 'password',
+		-value     => 'test',
+		-size      => 20,
+		-maxlength => 30
+	);
+
+	$sres .= '<p> E-mail ';
+	$sres .= $self->{cgiObj}->textfield(
+		-name      => 'email',
+		-value     => 'test.tost@libero.it',
+		-size      => 20,
+		-maxlength => 90
+	);
+
+	$sres .= "<p> ";
+	$sres .= $self->{cgiObj}->button( -name => 'buttonOk', -id => 'buttonOk', -value => 'Ok' );
+	$sres .= $self->{cgiObj}->button(
+		-name  => 'buttonCancel',
+		-id    => 'buttonCancel',
+		-value => 'Cancel'
+	);
+	$sres .= $self->{cgiObj}->button(
+		-name  => 'buttonLogin',
+		-id    => 'buttonLogin',
+		-value => 'Login utente'
+	);
+	$sres .= "<p> ";
+
+	$sres .= "<div id=\"StatusFormRegister\"> </div>";
+	$sres = "<div id=\"FormRegister\"> $sres </div>";
+	$self->{html} .= "$sres";
+
+	return "$sres";
+
+}    ## ___________ sub BuildHtmlRegister
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 
 # ===================================
 
@@ -348,14 +521,22 @@ sub BuildHtmlEditUser
 
 	$obj1 = new Swim::StorageDB();
 
+<<<<<<< HEAD
 	$param->{user}    = ' user2 ';
 	$param->{pwd}     = ' password1 ';
 	$param->{enabled} = ' 1 ';
 	$param->{email}   = ' user1 @swimming . it ';
+=======
+	$param->{user}    = 'user2';
+	$param->{pwd}     = 'password1';
+	$param->{enabled} = '1';
+	$param->{email}   = 'user1@swimming.it';
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	$sres             = $obj1->SaveUser($param);
 	print "Dump res: " . Dumper($sres) . " \n";
 	
   Dump res: $VAR1 = {
+<<<<<<< HEAD
           ' info ' => ' Creato nuovo utente user2 id = 14 ',
           ' error ' => 0,
           ' data ' => {
@@ -366,16 +547,34 @@ sub BuildHtmlEditUser
                       ' user ' => ' user2 ',
                       ' id ' => ' 14 ',
                       ' enabled ' => ' 1 '
+=======
+          'info' => 'Creato nuovo utente user2 id=14 ',
+          'error' => 0,
+          'data' => {
+                      'email' => 'user1@swimming.it',
+                      'pwd' => 'usjRS48E8ZADM',
+                      'numrows' => '1',
+                      'dt_mod' => '2011-04-28 20:27:12',
+                      'user' => 'user2',
+                      'id' => '14',
+                      'enabled' => '1'
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
                     }
         };
 
 =head3 Dump of result returned when the user already exists
 
   Dump res: $VAR1 = {
+<<<<<<< HEAD
           ' info ' => ' L \' utente user2 esiste gia\' ',
 		'error' => 2
 	  };
 
+=======
+          'info' => 'L\' utente user2 esiste gia\' ',
+          'error' => 2
+        };	
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 =cut
 
 # ===================================
@@ -403,12 +602,20 @@ sub BuildAnswerStoreRegister
 	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resStore->{info}";
 	if ( $resStore->{error} == 0 )
 	{
+<<<<<<< HEAD
 		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resStore->{data}->{user}"
 		  if defined $resStore->{data}->{user};
 		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resStore->{data}->{id}"
 		  if defined $resStore->{data}->{id};
 	}
 	$json =~ s/\, *$//;
+=======
+		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resStore->{data}->{user}" if defined $resStore->{data}->{user};
+		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resStore->{data}->{id}"
+		  if defined $resStore->{data}->{id};
+	}
+    $json =~ s/\, *$//;
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
 	$json = sprintf " { %s } ", $json;
 	$sres = sprintf "%s %s", $ctxType, $json;
 
@@ -416,5 +623,13 @@ sub BuildAnswerStoreRegister
 
 }    ## ___________ sub BuildAnswerStoreRegister
 
+<<<<<<< HEAD
 1;
 
+=======
+
+
+1;
+
+
+>>>>>>> 4b30d2513a35fca7302277adc911bf01c25903d1
