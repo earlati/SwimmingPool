@@ -1,0 +1,11 @@
+ 
+
+<p>  User list </p>
+
+<ul>
+[% FOREACH user IN stash.data.users %]
+     <li>User => [% user.name %]  id => [% user.id %]
+[% END %]
+</ul>
+
+

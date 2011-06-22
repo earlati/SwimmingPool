@@ -1,0 +1,256 @@
+body {
+	background: #BBBBBB;
+	background-image: url(../images/nuoto1-gray.jpg);
+	background-position: center;
+	background-attachment: fixed;
+}
+
+a:hover {
+	text-decoration: underline;
+	font-size: 140%;
+}
+
+.regular {
+	font: bold 11px "Verdana", Arial, Helvetica, sans-serif;
+	color: #000;
+}
+
+#CallLogin,#CallRegister,#TotalAccess {
+	cursor: pointer;
+}
+
+#TestOne {
+	font: italic 10px "Verdana", Arial, Helvetica, sans-serif;
+	font-size: small;
+	color: #005500;
+}
+
+/** Header */
+#swim-header,#swim-footer {
+	font-size: small;
+	font-weight: normal;
+	align: center;
+	color: #8699a4;
+	background-color: #0d3349;
+	width: 96%;
+	left: 2%;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	opacity: 0.9;
+}
+
+#swim-footer {
+	position: fixed;
+	bottom: 0px;
+}
+
+#swim-header ul li,#swim-footer ul li {
+	display: inline;
+	padding: 4px 0.5em;
+	margin-left: auto;
+	margin-right: 0px;
+	font-size: x-small;
+}
+
+#swim-header ul li:first-child {
+	font-size: small;
+	padding: 4px 0px;
+}
+
+#swim-header ul li:hover {
+	color: yellow;
+	font-weight: normal;
+}
+
+#swim-header ul li:first-child:hover {
+	color: green;
+	font-weight: normal;
+}
+
+div#debug {
+	font-size: small;
+	background-color: #009966;
+	border: 1px solid #000033;
+	opacity: 0.7;
+	width: 98%;
+	height: 40%;
+	position: fixed;
+	bottom: 0;
+	left: 1%;
+	overflow: auto;
+	z-index: 7;
+}
+
+div#debug .BtnMinimize {
+	background-image: url(../images/arrowDown4.jpg );
+	position: absolute;
+	right: 1px;
+	top: 1px;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+
+div#debug .BtnClose {
+	top: 21px;
+}
+
+.BtnClose {
+	background-image: url(../images/close3.jpg );
+	position: absolute;
+	right: 1px;
+	top: 1px;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+
+div#error {
+	font-size: small;
+	background-color: #ff0000;
+	border: 1px solid #660000;
+	opacity: 0.9;
+	width: 80%;
+	height: 40%;
+	position: fixed;
+	bottom: 30%;
+	left: 10%;
+	overflow: auto;
+	z-index: 9;
+}
+
+div#HelpBox {
+	font-size: small;
+	font-style: italic;
+	background-color: #ffff99;
+	border: 1px solid #006600;
+	opacity: 0.9;
+	width: 40%;
+	height: 20%;
+	position: absolute;
+	padding: 10px;
+	overflow: auto;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	overflow: auto;
+	background-color: #ffff99;
+	z-index: 9;
+}
+
+a#mailme {
+	position: fixed;
+	top: 100%;
+	left: 100%;
+	margin-top: -100px;
+	margin-left: -90px;
+	right: 10;
+	bottom: 10;
+	display: block;
+	height: 80px;
+	width: 80px;
+	background: url(/images/3demail-2.gif) bottom right no-repeat;
+	text-indent: -98em;
+	text-decoration: none;
+}
+
+div.titolo {
+	display: block;
+	color: yellow;
+	height: 50px;
+	margin-top: 0px;
+	text-transform: none;
+	font-size: x-large;
+	font-size-adjust: none;
+	font-stretch: normal;
+	font-style: oblique;
+	font-variant: normal;
+	font-weight: bolder;
+	text-align: center;
+	text-decoration: none;
+	text-indent: inherit;
+	background: url(/images/300_marcia.gif) top left;
+}
+
+div.titolo2 {
+	text-align: center;
+	display: block;
+	color: black;
+	margin-top: 0em;
+}
+
+div.pleonastico {
+	color: grey;
+	font-size: small;
+	font-style: italic;
+	white-space: pre;
+	direction: rtl;
+}
+
+div.introduzione {
+	font-size: medium;
+	white-space: pre;
+	direction: ltr;
+}
+
+div.src_code {
+	font-size: small;
+	white-space: normal;
+	direction: ltr;
+}
+
+span#TotalAccess {
+	background-color: green;
+	padding: 2px;
+	font-size: small;
+	color: #0000AA;
+	height: 20px;
+	width: 50px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+
+div#ChildBox {
+	background-image: url(../images/nuoto1.jpg);
+	color: #000000;
+	position: relative;
+	width: 400px;
+	height: 350px;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: small;
+	color: blue;
+	opacity: 0.9;
+	border: thick groove green;
+	-moz-border-radius: 16px;
+	-webkit-border-radius: 16px;
+	border-radius: 16px;
+	padding: 10px;
+	overflow: auto;
+}
+
+div#InnerChildBox {
+	background-image: url(../images/nuoto1.jpg);
+	color: black;
+	position: relative;
+	width: 90%;
+	height: 90%;
+	left: 5%;
+	bottom: 5%;
+	font-size: small;
+	opacity: 0.9;
+	padding: 10px;
+	overflow: auto;
+}
+
+div#InnerChildBox label {
+   width : 200px;
+   /* border: thick solid olive; */
+}
+
+
+#StatusFormRegister,#StatusFormLogin {
+	text-align: center;
+	text-decoration: underline;
+	color: blue;
+}
