@@ -16,6 +16,7 @@ find . -type f -name "*.sql" -exec git add {} \;
 find . -type f -name "README" -exec git add {} \;
 find . -type f -name "*.css" -exec git add {} \;
 find . -type f -name "*.js" -exec git add {} \;
+find . -type f -name "*.html" -exec git add {} \;
 
 
 

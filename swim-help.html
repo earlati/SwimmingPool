@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Swim/Sporting Planning & Reporting </title>
+        <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="css/swim.css">
+        <script src="/js/jquery.min.js">
+        </script>
+        <script src="/js/jquery-ui.min.js">
+        </script>
+        <script src="/js/jquery.cookie.js">
+        </script>
+        <script src="js/swimUtility.js">
+        </script>
+        <style type="text/css">
+            div {
+                font-size: small;
+            }
+            
+            .cls_titolo {
+                border: groove thick #ffaa00;
+                background-color: #aaaa00;
+                opacity: 0.3;
+                -moz-border-radius: 10px;
+                -webkit-border-radius: 10px;
+            }
+        </style>
+        <script language="JavaScript">
+            
+            $(document).ready(function(){
+                $('div#error').hide();
+                $('div#debug').hide();
+                
+                $('div').each(function(){
+                    var id = $(this).attr('id');
+                    var title = $(this).attr('title');
+                    Log('add title: ' + title);
+                    $(this).prepend('<p class="cls_titolo"><b> Title: ' + title + '</b> <u>   Id: ' + id + '</u></p>');
+                })
+                
+            })
+        </script>
+    </head>
+    <body>
+        <div id="dialog" title="Basic dialog">
+            This is the default dialog which is useful for displaying information. 
+            The dialog window can be moved, resized and closed with the 'x' icon.
+        </div>
+        <div id="TotalAccess" title="Contatore accessi">
+            Contatore di accessi alla pagina corrente 
+        </div>
+        <div id="test-1" title="Test 1">
+            In this example we are also going to perform a double check to ensure links to the same domain don't open in a new window using the this object.
+        </div>
+        <div id="test-2" title="Test 2">
+            Another thing to consider about the style attribute is that without it,
+            it would be virtually impossible to do JavaScript animation and have a valid DOM.
+        </div>
+        <div id="test-3" title="Test 3">
+            <em>And don't gimme that vudu magic trickery of an answer that says you can do all that with class names.</em>
+        </div>
+        <div id="test-4" title="Test 4">
+            <em>Because, well actually, you can. But why? That's just outright stupid. I could just imagine seeing this written out: </em>
+        </div>
+        <div id="debug">
+            <em>section for debug output </em>
+            <ol>
+            </ol>
+        </div>
+        <div id="error">
+            <ol>
+            </ol>
+        </div>
+    </body>
+</html>
