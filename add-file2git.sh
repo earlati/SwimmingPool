@@ -1,7 +1,9 @@
 #!/bin/bash
 # ======================================
-# FILE: add-file2git.sh 1.000 2010.02.07
+# FILE: add-file2git.sh 1.003 11.07.2011
 # ======================================
+
+git add geany.project
 
 find . -type f -name "*.pl" -exec git add {} \;
 find . -type f -name "*.pm" -exec git add {} \;

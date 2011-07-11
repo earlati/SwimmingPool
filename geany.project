@@ -1,0 +1,27 @@
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=false
+indent_mode=2
+
+[project]
+name=SwimmingPool
+base_path=/home/enzo/ENZO/MYWEB/SwimmingPool/
+description=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[files]
+current_page=7
+FILE_NAME_0=4185;Perl;0;16;1;1;0;/home/enzo/workspace/perl/web/FtpToRemoteHost.pl;0;4
+FILE_NAME_1=0;CSS;0;16;1;1;0;/home/enzo/ENZO/MYWEB/SwimmingPool/css/swim.css;0;4
+FILE_NAME_2=0;Perl;0;16;1;1;0;/home/enzo/ENZO/MYWEB/SwimmingPool/lib/Swim/SendMail.pm;0;4
+FILE_NAME_3=0;Perl;0;16;1;1;0;/home/enzo/ENZO/MYWEB/SwimmingPool/lib/Swim/Login.pm;0;4
+FILE_NAME_4=0;Perl;0;16;1;1;0;/home/enzo/ENZO/MYWEB/SwimmingPool/lib/Swim/BaseCgi.pm;0;4
+FILE_NAME_5=0;Perl;0;16;1;1;0;/home/enzo/ENZO/MYWEB/SwimmingPool/lib/Swim/DBUser.pm;0;4
+FILE_NAME_6=0;Perl;0;16;1;1;0;/home/enzo/ENZO/MYWEB/SwimmingPool/lib/SwimmingPool.pm;0;4
+FILE_NAME_7=412;Perl;0;16;1;1;0;/home/enzo/ENZO/MYWEB/SwimmingPool/lib/swim.pl;0;4
