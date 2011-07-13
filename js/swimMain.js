@@ -45,11 +45,10 @@ function InitPage() {
 		// http_refer [http://enzo7/SwimmingPool/] Total visit to
 		// [http://enzo7/SwimmingPool/] => TotalVisitors=[22]
 		var s1, sa;
-		Log("Counter: " + data);
-		// data.replace( /.*TotalVisitors=\[(\d+)\]/, '$1' );
+		// Log("Counter: " + data);
 		sa = data.split('TotalVisitors');
 		s1 = sa[1].replace(/\=\[(\d+)\]/, '$1');
-		Log("Total Visitor: " + s1);
+		Log("[InitPage] Total Visitor: " + s1);
 		$('#TotalAccess').text('Visits:' + s1);
 	} })
 

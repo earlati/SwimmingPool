@@ -1,0 +1,66 @@
+
+# ===============================================
+# FILE: appunti.swimmingpool.txt 1.003 11.07.2011
+# ===============================================
+
+[enzo@enzo7 SwimmingPool]$ git config --global user.name "Enzo"
+[enzo@enzo7 SwimmingPool]$ git config --global user.email enzo.arlati@libero.it
+
+[enzo@enzo7 SwimmingPool]$ cat  .git/config 
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = git@github.com:earlati/SwimmingPool.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[remote "github"]
+	url = git@github.com:earlati/SwimmingPool.git
+	fetch = +refs/heads/*:refs/remotes/github/*
+[remote "gitorious"]
+	url = git@gitorious.org:swimmingpool/swimmingpool.git
+	fetch = +refs/heads/*:refs/remotes/gitorious/*
+
+
+[enzo@enzo7 SwimmingPool]$  git push origin
+The authenticity of host 'github.com (207.97.227.239)' can't be established.
+RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'github.com,207.97.227.239' (RSA) to the list of known hosts.
+Permission denied (publickey).
+fatal: The remote end hung up unexpectedly
+
+*** ADD  .ssh/id_rsa.pub  to the repository
+
+[enzo@enzo7 SwimmingPool]$  git push origin
+Counting objects: 6, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 729 bytes, done.
+Total 4 (delta 2), reused 0 (delta 0)
+To git@github.com:earlati/SwimmingPool.git
+   8662f82..e369915  master -> master
+
+LOOK AT : https://github.com/earlati/SwimmingPool/commits/master
+
+[enzo@enzo7 SwimmingPool]$ git push gitorious
+Counting objects: 6, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 729 bytes, done.
+Total 4 (delta 2), reused 0 (delta 0)
+=> Syncing Gitorious... [OK]
+To git@gitorious.org:swimmingpool/swimmingpool.git
+   8662f82..e369915  master -> master
+
+
+LOOK AT : https://gitorious.org/swimmingpool/swimmingpool
+
+
+ 
+
+
+
+
+

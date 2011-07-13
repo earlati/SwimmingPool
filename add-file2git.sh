@@ -4,6 +4,7 @@
 # ======================================
 
 git add geany.project
+git add appunti.swimmingpool.txt
 
 find . -type f -name "*.pl" -exec git add {} \;
 find . -type f -name "*.pm" -exec git add {} \;

@@ -1,17 +1,21 @@
 //==============================================
 $(document).ready(function() {
 
-	Log("swim-login loading .... ");
+	Log("[FormLogin] swim-login loading .... ");
 
-	Log("check login " + $('#FormLogin').length);
-	Log("check register " + $('#FormRegister').length);
+	Log("[FormLogin] check login " + $('#FormLogin').length);
+	Log("[FormLogin] check register " + $('#FormRegister').length);
 
 	if ($('#FormLogin').length > 0) {
+    	Log("[FormLogin] InitLogin ... ");
 		InitLogin();
 	} else if ($('#FormRegister').length > 0) {
+    	Log("[FormLogin] InitRegister ... ");
 		InitRegister();
 	}
+	else
 
+   	Log("[FormLogin] hide login ... ");
 	$('.Loading').hide('slow');
 })
 // ________ $(document).ready(function()
