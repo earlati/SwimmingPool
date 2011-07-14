@@ -1,5 +1,7 @@
 //==============================================
-$(document).ready(function() {
+// $(document).ready(function() {
+// ==============================================
+function InitFormLogin() {
 
 	Log("[FormLogin] swim-login loading .... ");
 
@@ -13,12 +15,11 @@ $(document).ready(function() {
     	Log("[FormLogin] InitRegister ... ");
 		InitRegister();
 	}
-	else
 
    	Log("[FormLogin] hide login ... ");
 	$('.Loading').hide('slow');
-})
-// ________ $(document).ready(function()
+}
+// ________ function InitFormLogin()
 
 // ==============================================
 function InitLogin() {

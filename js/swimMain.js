@@ -1,20 +1,10 @@
 // ================================================================
-// FILE: swim.js -- rev. 1.001 18.03.2011
+// FILE: swimMain.js -- rev. 1.001 14.07.2011
 // ================================================================
 // use as: <script src="/js/swim.js" type="text/javascript"></script>
 // ================================================================
 
-// ================================================================
-// include_js_file('\/js\/jquery-1.4.2.min.js', 'head');
-// include_js_file('\/js\/jquery-ui.js', 'head')
-// ================================================================
-function include_js_file(filename, location) {
-	var body = document.getElementsByTagName('body').item(0);
-	script = document.createElement('script');
-	script.src = filename;
-	script.type = 'text/javascript';
-	body.appendChild(script);
-}
+
 //================================================================
 //================================================================
 
@@ -22,8 +12,13 @@ var userid, userkey;
 
 // ================================================================
 $(document).ready(function() {
-	Log('swim-main loading .....');
-	InitPage()
+	$("div#error").hide();
+	$("div#HelpBox").hide();
+	$("div#ChildBox").hide();
+
+   	Log('swim-main loading InitPage().....');
+    InitPage();
+
 });
 // ================================================================
 function InitPage() {
@@ -38,8 +33,8 @@ function InitPage() {
 
 	ManageDebugSection();
 
-	Log("Starting swim-main ... ");
-	Log("Param debug: " + $.getUrlVars()['debug']);
+	Log("[InitPage] Starting swim-main ... ");
+	Log("[InitPage] Param debug: " + $.getUrlVars()['debug']);
 
 	$.ajax({ url : '/cgi-bin/update-counter.pl', success : function(data) {
 		// http_refer [http://enzo7/SwimmingPool/] Total visit to
@@ -95,6 +90,7 @@ function InitPage() {
 		HideHint(objHelp);
 	})
 
+	// InitFormLogin();
 	InitPageSwimLogin();
 
 } // ________ function InitPage()
@@ -105,7 +101,6 @@ function InitPageSwimLogin() {
 	var user = $.cookie('CurrentUser');
 	var idconn = $.cookie('IdConnection');
 
-	// $('#buttonCancel').click( function(){ $("#ChildBox").hide('slow'); } )
 	$('#CallLogin').click(function() {
 		var idconn = $.cookie('IdConnection');
 		if (idconn === undefined || idconn === null) {
@@ -120,7 +115,7 @@ function InitPageSwimLogin() {
 		ChildBox('/SwimmingPool/lib/swim.pl?prog=register');
 	});
 
-	Log("Calling LoginProcedure ..... ");
+	Log("[InitPageSwimLogin] Calling LoginProcedure ..... ");
 	LoginProcedure();
 
 } // ________ function InitPageSwimLogin()

@@ -9,19 +9,18 @@
 // include_js_file('\/js\/jquery-1.4.2.min.js', 'head');
 // include_js_file('\/js\/jquery-ui.js', 'head')
 // ======================================================
-function include_js_file(filename, location) {
-	var body = document.getElementsByTagName('body').item(0);
-	script = document.createElement('script');
-	script.src = filename;
-	script.type = 'text/javascript';
-	body.appendChild(script);
-}
+//function include_js_file(filename, location) {
+	//var body = document.getElementsByTagName('body').item(0);
+	//script = document.createElement('script');
+	//script.src = filename;
+	//script.type = 'text/javascript';
+	//body.appendChild(script);
+//}
 
 // ==============================================
-$(document).ready(function() {
-	include_js_file('/SwimmingPool/js/swimFormLogin.js', 'head');
-
-})
+// $(document).ready(function() {
+//	include_js_file('/SwimmingPool/js/swimFormLogin.js', 'head');
+// })
 
 // ==============================================
 function ManageDebugSection() {
@@ -58,7 +57,9 @@ function ManageDebugSection() {
 function Log(msg) {
 	var msgout, s1, dt, now;
 	dt = new Date();
-	now = Math.ceil(dt.getTime() / 1000);
+	// now = Math.ceil(dt.getTime() / 1000);
+	now = dt.getHours() + ":" + dt.getMinutes() + ":" + 
+	      dt.getSeconds() + "." + dt.getMilliseconds();
 
 	msgout = "<li> " + now + " " + msg + "</li>";
 
@@ -266,6 +267,7 @@ function ChildBox(queryUrl, queryParam) {
 
 	fullQuery = queryUrl;
 	objInnerChild.load(fullQuery);
+	$('.Loading').hide('slow');
 
 } // ________ function ChildBox()
 
