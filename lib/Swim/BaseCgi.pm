@@ -211,12 +211,12 @@ sub GetReadonlyDescr
 # ===================================
 sub BuildHtmlEdit
 {
-	my ( $self, $name, $label, $currEmail, $size, $maxlen, $readonly ) = @_;
+	my ( $self, $name, $label, $currValue, $size, $maxlen, $readonly ) = @_;
 	my ( $sres, $params );
 
 	$params = {
 		-name      => "$name",
-		-value     => "$currEmail",
+		-value     => "$currValue",
 		-size      =>  $size,
 		-maxlength =>  $maxlen
 	};

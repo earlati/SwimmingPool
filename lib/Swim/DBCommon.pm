@@ -77,7 +77,7 @@ sub new
 		pwd         => "davidone",
 		logObj      => undef,
 		localserver => "0",
-		lastUpdate  => '28.04.2011'
+		lastUpdate  => '18.07.2011'
 	};
 
 	bless $self, $class;
@@ -120,8 +120,10 @@ sub CheckLocalServer
 {
 	my ($self)  = @_;
 	my ($local) = 0;
+	
 	if ( defined $ENV{SERVER_ADDR}
-		&& ( $ENV{SERVER_ADDR} eq "127.0.0.1" || $ENV{SERVER_ADDR} eq "::1" ) )
+		&& ( $ENV{SERVER_ADDR} eq "127.0.0.1" || $ENV{SERVER_ADDR} eq "::1" || 
+		     $ENV{SERVER_ADDR} eq "192.168.100.1" ) )
 	{
 		$local = 1;
 	}

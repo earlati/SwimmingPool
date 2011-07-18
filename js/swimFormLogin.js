@@ -1,30 +1,111 @@
 //==============================================
-// $(document).ready(function() {
+
+
 // ==============================================
-function InitFormLogin() {
+function InitPageSwimLogin() {
 
-	Log("[FormLogin] swim-login loading .... ");
+	var user = $.cookie('CurrentUser');
+	var idconn = $.cookie('IdConnection');
 
-	Log("[FormLogin] check login " + $('#FormLogin').length);
-	Log("[FormLogin] check register " + $('#FormRegister').length);
+	$('#CallLogin').click(function() {
+		var idconn = $.cookie('IdConnection');
+		if (idconn === undefined || idconn === null) { LoadFormLogin();
+		} else {
+			$.cookie('IdConnection', null);
+			$('#CallLogin').html('Login');
+			window.location.reload();
+		}
+	});
+	$('#CallRegister').click(function() {
+		LoadFormRegister();
+	});
 
-	if ($('#FormLogin').length > 0) {
-    	Log("[FormLogin] InitLogin ... ");
-		InitLogin();
-	} else if ($('#FormRegister').length > 0) {
-    	Log("[FormLogin] InitRegister ... ");
-		InitRegister();
+	LoginProcedure();
+
+} // ________ function InitPageSwimLogin()
+
+
+// ==============================================
+function LoadFormLogin() 
+{
+	Log( " LoadFormLogin .... " );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=login', null, InitLogin );
+			
+}  // _______  function LoadFormLogin()
+
+// ==============================================
+function LoadFormRegister() 
+{
+	Log( " LoadFormRegister .... " );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=register', null, InitRegister );
+			
+}  // _______  function LoadFormRegister()
+
+
+
+// ==============================================
+function LoginProcedure() {
+	var jqxhr, urlQuery, urlData;
+	var param = new Array();
+	var user = $.cookie('CurrentUser');
+	var idconn = $.cookie('IdConnection');
+
+	Log("[LoginProcedure] Current user=" + user + " IdConn=" + idconn);
+
+	if (idconn === undefined || idconn === null) 
+	{
+		LoadFormLogin();
+	} 
+	else 
+	{
+		// if idconn has a value query the server for check its validity
+
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
+		urlData = "idSession=" + idconn;
+
+		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
+			$.each(data, function(key, val) {
+				param[key] = val;
+			});
+		});
+
+		jqxhr.error(function() {
+			Error("[LoginProcedure] error " + "QueryJson on url: " + urlQuery);
+		});
+
+		jqxhr.complete(function() {
+			Log("[LoginProcedure.checkIdConn] complete info: " + param['info']);
+			Log("[LoginProcedure.checkIdConn] complete error: " + param['error']);
+			Log("[LoginProcedure.checkIdConn] idSession: " + param['idSession']);
+
+			$.cookie('IdConnection', param['idSession'], { espires : 20 });
+			$.cookie('CurrentUser', param['user'], { espires : 20 });
+
+			idsess = $.cookie('IdConnection');
+			user = $.cookie('CurrentUser');
+
+			if (window.idsess != undefined) {
+				Log("[LoginProcedure] idSession: " + idsess);
+				$('#swim-header ul').append('<li> user:' + user + '</li>');
+				$('#CallLogin').html('Logout');
+			} else {
+				$('#CallLogin').html('Login');
+			}
+		});
 	}
+	
+	Log( "[LoginProcedure] Ended" );
+	
 
-   	Log("[FormLogin] hide login ... ");
-	$('.Loading').hide('slow');
-}
-// ________ function InitFormLogin()
+} // ________ function LoginProcedure()
+
+
 
 // ==============================================
 function InitLogin() {
 	var user, pwd, idsess;
 
+    Log( '[InitLogin]' );
 	$('#FormLogin #buttonCancel').click(function() {
 		Log('[Login] Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');
@@ -33,7 +114,8 @@ function InitLogin() {
 
 	$('#FormLogin #buttonRegister').click(function() {
 		Log('[Login] Pressed buttonRegister ');
-		ChildBox('/SwimmingPool/lib/swim.pl?prog=register')
+		$("#ChildBox").hide('slow');
+        LoginFormRegister();
 		return false;
 	});
 
@@ -41,8 +123,8 @@ function InitLogin() {
 		var jqxhr, urlQuery, urlData;
 		var param = new Array();
 
-		user = $('#FormLogin input[name="user_name"]').attr('value');
-		pwd = $('#FormLogin input[name="password"]').attr('value');
+		user = $('#FormLogin input[name="user_name"]').val();
+		pwd = $('#FormLogin input[name="password"]').val();
 		Log('[Login] Pressed OK user=' + user + '  pwd=' + pwd);
 		$.cookie('CurrentUser', user, { espires : 20 });
 
@@ -82,11 +164,17 @@ function InitLogin() {
 		return false;
 	});
 
+    $( '.Loading' ).hide( 'slow' );
+
 } // ________ function InitLogin()
+
+
 
 // ==============================================
 function InitRegister() {
 	var user, pwd, enabled, email, email2;
+
+    Log( '[InitRegister]' );
 
 	$('#FormRegister #buttonCancel').click(function() {
 		Log('[Register] Pressed buttonCancel ');
@@ -96,7 +184,8 @@ function InitRegister() {
 
 	$('#FormRegister #buttonLogin').click(function() {
 		Log('[Register] Pressed buttonLogin ');
-		ChildBox('/SwimmingPool/lib/swim.pl?prog=login')
+		$("#ChildBox").hide('slow');
+		LoginFormLogin();
 		return false;
 	});
 
@@ -104,11 +193,11 @@ function InitRegister() {
 		var jqxhr, urlQuery, urlData;
 		var param = new Array();
 
-		user = $('#FormRegister input[name="user_name"]').attr('value');
-		pwd = $('#FormRegister input[name="password"]').attr('value');
+		user = $('#FormRegister input[name="user_name"]').val();
+		pwd = $('#FormRegister input[name="password"]').val();
 		checked = $('#FormRegister input[name="enabled_user"]').attr('checked');
-		email = $('#FormRegister input[name="email"]').attr('value');
-		email2 = $('#FormRegister input[name="email2"]').attr('value');
+		email = $('#FormRegister input[name="email"]').val();
+		email2 = $('#FormRegister input[name="email2"]').val();
 
 		Log('[Register] Pressed OK : user=' + user + ' email=' + email);
 
@@ -147,6 +236,8 @@ function InitRegister() {
 
 		return false;
 	});
+
+    $( '.Loading' ).hide( 'slow' );
 
 } // ________ function InitRegister()
 
