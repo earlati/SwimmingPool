@@ -9,13 +9,18 @@ function InitPageSwimLogin() {
 
 	$('#CallLogin').click(function() {
 		var idconn = $.cookie('IdConnection');
-		if (idconn === undefined || idconn === null) { LoadFormLogin();
-		} else {
+		if (idconn === undefined || idconn === null) 
+		{ 
+			LoadFormLogin();
+		} 
+		else 
+		{
 			$.cookie('IdConnection', null);
 			$('#CallLogin').html('Login');
 			window.location.reload();
 		}
 	});
+	
 	$('#CallRegister').click(function() {
 		LoadFormRegister();
 	});
@@ -113,9 +118,8 @@ function InitLogin() {
 	});
 
 	$('#FormLogin #buttonRegister').click(function() {
-		Log('[Login] Pressed buttonRegister ');
-		$("#ChildBox").hide('slow');
-        LoginFormRegister();
+		// Log('[Login] Pressed buttonRegister ');
+        LoadFormRegister();
 		return false;
 	});
 
@@ -183,9 +187,8 @@ function InitRegister() {
 	});
 
 	$('#FormRegister #buttonLogin').click(function() {
-		Log('[Register] Pressed buttonLogin ');
-		$("#ChildBox").hide('slow');
-		LoginFormLogin();
+		// Log('[Register] Pressed buttonLogin ');
+		LoadFormLogin();
 		return false;
 	});
 

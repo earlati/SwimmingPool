@@ -64,7 +64,6 @@ function Log(msg) {
 	msgout = "<li> " + now + " " + msg + "</li>";
 
 	$("div#debug ol").prepend(msgout);
-
 }
 
 // ==============================================
@@ -290,11 +289,11 @@ function ChildBox(queryUrl, queryParam, callback ) {
 // ================================================================
 function UpdateForm_TotalAccess( idResult ) 
 {
-	$.ajax({ url : '/cgi-bin/update-counter.pl', success : function(data) {
-		// http_refer [http://enzo7/SwimmingPool/] Total visit to
-		// [http://enzo7/SwimmingPool/] => TotalVisitors=[22]
+	$.ajax({ url : '/cgi-bin/update-counter.pl', 
+	    success : function(data) {
 		var s1, sa;
-		// Log("Counter: " + data);
+		// Log("[UpdateForm_TotalAccess]  data: " + data);
+		// 23:12:3.765 [UpdateForm_TotalAccess] data: Total visit to [http://enzo7/SwimmingPool/index.html] => TotalVisitors=[40] 
 		sa = data.split('TotalVisitors');
 		s1 = sa[1].replace(/\=\[(\d+)\]/, '$1');
 		Log("[UpdateForm_TotalAccess] Total Visitor: " + s1);
