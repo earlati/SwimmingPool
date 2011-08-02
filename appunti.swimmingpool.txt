@@ -58,8 +58,10 @@ To git@gitorious.org:swimmingpool/swimmingpool.git
 LOOK AT : https://gitorious.org/swimmingpool/swimmingpool
 
 
- 
-
+*********************** 
+*** DATABASE CHANGE *** 
+***********************
+ALTER TABLE `enzarl7_swim`.`session_connect` CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT  ;
 
 
 

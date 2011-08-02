@@ -249,14 +249,14 @@ sub GetUserById
 			{
 				$rslt->{$k} = $htmp->{$k};
 			}
-
 		}
 	};
 	if ($@)
 	{
-		warn "[GetUser] error $@ ";
+		warn "[GetUserById] error $@ ";
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
+		$rslt->{numrows}   = 0;
 	}
 
 	return $rslt;
@@ -588,6 +588,7 @@ sub SaveSessionConnection
 	if ($@)
 	{
 		warn "[SaveSessionConnection] error $@ ";
+		warn "[SaveSessionConnection] SQL = $sqlcmd  Params: " . Dumper( $params ) ;
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}

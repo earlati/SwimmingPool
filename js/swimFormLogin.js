@@ -49,6 +49,24 @@ function LoadFormRegister()
 
 
 // ==============================================
+function LoadFormResetPwd() 
+{
+	Log( " LoadFormResetPwd .... " );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=resetpwd', null, InitResetPwd );
+			
+}  // _______  function LoadFormResetPwd()
+
+
+// ==============================================
+function LoadFormEnableUser() 
+{
+	Log( " LoadFormEnableUser .... " );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=enableusr', null, InitEnableUser );
+			
+}  // _______  function LoadFormEnableUser()
+
+
+// ==============================================
 function LoginProcedure() {
 	var jqxhr, urlQuery, urlData;
 	var param = new Array();
@@ -107,52 +125,75 @@ function LoginProcedure() {
 
 
 // ==============================================
+//  SECTION : INIT PROCEDURE
+// ==============================================
+
+
+
+// ==============================================
 function InitLogin() {
 	var user, pwd, idsess;
+	var Fun = "[InitLogin] ";
+	var idForm = '#FormLogin';
+	
+	user = $.cookie('CurrentUser');
+	idsess = $.cookie('IdConnection');
+	Log( Fun + ' Found user=' + user );
+	
+	$( idForm + ' input[name="user_name"]').val( user );
 
-    Log( '[InitLogin]' );
-	$('#FormLogin #buttonCancel').click(function() {
-		Log('[Login] Pressed buttonCancel ');
+    Log( Fun );
+    
+	$( idForm + ' #buttonCancel').click(function() {
+		Log( Fun + 'Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');
 		return false;
 	});
 
-	$('#FormLogin #buttonRegister').click(function() {
-		// Log('[Login] Pressed buttonRegister ');
+	$( idForm + ' #buttonRegister').click(function() {
+		Log( Fun + 'Pressed buttonRegister ');
         LoadFormRegister();
 		return false;
 	});
 
-	$('#FormLogin #buttonOk').click(function() {
+	$( idForm + ' #buttonResetPassword').click(function() {
+		Log( Fun + 'Pressed buttonResetPassword ');
+		LoadFormResetPwd();
+		return false;
+	});
+
+	$( idForm + ' #buttonOk').click(function() {
 		var jqxhr, urlQuery, urlData;
 		var param = new Array();
 
-		user = $('#FormLogin input[name="user_name"]').val();
-		pwd = $('#FormLogin input[name="password"]').val();
-		Log('[Login] Pressed OK user=' + user + '  pwd=' + pwd);
+		user = $( idForm + ' input[name="user_name"]').val();
+		pwd = $( idForm + ' input[name="password"]').val();
+		Log( Fun + ' Pressed OK user=' + user + '  pwd=' + pwd);
 		$.cookie('CurrentUser', user, { espires : 20 });
 
 		/***********************************************************************
-		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin'; urlData =
-		 * "&user=" + user; urlData += "&password=" + pwd; Log( "UrlQuery : " +
-		 * urlQuery + ' ' + urlData ); $('#HelpBox').load(urlQuery + urlData );
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin'; 
+		 * urlData = "&user=" + user; 
+		 * urlData += "&password=" + pwd; 
+		 * Log( "UrlQuery : " + urlQuery + ' ' + urlData ); 
+		 * $('#HelpBox').load(urlQuery + urlData );
 		 * $('#HelpBox').show();
 		 **********************************************************************/
 
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=checkLogin';
 		urlData = "user=" + user;
 		urlData += "&pwd=" + pwd;
-		Log("[Login] UrlQuery : " + urlQuery + ' ' + urlData);
+		Log( Fun + "UrlQuery : " + urlQuery + ' ' + urlData);
 
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
-				Log("[Login] json: " + key + " : " + val);
+				Log( Fun + "JSON: " + key + " : " + val);
 				param[key] = val;
 			});
 		});
 
 		jqxhr.error(function() {
-			Error("[Login] error " + "QueryJson on url: " + urlQuery);
+			Error( Fun + "ERROR: " + "QueryJson on url: " + urlQuery);
 		});
 
 		jqxhr.complete(function() {
@@ -173,41 +214,43 @@ function InitLogin() {
 } // ________ function InitLogin()
 
 
-
 // ==============================================
 function InitRegister() {
 	var user, pwd, enabled, email, email2;
+	var idForm = '#FormRegister';
 
     Log( '[InitRegister]' );
 
-	$('#FormRegister #buttonCancel').click(function() {
+	$( idForm + ' #buttonCancel').click(function() {
 		Log('[Register] Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');
 		return false;
 	});
 
-	$('#FormRegister #buttonLogin').click(function() {
+	$( idForm + ' #buttonLogin').click(function() {
 		// Log('[Register] Pressed buttonLogin ');
 		LoadFormLogin();
 		return false;
 	});
 
-	$('#FormRegister #buttonOk').click(function() {
+	$( idForm + ' #buttonOk').click(function() {
 		var jqxhr, urlQuery, urlData;
 		var param = new Array();
 
-		user = $('#FormRegister input[name="user_name"]').val();
-		pwd = $('#FormRegister input[name="password"]').val();
-		checked = $('#FormRegister input[name="enabled_user"]').attr('checked');
-		email = $('#FormRegister input[name="email"]').val();
-		email2 = $('#FormRegister input[name="email2"]').val();
+		user = $(idForm + ' input[name="user_name"]').val();
+		pwd = $(idForm + ' input[name="password"]').val();
+		checked = $(idForm + ' input[name="enabled_user"]').attr('checked');
+		email = $(idForm + ' input[name="email"]').val();
+		email2 = $(idForm + ' input[name="email2"]').val();
 
 		Log('[Register] Pressed OK : user=' + user + ' email=' + email);
 
 		/***********************************************************************
-		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister'; urlData =
-		 * "&user=" + user; urlData += "&password=" + pwd; Log( "UrlQuery : " +
-		 * urlQuery + ' ' + urlData ); $('#HelpBox').load(urlQuery + urlData );
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=storeRegister'; 
+		 * urlData = "&user=" + user; 
+		 * urlData += "&password=" + pwd; 
+		 * Log( "UrlQuery : " + urlQuery + ' ' + urlData ); 
+		 * $('#HelpBox').load(urlQuery + urlData );
 		 * $('#HelpBox').show();
 		 **********************************************************************/
 
@@ -243,4 +286,125 @@ function InitRegister() {
     $( '.Loading' ).hide( 'slow' );
 
 } // ________ function InitRegister()
+
+
+
+
+// ==============================================
+function InitResetPwd() {
+	var user, email;
+	var idForm = '#FormResetPwd';
+
+    Log( '[InitResetPwd]' );
+
+	$( idForm + ' #buttonCancel').click(function() {
+		Log('[ResetPwd] Pressed buttonCancel ');
+		$("#ChildBox").hide('slow');
+		return false;
+	});
+
+	$( idForm + ' #buttonOk').click(function() {
+		var jqxhr, urlQuery, urlData;
+		var param = new Array();
+
+		user = $(idForm + ' input[name="user_name"]').val();
+		email = $( idForm + ' input[name="email"]').val();
+
+		Log('[ResetPwd] Pressed OK : email=' + email);
+
+		/***********************************************************************
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=resetPwd'; 
+		 * urlData = "&email=" + email; 
+		 * $('#HelpBox').load(urlQuery + urlData );
+		 * $('#HelpBox').show();
+		 **********************************************************************/
+
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=resetPwd';
+		urlData += "email=" + email;
+
+		Log("[ResetPwd] UrlQuery : " + urlQuery);
+
+		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
+			$.each(data, function(key, val) {
+				Log("[ResetPwd] key=" + key + " : val=" + val);
+				param[key] = val;
+			});
+		});
+
+		jqxhr.error(function() {
+			Error("[Register] error " + "QueryJson on url: " + urlQuery);
+		});
+
+		jqxhr.complete(function() {
+			Log("[ResetPwd] complete info: " + param['info']);
+			Log("[ResetPwd] complete error: " + param['error']);
+			$('#StatusFormResetPwd').html('<p>' + param['info']);
+		});
+
+		return false;
+	});
+
+    $( '.Loading' ).hide( 'slow' );
+
+} // ________ function InitResetPwd()
+
+
+
+// ==============================================
+function InitEnableUser() {
+	var user, pwd, enabled, email;
+	var idForm = '#FormEnableUser';
+
+    Log( '[InitEnableUser]' );
+
+	$( idForm + ' #buttonCancel').click(function() {
+		Log('[EnableUser] Pressed buttonCancel ');
+		$("#ChildBox").hide('slow');
+		return false;
+	});
+
+	$( idForm + ' #buttonOk').click(function() {
+		var jqxhr, urlQuery, urlData;
+		var param = new Array();
+
+		email = $( idForm + ' input[name="email"]').val();
+
+		Log('[EnableUser] Pressed OK : email=' + email);
+
+		/***********************************************************************
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=resetPwd'; urlData =
+		 * "&email=" + email; 
+		 * $('#HelpBox').load(urlQuery + urlData );
+		 * $('#HelpBox').show();
+		 **********************************************************************/
+
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=enableUser';
+		urlData = "user=" + user;
+		urlData += "&email=" + email;
+
+		Log("[EnableUser] UrlQuery : " + urlQuery);
+
+		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
+			$.each(data, function(key, val) {
+				Log("[EnableUser] key=" + key + " : val=" + val);
+				param[key] = val;
+			});
+		});
+
+		jqxhr.error(function() {
+			Error("[EnableUser] error " + "QueryJson on url: " + urlQuery);
+		});
+
+		jqxhr.complete(function() {
+			Log("[EnableUser] complete info: " + param['info']);
+			Log("[EnableUser] complete error: " + param['error']);
+			$('#StatusFormEnableUser').html('<p>' + param['info']);
+		});
+
+		return false;
+	});
+
+    $( '.Loading' ).hide( 'slow' );
+
+} // ________ function InitEnableUser()
 

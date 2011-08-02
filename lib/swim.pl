@@ -18,6 +18,11 @@ use lib './lib';
 use Swim::DBCommon;
 use Swim::Login;
 
+=head1   debug
+
+
+=cut
+
 eval {
 
 	my ( $obj1,   $s1,      $qstring, $cmd );
@@ -43,7 +48,8 @@ eval {
 	foreach $k ( keys %$params )
 	{
 		if ( "$k" eq "prog " ) { next; }
-		$strpara .= sprintf "%s=%s&", $k, $params->{$k}, warn "[$base] Param [$k] => [$params->{$k}]";
+		warn "[$base] Param [$k] => [$params->{$k}]";
+		$strpara .= sprintf "%s=%s&", $k, $params->{$k};
 	}
 	$strpara =~ s/&$//;
 	$cmd = "$params->{prog}";
@@ -110,7 +116,7 @@ if ($@)
 {
 	print "Content-type: text/plain\n\n";
 
-	print " Error: \n";
+	print " ERRORE : \n";
 	print " $@ \n";
 	print "INC:  @INC  \n";
 }

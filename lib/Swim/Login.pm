@@ -15,34 +15,13 @@ use warnings;
 use Data::Dumper;
 use CGI;
 
+use lib '../';
 use Swim::DBUser;
 use base qw( Swim::BaseCgi );
 
-RunTest() unless caller();
 
-# ========================================
 
-=head2 sub RunTest
 
-     TestRegister();
-     TestCheckLogin();
-     
-=cut
-
-# ========================================
-sub RunTest
-{
-	eval { TestCheckLogin(); };
-
-	if ($@)
-	{
-		print "Content-type: text/plain\n\n";
-		print " Error: \n";
-		print " $@ \n";
-		print "INC:  @INC  \n";
-	}
-
-}    ## _________ sub Run
 
 # =====================================
 sub mylog
@@ -61,29 +40,7 @@ sub mylog
 
 }
 
-# ===================================
-sub TestRegister
-{
-	my ( $obj1, $s1, $params );
 
-	$params = 'p1=aaaaa&p2=bbbbb';
-	$obj1 = new Swim::Login( 'register', $params );
-	$obj1->SelectCommand();
-	$obj1->EndHtml();
-	$s1 = $obj1->GetHtml();
-	mylog "$s1 \n";
-}
-
-# ===================================
-sub TestCheckLogin
-{
-	my ( $obj1, $s1, $params );
-
-	$params = 'user=pippo&pwd=pluto';
-	$obj1   = new Swim::Login( 'checkLogin', $params );
-	$s1     = $obj1->BuildAnswerCheckLogin();
-	mylog "$s1 \n";
-}
 
 # ===================================
 sub SelectCommand

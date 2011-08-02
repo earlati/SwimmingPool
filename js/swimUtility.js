@@ -266,6 +266,8 @@ function ChildBox(queryUrl, queryParam, callback ) {
 
 	fullQuery = queryUrl;
 	objInnerChild.load(fullQuery, function(response, status, xhr)  {
+    // Log( "[ChildBox] " + xhr.status + " " + xhr.statusText);
+    
       if (status == "error") 
       {
          var msg = "Sorry but there was an error: ";
