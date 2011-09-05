@@ -27,6 +27,8 @@ function InitPage() {
 	$("div#error").hide();
 	$("div#HelpBox").hide();
 	$("div#ChildBox").hide();
+	
+	// $( "#user_menu" ).msDropDown( {mainCSS:'dd2'} );
 
 	$("img").hover(function() {
 		$(this).fadeTo("slow", 0.44);

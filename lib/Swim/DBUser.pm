@@ -231,6 +231,7 @@ sub GetUserById
 {
 	my ( $self, $iduser ) = @_;
 	my ( $sqlcmd, $params, $rsltTmp, $htmp );
+	my ( $fun ) = 'GetUserById';
 	my ($rslt) = ();
 
 	eval {
@@ -253,7 +254,7 @@ sub GetUserById
 	};
 	if ($@)
 	{
-		warn "[GetUserById] error $@ ";
+		warn "[$fun] error $@ ";
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 		$rslt->{numrows}   = 0;
@@ -262,6 +263,45 @@ sub GetUserById
 	return $rslt;
 
 }    ## _________  sub GetUserById
+
+# ===================================================
+sub GetUserByEmail
+{
+	my ( $self, $email ) = @_;
+	my ( $sqlcmd, $params, $rsltTmp, $htmp );
+	my ( $fun ) = 'GetUserByEmail';
+	my ($rslt) = ();
+
+	eval {
+
+		$sqlcmd  = "select * from users where email = ? ";
+		@$params = ("$email");
+		$rsltTmp = $self->ExecuteSelectCommand( $sqlcmd, $params );
+
+		$rslt->{numrows}   = $rsltTmp->{numrows};
+		$rslt->{errordata} = $rsltTmp->{errordata};
+		$rslt->{error}     = $rsltTmp->{error};
+		if ( $rsltTmp->{numrows} == 1 )
+		{
+			$htmp = $rsltTmp->{rows}->{1};
+			foreach my $k ( keys %$htmp )
+			{
+				$rslt->{$k} = $htmp->{$k};
+			}
+		}
+	};
+	if ($@)
+	{
+		warn "[$fun] error $@ ";
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+		$rslt->{numrows}   = 0;
+	}
+
+	return $rslt;
+
+}    ## _________  sub GetUserByEmail
+
 
 # ===================================================
 

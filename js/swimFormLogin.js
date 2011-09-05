@@ -34,7 +34,7 @@ function InitPageSwimLogin() {
 function LoadFormLogin() 
 {
 	Log( " LoadFormLogin .... " );
-	ChildBox('/SwimmingPool/lib/swim.pl?prog=login', null, InitLogin );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=formLogin', null, InitLogin );
 			
 }  // _______  function LoadFormLogin()
 
@@ -42,7 +42,7 @@ function LoadFormLogin()
 function LoadFormRegister() 
 {
 	Log( " LoadFormRegister .... " );
-	ChildBox('/SwimmingPool/lib/swim.pl?prog=register', null, InitRegister );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=formRegister', null, InitRegister );
 			
 }  // _______  function LoadFormRegister()
 
@@ -52,7 +52,7 @@ function LoadFormRegister()
 function LoadFormResetPwd() 
 {
 	Log( " LoadFormResetPwd .... " );
-	ChildBox('/SwimmingPool/lib/swim.pl?prog=resetpwd', null, InitResetPwd );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=formResetPwd', null, InitResetPwd );
 			
 }  // _______  function LoadFormResetPwd()
 
@@ -124,11 +124,32 @@ function LoginProcedure() {
 
 
 
+
 // ==============================================
 //  SECTION : INIT PROCEDURE
 // ==============================================
 
 
+// ==============================================
+function JsonCommonCompleteStatus( jqxhr, _headerLog, formStsName, urlQuery, param ) 
+{
+    var HeaderLog = '[' + _headerLog + ']';
+    	
+		jqxhr.error(function() {
+			Error( HeaderLog + " error " + "QueryJson on url: " + urlQuery);
+		});
+
+		jqxhr.complete(function() {
+			Log( HeaderLog + " complete info: " + param['info']);
+			Log( HeaderLog + " complete error: " + param['error']);
+			$('#' + formStsName ).html('<p>' + param['info']);
+			if( param['error'] != undefined  &&  param['error'].length > 3 )
+			{
+				Error( HeaderLog + " complete error: " + param['error'] );
+				}
+		});	
+	
+}  // ______________ function JsonCommonCompleteStatus( jqxhr, headerLog, ... )
 
 // ==============================================
 function InitLogin() {
@@ -192,12 +213,10 @@ function InitLogin() {
 			});
 		});
 
-		jqxhr.error(function() {
-			Error( Fun + "ERROR: " + "QueryJson on url: " + urlQuery);
-		});
+        JsonCommonCompleteStatus( jqxhr, "Login", 'StatusFormLogin', urlQuery, param );
 
 		jqxhr.complete(function() {
-			$('#StatusFormLogin').html('<p> ' + param['info']);
+			// $('#StatusFormLogin').html('<p> ' + param['info']);
 			$.cookie('IdConnection', param['idSession'], { espires : 20 });
 			idsess = $.cookie('IdConnection');
 			if (idsess != undefined) {
@@ -228,7 +247,7 @@ function InitRegister() {
 	});
 
 	$( idForm + ' #buttonLogin').click(function() {
-		// Log('[Register] Pressed buttonLogin ');
+		Log('[Register] Pressed buttonLogin ');
 		LoadFormLogin();
 		return false;
 	});
@@ -270,16 +289,7 @@ function InitRegister() {
 			});
 		});
 
-		jqxhr.error(function() {
-			Error("[Register] error " + "QueryJson on url: " + urlQuery);
-		});
-
-		jqxhr.complete(function() {
-			Log("[Register] complete info: " + param['info']);
-			Log("[Register] complete error: " + param['error']);
-			$('#StatusFormRegister').html('<p>' + param['info']);
-		});
-
+        JsonCommonCompleteStatus( jqxhr, "Register", 'StatusFormRegister', urlQuery, param );
 		return false;
 	});
 
@@ -307,22 +317,22 @@ function InitResetPwd() {
 		var jqxhr, urlQuery, urlData;
 		var param = new Array();
 
-		user = $(idForm + ' input[name="user_name"]').val();
+		// user = $(idForm + ' input[name="user_name"]').val();
 		email = $( idForm + ' input[name="email"]').val();
 
 		Log('[ResetPwd] Pressed OK : email=' + email);
 
 		/***********************************************************************
-		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=resetPwd'; 
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqResetPwd'; 
 		 * urlData = "&email=" + email; 
 		 * $('#HelpBox').load(urlQuery + urlData );
 		 * $('#HelpBox').show();
 		 **********************************************************************/
 
-		urlQuery = '/SwimmingPool/lib/swim.pl?prog=resetPwd';
-		urlData += "email=" + email;
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqResetPwd';
+		urlData  = "email=" + email;
 
-		Log("[ResetPwd] UrlQuery : " + urlQuery);
+		Log("[ResetPwd] UrlQuery : " + urlQuery + ' ' + urlData);
 
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
@@ -331,16 +341,7 @@ function InitResetPwd() {
 			});
 		});
 
-		jqxhr.error(function() {
-			Error("[Register] error " + "QueryJson on url: " + urlQuery);
-		});
-
-		jqxhr.complete(function() {
-			Log("[ResetPwd] complete info: " + param['info']);
-			Log("[ResetPwd] complete error: " + param['error']);
-			$('#StatusFormResetPwd').html('<p>' + param['info']);
-		});
-
+        JsonCommonCompleteStatus( jqxhr, "ResetPwd", 'StatusFormResetPwd', urlQuery, param );
 		return false;
 	});
 
@@ -372,7 +373,7 @@ function InitEnableUser() {
 		Log('[EnableUser] Pressed OK : email=' + email);
 
 		/***********************************************************************
-		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=resetPwd'; urlData =
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqResetPwd'; urlData =
 		 * "&email=" + email; 
 		 * $('#HelpBox').load(urlQuery + urlData );
 		 * $('#HelpBox').show();

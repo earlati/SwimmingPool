@@ -36,7 +36,7 @@ sub Main
 {
 	eval 
 	{ 
-		 TestCheckLogin(); 
+		 TestResetPassword(); 
 	};
 
 	if ($@)
@@ -57,7 +57,7 @@ sub TestRegister
 
 	$params = 'p1=aaaaa&p2=bbbbb';
 	$obj1 = new Swim::Login( 'register', $params );
-	$obj1->SelectCommand();
+	$obj1->BuildHtmlRegister();
 	$obj1->EndHtml();
 	$s1 = $obj1->GetHtml();
 	mylog "$s1 \n";
@@ -73,4 +73,20 @@ sub TestCheckLogin
 	$s1     = $obj1->BuildAnswerCheckLogin();
 	mylog "$s1 \n";
 }
+
+# =====================================
+sub TestRequestResetPassword
+{
+	my ( $obj1, $s1, $cmd, $params );
+
+   $params = 'email=enzo.arlati@libero.it&prog=reqResetPwd'; 
+   $cmd    = 'reqResetPwd';
+   $obj1 = new Swim::Login( $cmd, $params );
+   $s1   = $obj1->PerformRequestResetPassword();
+	
+   mylog ( "$s1 " );	
+}
+
+# =====================================
+
 

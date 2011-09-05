@@ -81,6 +81,7 @@ sub InitObject
 	my ($s1);
 
 	$self->{cgiObj} = new CGI($params);
+	$self->{params} = $self->{cgiObj}->Vars;
 	$s1 = $self->BuildBaseHtml();
 
 	# print "[InitObject] : $s1 \n";
@@ -140,7 +141,7 @@ sub BuildBaseHtml
 		-bgcolor => '#AAAAAA'
 	);
 
-	$self->{params} = $self->{cgiObj}->Vars;
+	# $self->{params} = $self->{cgiObj}->Vars;
 
 	# foreach my $k ( keys %$params ) {
 	#	$sres .= $self->{cgiObj}->h2("Params: $k  $params->{$k} ");

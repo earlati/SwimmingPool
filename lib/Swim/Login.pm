@@ -20,7 +20,22 @@ use Swim::DBUser;
 use base qw( Swim::BaseCgi );
 
 
+RunTest() unless caller;
 
+# =====================================
+sub RunTest
+{
+	my ( $obj1, $s1, $cmd, $params );
+
+   $cmd    = 'reqResetPwd';
+   $params = 'email=enzo.arlati@libero.it&prog=reqResetPwd'; 
+   $obj1 = new Swim::Login( $cmd, $params );
+   $s1 = $obj1->PerformRequestResetPassword();
+	
+   print "$s1 \n";
+	
+}  # ______ sub RunTest
+	
 
 
 # =====================================
@@ -36,31 +51,12 @@ sub mylog
 
 	# print "Dumer call: " . Dumper( \@call ) . "\n";
 	$s1 = sprintf "[%s] %s", $call[3], $msg;
-	warn sprintf "$s1 \n";
+	warn ( sprintf "$s1 \n" );
 
-}
+}  ## __________ sub mylog
 
 
 
-# ===================================
-sub SelectCommand
-{
-	my ($self) = @_;
-
-	if ( $self->Command() eq 'login' )
-	{
-		$self->BuildHtmlLogin();
-	}
-	elsif ( $self->Command() eq 'checkLogin' )
-	{
-		$self->BuildAnswerCheckLogin();
-	}
-	elsif ( $self->Command() eq 'register' )
-	{
-		$self->BuildHtmlRegister();
-	}
-
-}    ## ______ sub SelectCommand
 
 # ===================================
 # ===================================
@@ -124,7 +120,7 @@ sub BuildAnswerCheckLogin
 
 	mylog("BuildAnswerCheckLogin ... ");
 
-	$self->{params} = $self->{cgiObj}->Vars;
+	# $self->{params} = $self->{cgiObj}->Vars;
 	$params = $self->{params};
 	foreach my $k ( keys %$params )
 	{
@@ -211,6 +207,40 @@ sub BuildHtmlRegister
 	return "$sres";
 
 }    ## ___________ sub BuildHtmlRegister
+
+
+
+# ===================================
+sub BuildHtmlResetPwd
+{
+	my ($self)      = @_;
+	my ($sres)      = "";
+	my ($currEmail) = '';
+	my ( $readonly ) = 0;
+	
+	$currEmail = 'enzo.arlati@libero.it';
+	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
+	
+	$sres .= $self->GetLoadingDiv();
+	$sres .= $self->{cgiObj}->h2("Reset Password");
+
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
+
+	$sres .= "<p> ";
+	$sres .= $self->BuildHtmlBtnOk();
+	$sres .= $self->BuildHtmlBtnCancel();
+	$sres .= "<p> ";
+
+	$sres .= "<div id=\"StatusFormResetPwd\"> </div>";
+	$sres = "<div id=\"FormResetPwd\"> $sres </div>";
+	$self->{html} .= "$sres";
+
+	return "$sres";
+
+}    ## ___________ sub BuildHtmlResetPwd
+
+
 
 # ===================================
 sub BuildHtmlBtnLogin
@@ -343,7 +373,7 @@ sub BuildAnswerStoreRegister
 	my ($sres)    = "";
 	my ($ctxType) = $self->GetContentJson();
 
-	$self->{params} = $self->{cgiObj}->Vars;
+	# $self->{params} = $self->{cgiObj}->Vars;
 	$params = $self->{params};
 	foreach my $k ( keys %$params )
 	{
@@ -372,6 +402,162 @@ sub BuildAnswerStoreRegister
 	return "$sres";
 
 }    ## ___________ sub BuildAnswerStoreRegister
+
+
+
+
+# ===================================
+
+=head2 sub PerformRequestResetPassword
+
+   
+
+=cut 
+
+# ===================================
+sub PerformRequestResetPassword
+{
+	my ($self) = @_;
+	my ( $s1, $json, $paramsInp, $paramsOut, $params, $objStore, $dataStore, $resStore );
+	my ($sres)    = "";
+	my ($ctxType) = $self->GetContentJson();
+
+	$params = $self->{params};
+	mylog( sprintf( "PARAMS: %s ", Dumper( $params )));
+
+	# Build resetpwd record and store it on db
+    %$paramsInp = ();
+    $paramsInp->{operation} = 'resetPwd';
+    $paramsInp->{email} = $params->{email};
+    $paramsOut = $self->BuildRemoteCommand( $paramsInp );
+    
+
+	foreach my $k ( keys %$params )
+	{
+		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
+		warn "[ResetPassword] $s1 ";
+		$dataStore->{$k} = "$params->{$k}";
+	}
+
+	$objStore = new Swim::DBUser();
+	
+	$resStore->{error} = 99;
+	$resStore->{info} = '<b> PerformRequestResetPassword TODO </b>';
+	
+	
+	# Send ResetPwd command to user e-mail
+	
+	
+	# $resStore = $objStore->SaveUser($dataStore);
+
+	$json = ' ';
+	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resStore->{error}";
+	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resStore->{info}";
+	if ( $resStore->{error} == 0 )
+	{
+		#$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resStore->{data}->{user}"
+		  #if defined $resStore->{data}->{user};
+		#$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resStore->{data}->{id}"
+		  #if defined $resStore->{data}->{id};
+	}
+	$json =~ s/\, *$//;
+	$json = sprintf " { %s } ", $json;
+	$sres = sprintf "%s %s", $ctxType, $json;
+
+	return "$sres";
+
+}    ## ___________ sub PerformRequestResetPassword
+
+
+
+# ===================================
+
+=head2 sub BuildRemoteCommand
+
+  ALLOWED Operation mode : resetPwd
+
+
+   ParamsIn: 
+          'email' => 'enzo.arlati@libero.it',
+          'operation' => 'resetPwd'
+          
+          
+INSERT INTO `enzarl7_swim`.`remote_cmd`
+(`idremote_cmd`,
+`crypto_command`,
+`command`,
+`id_user`,
+`email`,
+`dt_mod`,
+`dt_expire`)
+VALUES
+(
+{idremote_cmd: INT},
+{crypto_command: VARCHAR},
+{command: VARCHAR},
+{id_user: INT},
+{email: VARCHAR},
+{dt_mod: TIMESTAMP},
+{dt_expire: DATETIME}
+);
+          
+
+DELETE FROM remote_cmd WHERE email = '' and command = '';
+
+
+=cut
+
+# ===================================
+sub BuildRemoteCommand
+{
+	my ($self, $paramsInp ) = @_;
+	my ( $s1, $rslt, $sqlcmd, $sqlparams, $paramsOut, $objStore, $resStore );
+	my ( @allowedOperations ) = qw( resetPwd enableUser );
+	%$paramsOut = %$paramsInp;
+
+	mylog( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
+
+	$objStore = new Swim::DBUser(); 
+	
+	# get user data
+    $rslt = $objStore->GetUserByEmail(  $paramsInp->{email} );
+    $paramsOut->{username} = $rslt->{user};
+    $paramsOut->{userid}   = $rslt->{id};
+    
+	# remove expired records
+	$sqlcmd = 'DELETE FROM remote_cmd where dt_expire < now() '; 
+	@$sqlparams = ( );  
+    $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+	
+	# remove previous command type for the same email
+	$sqlcmd = 'DELETE FROM remote_cmd WHERE email = ? and command = ? '; 
+	@$sqlparams = ( $paramsInp->{email}, $paramsInp->{operation} );  
+    $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+
+	$sqlcmd  = 'INSERT INTO remote_cmd (`command`, `email`,`dt_mod`,`dt_expire`) '; 
+	$sqlcmd .= ' VALUES ( ?, ?, now(), date_add( now(), interval 3 day ) )';
+	@$sqlparams = ( $paramsInp->{operation}, $paramsInp->{email} );  
+    $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+
+    $paramsOut->{cmdid} = $objStore->GetLastInsertId();
+    
+    $paramsOut->{crypto} = sprintf "%08d%08d%10s", $paramsOut->{cmdid}, $paramsOut->{userid}, $paramsOut->{operation}; 
+    # $s1 = unpack "H*", $s1;
+    # lastId = 22  202020323220726573657450776420656e7a6f2e61726c617469406c696265726f2e6974 
+    
+    $sqlcmd = 'update remote_cmd set crypto_command = ? where idremote_cmd = ? ';
+	@$sqlparams = ( $paramsOut->{crypto}, $paramsOut->{cmdid} );  
+    $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+    
+	mylog( sprintf( "ParamsOut: %s ", Dumper( $paramsOut )));    
+
+    return $paramsOut;
+	
+}   ## ______________  sub BuildRemoteCommand
+
+
+     
+
 
 1;
 

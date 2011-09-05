@@ -51,6 +51,9 @@ sub RunTest
 	$rslt    = $obj1->ExecuteSelectCommand( $sqlcmd, $params );
 	print "RSLT: " . Dumper($rslt);
 
+	$rslt    = $obj1->GetLastInsertId( );
+	print "LastInsertId: $rslt \n";
+
 }    # ______ sub RunTest
 
 # =====================================
@@ -275,8 +278,8 @@ sub GetJsonTables
 # ===================================================
 sub ExecuteSelectCommand
 {
-	my ( $self, $sqlCmd, $params ) = @_;
-	my ( $sqlcmd, $sth, $numRows, $ref, $idrow );
+	my ( $self, $sqlCmd, $params, $nofetchrow ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $ref, $idrow, $sts, $serr );
 	my ($rslt) = ();
 
 	eval {
@@ -285,18 +288,22 @@ sub ExecuteSelectCommand
 		$rslt->{error}     = 0;
 
 		$sth = $self->{dbh}->prepare("$sqlCmd");
-		$sth->execute(@$params);
-		$numRows         = $sth->rows;
-		$rslt->{numrows} = $numRows;
-		$idrow           = 1;
-		while ( my $ref = $sth->fetchrow_hashref() )
+		$sts     = $sth->execute(@$params);
+	    $numRows = $sth->rows;
+				
+		if( $numRows > 0 && ! defined $nofetchrow )
 		{
-			foreach my $k ( keys %$ref )
-			{
-				$rslt->{rows}->{$idrow}->{$k} = $ref->{$k};
-			}
-			$idrow += 1;
-		}
+		    $rslt->{numrows} = $numRows;
+		    $idrow           = 1;
+		    while ( my $ref = $sth->fetchrow_hashref() )
+	    	{
+			    foreach my $k ( keys %$ref )
+			    {
+		      		$rslt->{rows}->{$idrow}->{$k} = $ref->{$k};
+			    }
+			    $idrow += 1;
+		    }
+	    }
 		$sth->finish;
 	};
 	if ($@)
@@ -309,6 +316,24 @@ sub ExecuteSelectCommand
 	return $rslt;
 
 }    ## _________  sub ExecuteSelectCommand
+
+
+
+# ===================================================
+sub GetLastInsertId
+{
+	my ( $self ) = @_;
+	my ( $rslt, $lastid );
+	my ( $sqlCmd ) = 'select last_insert_id() lastid ';
+	
+    $rslt = $self->ExecuteSelectCommand( $sqlCmd, undef );
+    $lastid = $rslt->{rows}->{1}->{lastid};
+    
+	return $lastid;
+
+}    ## _________  sub GetLastInsertId
+
+
 
 1;
 

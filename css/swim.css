@@ -142,7 +142,7 @@ a#mailme {
 	position: fixed;
 	top: 100%;
 	left: 100%;
-	margin-top: -100px;
+	margin-top: -80px;
 	margin-left: -90px;
 	right: 10;
 	bottom: 10;
@@ -153,6 +153,8 @@ a#mailme {
 	text-indent: -98em;
 	text-decoration: none;
 }
+
+
 
 div.titolo {
 	display: block;
@@ -254,3 +256,5 @@ div#InnerChildBox label {
 	text-decoration: underline;
 	color: blue;
 }
+
+

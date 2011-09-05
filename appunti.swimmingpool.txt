@@ -63,6 +63,7 @@ LOOK AT : https://gitorious.org/swimmingpool/swimmingpool
 ***********************
 ALTER TABLE `enzarl7_swim`.`session_connect` CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT  ;
 
+ALTER TABLE `enzarl7_swim`.`groups` CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT  ;
 
 
 
