@@ -58,7 +58,7 @@ function Log(msg) {
 	var msgout, s1, dt, now;
 	dt = new Date();
 	// now = Math.ceil(dt.getTime() / 1000);
-	now = dt.getHours() + ":" + dt.getMinutes() + ":" + 
+	now = dt.getHours() + ":" + dt.getMinutes() + ":" +  
 	      dt.getSeconds() + "." + dt.getMilliseconds();
 
 	msgout = "<li> " + now + " " + msg + "</li>";
@@ -142,7 +142,7 @@ function ShowCheckedObject(objChecker, objTarget) {
 // ================================================================
 // QueryAjax("/cgi-bin/ListPerlModule.pl", "ListaModuliPerl");
 // ================================================================
-function QueryAjax(urlQuery, idOutput1) {
+function QueryAjax(urlQuery, idOutput1, usePre ) {
 	var len, obj1, obj2;
 	obj1 = $("#" + idOutput1);
 
@@ -162,9 +162,18 @@ function QueryAjax(urlQuery, idOutput1) {
 		obj1.css({ "color" : "#006600", "font" : "13px auto" });
 		if (len > 0) {
 			obj1.text('');
-		} else {
+		} else 
+		{
 			obj1.text('');
-			obj1.html(data);
+			if (usePre === undefined || usePre === null )
+			{
+			    obj1.html(  data );
+			}
+			else
+			{
+			    obj1.html( '<pre>' + data + '</pre>' );
+			}
+
 			obj1.fadeTo("slow", 1);
 		}
 	}, error : function(richiesta, stato, errori) {
@@ -236,32 +245,32 @@ function QueryJson(urlQuery, idOutput1) {
 		obj1.show();
 		Log("end ... ");
 	}).success(function() {
-		Log("success " + "QueryJson on url: " + urlQuery);
-	}).error(function() {
-		Error("error " + "QueryJson on url: " + urlQuery);
+		Log("QueryJson success " + " on url: " + urlQuery);  
+	}).error(function( jqXHR, textStatus ) {
+		Error("QueryJson error [" + textStatus + "]  on url: " + urlQuery +
+              "incoming Text " + jqXHR.responseText);
 	}).complete(function() {
-		Log("complete " + "QueryJson on url: " + urlQuery);
+		Log("QueryJson complete " + " on url: " + urlQuery);
 	});
 
-	jqxhr.success(function() {
-		Log("success2 " + "QueryJson on url: " + urlQuery);
-	});
-	jqxhr.complete(function() {
-		Log("complete2 " + "QueryJson on url: " + urlQuery);
-	});
+
 }
 
 // ================================================================
 // ================================================================
 function ChildBox(queryUrl, queryParam, callback ) {
 
-	var objChild, objInnerChild, fullQuery;
+	var objChild, objInnerChild, fullQuery, position, left, top;
 	objChild = $("#ChildBox");
 	objInnerChild = $("#InnerChildBox");
 
 	Log("[ChildBox] queryUrl => " + queryUrl );
 
+	left = ( $(window).width() - objChild.width() ) / 2;
+	top  = ( $(window).height() - objChild.height() ) / 2;
+	objChild.css( { 'left': left + 'px', 'top' : top + 'px' });
 	objChild.show();
+	
 	objInnerChild.empty().html('<img src="/images/loading2.gif" /> ');
 
 	fullQuery = queryUrl;

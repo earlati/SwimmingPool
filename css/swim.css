@@ -26,7 +26,7 @@ a:hover {
 }
 
 /** Header */
-#swim-header,#swim-footer {
+#swim-header, #swim-footer {
 	font-size: small;
 	font-weight: normal;
 	align: center;
@@ -34,40 +34,71 @@ a:hover {
 	background-color: #0d3349;
 	width: 96%;
 	left: 2%;
+	height: 4em;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	opacity: 0.9;
 }
 
-#swim-footer {
-	position: fixed;
-	bottom: 0px;
-}
+#swim-footer { 	position: fixed; bottom: 0px; }
 
-#swim-header ul li,#swim-footer ul li {
-	display: inline;
-	padding: 4px 0.5em;
-	margin-left: auto;
-	margin-right: 0px;
-	font-size: x-small;
-}
 
-#swim-header ul li:first-child {
-	font-size: small;
-	padding: 4px 0px;
-}
+#swim-header li { width: 120px; height: 20px; text-align: center; list-style: none; }
+#swim-header li:hover { font-style: italic; background-position: bottom center; }
 
-#swim-header ul li:hover {
-	color: yellow;
-	font-weight: normal;
-}
+#swim-header ul { padding: 0; margin: 0; }
 
-#swim-header ul li:first-child:hover {
-	color: green;
-	font-weight: normal;
-}
+#swim-header > ul > li { float: left; list-style: none; position: relative; top: 30px;  }
+#swim-header > ul > li > ul { position: relative; top: 3px; visibility : hidden; }
+#swim-header > ul > li:hover ul{ visibility : visible; }
 
+#swim-header > ul > li:first-child { font-size: x-medium;	font-style: bold; padding: 2px 1em; position: relative; top: 0px; }
+#swim-header > ul > li:first-child:hover { 	color: green; font-weight: normal; }
+
+/*
+#swim-header > ul > li { postion: relative;  float: left; list-style: none; display: block;    }
+
+#swim-header > ul, #swim-footer > ul {  postion: relative; float:left; list-style: none; display: block; }
+#swim-header  li, #swim-footer  li { list-style: none; font: 12px Tahoma, Arial; padding: 8px 1em; }
+
+#swim-header > ul > li, #swim-footer > ul > li { float: left; }
+
+#swim-header > ul > li:first-child { font-size: medium;	font-style: bold; padding: 2px 1em; }
+#swim-header > ul > li:first-child:hover { 	color: green; font-weight: normal; }
+
+#swim-header ul li:hover { 	color: yellow; font-weight: normal;	font-style: bold; }
+
+#swim-header ul ul { position: absolute; top: 30px; width: 120px; visibility: hidden; }
+#swim-header ul li:hover ul { visibility:visible;	}
+* ===========================
+* 
+#swim-header li { width: 120px; height: 20px; text-align: center; }
+#swim-header li:hover { font-style: italic; background-position: bottom center; }
+#swim-header ul { padding: 0; margin: 0; }
+#swim-header >ul > li > ul > li  { float: bottom; list-style: none; display: block;  }
+#swim-header >ul > li > ul { position: relative; top: 3px; visibility : hidden; }
+#swim-header >ul > li:hover ul{ visibility : visible; }
+*/
+
+/*
+#menu2 li { width: 120px; height: 20px; text-align: center; }
+#menu2 li:hover { font-style: italic; background-position: bottom center; }
+#menu2 ul { padding: 0; margin: 0; }
+#menu2 >ul > li { postion: relative;  float: left; list-style: none; display: block;    }
+#menu2 >ul > li > ul > li  { float: bottom; list-style: none; display: block;  }
+#menu2 >ul > li > ul { position: relative; top: 3px; visibility : hidden; }
+#menu2 >ul > li:hover ul{ visibility : visible; }
+*/
+
+
+
+.green { background: url(/img/green.jpg) no-repeat top center;   color: #006600; }
+.orange{ background: url(/img/orange.jpg) no-repeat top center;  color: #CC3300; }
+.blu   { background: url(/img/blu.jpg) no-repeat top center;     color: #006699; }
+.yellow{ background: url(/img/yellow.jpg) no-repeat top center;  color: #FF9900; }
+.purple{ background: url(/img/purple.jpg) no-repeat top center;  color: #990066; }
+			
 div#debug {
 	font-size: small;
 	background-color: #009966;
@@ -110,6 +141,7 @@ div#error {
 	font-size: small;
 	background-color: #ff0000;
 	border: 1px solid #660000;
+	display: none;
 	opacity: 0.9;
 	width: 80%;
 	height: 40%;
@@ -215,7 +247,7 @@ span#TotalAccess {
 div#ChildBox {
 	background-image: url(../images/nuoto1.jpg);
 	color: #000000;
-	position: relative;
+	position: absolute;
 	width: 400px;
 	height: 350px;
 	margin-left: auto;
@@ -258,3 +290,6 @@ div#InnerChildBox label {
 }
 
 
+
+    
+    

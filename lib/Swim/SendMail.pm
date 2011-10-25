@@ -108,7 +108,7 @@ sub Send
 	  my ($self) = @_;
 
 	  # printf "[SendMail::Send] Dumper: %s ", Dumper( $self );
-	  open( MAIL, "|/usr/sbin/sendmail -tv" );
+	  open( MAIL, "|/usr/sbin/sendmail -t" );
 
 	  print MAIL "To: $self->{to}\n";
 	  print MAIL "From: $self->{from}\n";

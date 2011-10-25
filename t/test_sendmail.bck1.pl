@@ -56,8 +56,9 @@ use warnings;
 
 my ( $message, $strnow, $title, $from, $to, $subject, $sts );
 
-$title = 'Perl Mail demo';
-$from  = 'swimmingpool@earlati.com';
+$title   = 'Perl Mail demo';
+$from    = 'swimmingpool@earlati.com';
+$from    = 'enzo.arlati@libero.it';
 $to      = 'enzo.arlati@libero.it';
 $strnow  = localtime();
 $subject = "[$strnow] Test sendmail";

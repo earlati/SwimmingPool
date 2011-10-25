@@ -7,11 +7,12 @@ use Data::Dumper;
 
 use lib '.';
 use lib './lib';
+use lib '../lib';
 use Swim::DBCommon;
 
 eval {
 	my ( $obj1, $s1 );
-	$obj1 = new Swim::StorageDB();
+	$obj1 = new Swim::DBCommon();
 	$s1   = $obj1->GetJsonTables();
 	print "$s1 \n";
 };
@@ -23,6 +24,7 @@ if ($@) {
 	print " $@ \n";
 	print "INC:  @INC  \n";
 }
+
 
 
 

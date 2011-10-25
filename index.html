@@ -1,91 +1,78 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta charset="utf-8">
-        <title>Swim/Sporting Planning & Reporting </title>
+  <head>
+    <meta name="generator" content="HTML Tidy for Linux/x86 (vers 11 February 2007), see www.w3.org" />
+    <meta charset="utf-8" />
+    <title>
+      Swim/Sporting Planning &amp; Reporting
+    </title>
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="/css/dd.css">  -->
+    <link rel="stylesheet" type="text/css" href="css/swim.css" />
+    
+    <script src="/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/js/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="/js/jquery.cookie.js" type="text/javascript"></script>
+    
+    <!-- <script type="text/javascript" src="/js/jquery.jqDock.min.js"></script>  -->
+    <!-- <script src="/js/jquery.dd.js">         </script>  -->
 
-        <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
-        <!-- <link rel="stylesheet" type="text/css" href="/css/dd.css">  -->
+    <script src="js/swimUtility.js" type="text/javascript"></script>
+    <script src="js/swimFormLogin.js" type="text/javascript"></script>
+    <script src="js/swimMain.js" type="text/javascript"></script>
+  </head>
+  <body>
+	  
+    <div id="swim-header">
+      <ul>
+       <!-- <li class="green"> <span>Swim/Sporting<br /> Planning &amp; Reporting</span> </li>  -->
+        <li > <span>Swim/Sporting </span><span>Planning &amp; Reporting</span> </li>
+        <li id="Autenticate" class="blu"> Utente 
+        <ul>
+           <li id="CallLogin" class="blu">Accedi</li>
+           <li id="CallRegister" class="blu">Registra </li>
+        </ul>
+        </li>
+        <li id="test_1" class="blu"> Attivita'
+        <ul>
+           <li  class="blu">Nuoto</li>
+           <li  class="blu">Corsa a piedi</li>
+           <li  class="blu">Bicicletta</li>
+           <li  class="blu">Pettinare bambole</li>
+           <li  class="blu">Spulciare le pulci</li>
+        </ul>
+        </li>
+        <li id="test_2" class="blu"> Varie
+        <ul>
+			<li class="blu"> Loose-bytes</li>
+			<li class="blu"> Qualcos'altro</li>
+        </ul>
+        </li>
+      </ul>
+    </div>
+    
+    <br><br><br><br><br><br>    
+    
+    
 
-        <link rel="stylesheet" type="text/css" href="css/swim.css">
+    
+    <h1 id="swim-menu"></h1>
+    <h2 id="swim-banner"></h2>
+    <h2 id="TestOne"></h2>
+    <div style="margin-left: 2em" id="swim-footer">
+      <a id="mailme" href="mailto:enzo.arlati@libero.it"></a>
+    </div>
+    
+    <div id="debug">   <div class="BtnMinimize"></div>  <div class="BtnClose"></div> <ol></ol> </div>
+    <div id="error">   <div class="BtnClose"></div><ol></ol> </div>
+    <div id="HelpBox"> <ol></ol></div>
 
-        <script src="/js/jquery.min.js">        </script>
-        <script src="/js/jquery-ui.min.js">     </script>
-        <script src="/js/jquery.cookie.js">     </script>
-        <!-- <script src="/js/jquery.dd.js">         </script>  -->
-        
-        <script src="js/swimUtility.js">    </script> 
-        <script src="js/swimFormLogin.js">  </script> 
-        <script src="js/swimMain.js">       </script>
-    </head>
-    <body>
-
-        <div id="swim-header">
-            <ul>
-                <li>
-                    <span>Swim/Sporting 
-                        <br/>
-                        Planning & Reporting 
-                    </span>
-                </li>
-                <li id="CallLogin" class="hint">
-                    login 
-                </li>
-                <li id="CallRegister" class="hint">
-                    register 
-                </li>
-                <!--
-                <li>
-                  <select name="user_menu" id="user_menu" >
-                     <option value="login" title="images/select16.png">Login</option>
-                     <option value="register" title="images/select16.png">Registrazione</option>
-                     <option value="reset_password" title="images/select16.png">Cancella password</option>
-                     <option value="enable_user"    title="images/select16.png">Abilita utente</option>
-                  </select>
-                </li>
-                -->
-            </ul>
-        </div>
-        <h1 id="swim-menu"></h1>
-        <h2 id="swim-banner"></h2>
-        <h2 id="TestOne"></h2>
-        <!--
-        <h2 id="test-1" class="hint">test 1</h2>
-        <h2 id="test-2" class="hint">test 2</h2>
-        <h2 id="test-3" class="hint">test 3</h2>
-        <h2 id="test-4" class="hint">test 4</h2>
-        -->
-        <ol id="swim-footer">
-        <a id="mailme" href="mailto:enzo.arlati@libero.it"></a>
-        </ol>
-
-        <div id="debug" >
-            <div class="BtnMinimize">
-            </div>
-            <div class="BtnClose">
-            </div>
-            <ol>
-            </ol>
-        </div>
-        <div id="error" >
-            <div class="BtnClose">
-            </div>
-            <ol>
-            </ol>
-        </div>
-        <div id="HelpBox">
-        </div>
-        <div id="swim-footer">
-            <ul>
-                <li>
-                    <span id="TotalAccess" class="hint">0 </span>
-                </li>
-                <li>
-                </li>
-            </ul>
-        </div>
-        <div id="ChildBox">
-            <div id="InnerChildBox">
-            </div>
-        </div>
-    </body>
+    <div id="swim-footer">
+      <ul>
+        <li> <span id="TotalAccess" class="hint">0</span> </li>
+      </ul>
+    </div>
+    
+    <div id="ChildBox"> <div id="InnerChildBox"></div> </div>
+    
+  </body>
 </html>

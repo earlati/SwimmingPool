@@ -20,7 +20,6 @@ use Swim::Login;
 
 =head1   debug
 
-	curl  'http://enzo7/SwimmingPool/lib/swim.pl?prog=reqResetPwd&email=enzo.arlati@libero.it'
 
 =cut
 
@@ -44,13 +43,9 @@ eval {
 		$v    = @$ll2[1];
 		$params->{$k} = "$v" if defined $k;
 	}
-	
-	# ==============================================
-	# swim.pl?prog=reqResetPwd&email=enzo.arlati@libero.it'
-	# $params->{prog} = 'reqResetPwd';
-    # $params->{email} = 'enzo.arlati@libero.it';
-    
-	# ==============================================
+
+	# print "Content-type: text/plain\n\n";
+
 	$strpara = "";
 	foreach $k ( keys %$params )
 	{
@@ -123,9 +118,10 @@ eval {
 		my ( $obj1, $s1 );
 		# CMD => [reqResetPwd] param=>[email=enzo.arlati@libero.it&prog=reqResetPwd]
 		$obj1 = new Swim::Login( $cmd, $strpara );
-		$s1 = $obj1->PerformRequestRemoteCmd();
+		$s1 = $obj1->PerformRequestResetPassword();
 		print "$s1 \n";
 	}
+
 	# ==============================================
 	else
 	{

@@ -203,8 +203,13 @@ sub GetUser
 		$rsltTmp = $self->ExecuteSelectCommand( $sqlcmd, $params );
 
 		$rslt->{numrows}   = $rsltTmp->{numrows};
+		$rsltTmp->{numrows} = 0 if ! defined $rsltTmp->{numrows};
+		
 		$rslt->{errordata} = $rsltTmp->{errordata};
 		$rslt->{error}     = $rsltTmp->{error};
+		
+		warn sprintf "error %d [%s] ", $rslt->{error} , $rslt->{errordata};
+
 		if ( $rsltTmp->{numrows} == 1 )
 		{
 			$htmp = $rsltTmp->{rows}->{1};

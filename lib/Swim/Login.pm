@@ -18,6 +18,7 @@ use CGI;
 use lib '../';
 use Swim::DBUser;
 use base qw( Swim::BaseCgi );
+use Swim::SendMail;
 
 
 RunTest() unless caller;
@@ -25,13 +26,17 @@ RunTest() unless caller;
 # =====================================
 sub RunTest
 {
-	my ( $obj1, $s1, $cmd, $params );
+	my ( $obj1, $s1, $params );
 
-   $cmd    = 'reqResetPwd';
-   $params = 'email=enzo.arlati@libero.it&prog=reqResetPwd'; 
-   $obj1 = new Swim::Login( $cmd, $params );
-   $s1 = $obj1->PerformRequestResetPassword();
-	
+   $params = 'email=enzo.arlati@libero.it&prog=resetPwd'; 
+   $obj1 = new Swim::Login( 'reqResetPwd', $params );
+   $s1 = $obj1->PerformRequestRemoteCmd();
+   print "$s1 \n";
+   print "====================== \n";
+
+   $params = 'email=enzo.arlati@libero.it&prog=enableUsr'; 
+   $obj1 = new Swim::Login( 'reqEnableUsr', $params );
+   $s1 = $obj1->PerformRequestRemoteCmd();
    print "$s1 \n";
 	
 }  # ______ sub RunTest
@@ -410,63 +415,84 @@ sub BuildAnswerStoreRegister
 
 =head2 sub PerformRequestResetPassword
 
-   
+
+   PARAMS  INP: 
+      'email' => 'enzo.arlati@libero.it' 
+       'prog' => 'reqResetPwd'
+  
+  
+  
+   After BuildRemoteCommand paramsOut: 
+          'info' => '' 
+          'userid' => 47 
+          'cmdid' => 70 
+          'username' => 'enzo' 
+          'email' => 'enzo.arlati@libero.it' 
+          'crypto' => '0000007000000047reqResetPwd' 
+          'error' => '' 
+          'operation' => 'reqResetPwd', 
+
+
+   Result:
+      Content-type: application/json
+      {   "error" : "" , "info" : "Validazione comando remoto reqResetPwd per utente enzo"  } 
+
+
+   malformed header from script. Bad header=enzo.arlati@libero.it... Conne: swim.pl, 
+
 
 =cut 
 
 # ===================================
-sub PerformRequestResetPassword
+sub PerformRequestRemoteCmd
 {
 	my ($self) = @_;
-	my ( $s1, $json, $paramsInp, $paramsOut, $params, $objStore, $dataStore, $resStore );
+	my ( $s1, $json, $paramsInp, $paramsOut, $params );
+	my ( $from, $to, $subject, $message, $snow );
 	my ($sres)    = "";
 	my ($ctxType) = $self->GetContentJson();
+
+    $snow    = localtime();
 
 	$params = $self->{params};
 	mylog( sprintf( "PARAMS: %s ", Dumper( $params )));
 
 	# Build resetpwd record and store it on db
     %$paramsInp = ();
-    $paramsInp->{operation} = 'resetPwd';
+    $paramsInp->{operation} = $params->{prog};
     $paramsInp->{email} = $params->{email};
+
+	# mylog( sprintf( "paramsInp: %s ", Dumper( $paramsInp )));
     $paramsOut = $self->BuildRemoteCommand( $paramsInp );
+	# mylog( sprintf( "paramsOut: %s ", Dumper( $paramsOut )));
     
 
-	foreach my $k ( keys %$params )
-	{
-		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
-		warn "[ResetPassword] $s1 ";
-		$dataStore->{$k} = "$params->{$k}";
-	}
-
-	$objStore = new Swim::DBUser();
-	
-	$resStore->{error} = 99;
-	$resStore->{info} = '<b> PerformRequestResetPassword TODO </b>';
-	
-	
 	# Send ResetPwd command to user e-mail
 	
-	
-	# $resStore = $objStore->SaveUser($dataStore);
+	$from    = 'swimmingpool@earlati.com';
+	$to      = $paramsOut->{email};
+	$subject = sprintf "Validazione comando remoto %s per utente %s", $paramsOut->{operation}, $paramsOut->{username} ;
+	$message = "Validazione comando remoto inviato il $snow \n\n";
+	$message .= sprintf "Digitare il seguente comando %s dal browser\n", $paramsOut->{crypto};
+    $message .= sprintf "per attivare il comando remoto %s \n", $paramsOut->{operation};
+    $message .= sprintf "per l' utente %s \n", $paramsOut->{username};
+    
+    $paramsOut->{info} =  "$subject";
+
+    Swim::SendMail::BasicSendMail( $from, $to, undef, undef, $subject, $message );
 
 	$json = ' ';
-	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resStore->{error}";
-	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resStore->{info}";
-	if ( $resStore->{error} == 0 )
-	{
-		#$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resStore->{data}->{user}"
-		  #if defined $resStore->{data}->{user};
-		#$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resStore->{data}->{id}"
-		  #if defined $resStore->{data}->{id};
-	}
+	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$paramsOut->{error}";
+	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$paramsOut->{info}";
+	$json .= sprintf " \"%s\" : \"%s\" ,", "crypto",  "$paramsOut->{crypto}";
+	$json .= sprintf " \"%s\" : \"%s\" ,", "username",  "$paramsOut->{username}";
 	$json =~ s/\, *$//;
 	$json = sprintf " { %s } ", $json;
 	$sres = sprintf "%s %s", $ctxType, $json;
 
 	return "$sres";
 
-}    ## ___________ sub PerformRequestResetPassword
+}    ## ___________ sub PerformRequestRemoteCmd
 
 
 
@@ -474,37 +500,26 @@ sub PerformRequestResetPassword
 
 =head2 sub BuildRemoteCommand
 
-  ALLOWED Operation mode : resetPwd
+  ALLOWED Operation mode : resetPwd enableUsr
 
 
    ParamsIn: 
           'email' => 'enzo.arlati@libero.it',
           'operation' => 'resetPwd'
           
-          
-INSERT INTO `enzarl7_swim`.`remote_cmd`
-(`idremote_cmd`,
-`crypto_command`,
-`command`,
-`id_user`,
-`email`,
-`dt_mod`,
-`dt_expire`)
-VALUES
-(
-{idremote_cmd: INT},
-{crypto_command: VARCHAR},
-{command: VARCHAR},
-{id_user: INT},
-{email: VARCHAR},
-{dt_mod: TIMESTAMP},
-{dt_expire: DATETIME}
-);
-          
+   ParamsOut: 
+          'crypto' => '000000460000004700resetPwd',
+          'email' => 'enzo.arlati@libero.it',
+          'userid' => 47,
+          'operation' => 'resetPwd',
+          'cmdid' => 46,
+          'username' => 'enzo'
+        
+    Row saved in Database:
+    '42', '0000004200000047  resetPwd', 'resetPwd', '0', 'enzo.arlati@libero.it', '2011-09-05 23:46:06', '2011-09-08 23:46:06'
+    
 
-DELETE FROM remote_cmd WHERE email = '' and command = '';
-
-
+        
 =cut
 
 # ===================================
@@ -515,7 +530,9 @@ sub BuildRemoteCommand
 	my ( @allowedOperations ) = qw( resetPwd enableUser );
 	%$paramsOut = %$paramsInp;
 
-	mylog( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
+    $paramsOut->{error} = "";
+    $paramsOut->{info}  =  "";
+	# mylog( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
 
 	$objStore = new Swim::DBUser(); 
 	
@@ -541,15 +558,14 @@ sub BuildRemoteCommand
 
     $paramsOut->{cmdid} = $objStore->GetLastInsertId();
     
-    $paramsOut->{crypto} = sprintf "%08d%08d%10s", $paramsOut->{cmdid}, $paramsOut->{userid}, $paramsOut->{operation}; 
-    # $s1 = unpack "H*", $s1;
-    # lastId = 22  202020323220726573657450776420656e7a6f2e61726c617469406c696265726f2e6974 
-    
+    $paramsOut->{crypto} = sprintf "%08d%08d%010s", $paramsOut->{cmdid}, $paramsOut->{userid}, $paramsOut->{operation}; 
+    # $paramsOut->{crypto} => '000000450000004700resetPwd'
+
     $sqlcmd = 'update remote_cmd set crypto_command = ? where idremote_cmd = ? ';
 	@$sqlparams = ( $paramsOut->{crypto}, $paramsOut->{cmdid} );  
     $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
     
-	mylog( sprintf( "ParamsOut: %s ", Dumper( $paramsOut )));    
+	# mylog( sprintf( "ParamsOut: %s ", Dumper( $paramsOut )));    
 
     return $paramsOut;
 	

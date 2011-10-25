@@ -36,7 +36,7 @@ sub Main
 {
 	eval 
 	{ 
-		 TestResetPassword(); 
+		 TestCheckLogin(); 
 	};
 
 	if ($@)
