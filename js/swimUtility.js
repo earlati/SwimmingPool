@@ -67,16 +67,31 @@ function Log(msg) {
 }
 
 // ==============================================
+function Info(msg) {
+	var msgout, s1, dt, now;
+	dt = new Date();
+	now = dt.getHours() + ":" + dt.getMinutes() + ":" +  
+	      dt.getSeconds() + "." + dt.getMilliseconds();
+
+	msgout =  "<p/>" + msg ;
+	$("div#info ol").html(msgout);
+	$("div#info").fadeIn( 'slow');
+	$("div#info").fadeOut( 8000 );
+}
+
+
+// ==============================================
 function Error(msg) {
 	var msgout, s1, dt, now;
 	dt = new Date();
-	now = Math.ceil(dt.getTime() / 1000);
+	// now = Math.ceil(dt.getTime() / 1000);
+	now = dt.getHours() + ":" + dt.getMinutes() + ":" +  
+	      dt.getSeconds() + "." + dt.getMilliseconds();
 
 	msgout = "<li> " + now + " " + msg + "</li>";
 
 	$("div#error").show();
 	$("div#error ol").prepend(msgout);
-
 }
 
 // ===========================================
@@ -92,9 +107,10 @@ $.extend({ getUrlVars : function() {
 		vars[hash[0]] = hash[1];
 	}
 	return vars;
-}, getUrlVar : function(name) {
-	return $.getUrlVars()[name];
-} });
+    }, getUrlVar : function(name) {
+	   return $.getUrlVars()[name];
+    } 
+});
 
 // ================================================================
 // sleep
@@ -256,6 +272,16 @@ function QueryJson(urlQuery, idOutput1) {
 
 }
 
+
+// ================================================================
+function CenterBox( objBox ) {
+    var left, top;
+	left = ( $(window).width() - objBox.width() ) / 2;
+	top  = ( $(window).height() - objBox.height() ) / 2;
+	objBox.css( { 'left': left + 'px', 'top' : top + 'px' });
+}  // ________ function CenterBox( objBox )
+
+
 // ================================================================
 // ================================================================
 function ChildBox(queryUrl, queryParam, callback ) {
@@ -266,9 +292,10 @@ function ChildBox(queryUrl, queryParam, callback ) {
 
 	Log("[ChildBox] queryUrl => " + queryUrl );
 
-	left = ( $(window).width() - objChild.width() ) / 2;
-	top  = ( $(window).height() - objChild.height() ) / 2;
-	objChild.css( { 'left': left + 'px', 'top' : top + 'px' });
+	// left = ( $(window).width() - objChild.width() ) / 2;
+	// top  = ( $(window).height() - objChild.height() ) / 2;
+	// objChild.css( { 'left': left + 'px', 'top' : top + 'px' });
+	CenterBox( objChild );
 	objChild.show();
 	
 	objInnerChild.empty().html('<img src="/images/loading2.gif" /> ');
@@ -281,7 +308,8 @@ function ChildBox(queryUrl, queryParam, callback ) {
       {
          var msg = "Sorry but there was an error: ";
          Log( "[ChildBox] ERRORE " + msg );
-         $("#error").html(msg + xhr.status + " " + xhr.statusText);
+         // $("#error").html(msg + xhr.status + " " + xhr.statusText);
+         Error( "[ChildBox] ERRORE [" + xhr.status + "]" + response );
       }
       else
       {  

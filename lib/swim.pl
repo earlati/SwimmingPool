@@ -47,7 +47,7 @@ eval {
 	
 	# ==============================================
 	# swim.pl?prog=reqResetPwd&email=enzo.arlati@libero.it'
-	# $params->{prog} = 'reqResetPwd';
+	# $params->{prog}  = 'reqResetPwd';
     # $params->{email} = 'enzo.arlati@libero.it';
     
 	# ==============================================
@@ -72,9 +72,7 @@ eval {
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
 		print "$s1 \n";
-
 	}
-
 	# ==============================================
 	elsif ( $cmd eq 'checkLogin' )
 	{
@@ -82,7 +80,6 @@ eval {
 		$obj1 = new Swim::Login( $cmd, $strpara );
 		$s1 = $obj1->BuildAnswerCheckLogin();
 		print "$s1 \n";
-
 	}
 
 	# ==============================================
@@ -94,9 +91,7 @@ eval {
 		$obj1->EndHtml();
 		$s1 = $obj1->GetHtml();
 		print "$s1 \n";
-
 	}
-
 	# ==============================================
 	elsif ( $cmd eq 'storeRegister' )
 	{
@@ -104,7 +99,6 @@ eval {
 		$obj1 = new Swim::Login( $cmd, $strpara );
 		$s1 = $obj1->BuildAnswerStoreRegister();
 		print "$s1 \n";
-
 	}
 
 	# ==============================================
@@ -126,6 +120,29 @@ eval {
 		$s1 = $obj1->PerformRequestRemoteCmd();
 		print "$s1 \n";
 	}
+	
+	# ==============================================
+	elsif ( $cmd eq 'formEnableUser' )
+	{
+		my ( $obj1, $s1 );
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$obj1->BuildHtmlEnableUser();
+		$obj1->EndHtml();
+		$s1 = $obj1->GetHtml();
+		print "$s1 \n";
+	}
+	# ==============================================
+	elsif ( $cmd eq 'reqEnableUser' )
+	{
+		my ( $obj1, $s1 );
+		# CMD => [reqEnableUser] param=>[email=enzo.arlati@libero.it&prog=reqEnableUser]
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$s1 = $obj1->PerformRequestRemoteCmd();
+		print "$s1 \n";
+	}
+	
+	
+	
 	# ==============================================
 	else
 	{

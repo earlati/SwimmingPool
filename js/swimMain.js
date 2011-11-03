@@ -35,23 +35,27 @@ $(document).ready(function () {
 
 function InitPage() {
     $("div#error").hide();
+    $("div#info").hide();
     $("div#HelpBox").hide();
     $("div#ChildBox").hide();
 
+    $("div#info").css({ 'right': '10px', 'top': '10px' });
+    
     // $( "#user_menu" ).msDropDown( {mainCSS:'dd2'} );
     $("img").hover(function () {
         $(this).fadeTo("slow", 0.44);
         $(this).fadeTo("slow", 1.0);
     });
 
+   // var sndFlush = new Audio( "/sounds/flush.mp3" );
+
     ManageDebugSection();
 
     Log("[InitPage] Starting swim-main ... ");
     Log("[InitPage] Param debug: " + $.getUrlVars()['debug']);
 
-    $('.BtnClose').click(function () {
-        $(this).parent().hide('slow');
-    })
+    $('.BtnClose').click(function () {  $(this).parent().hide('slow');  })
+    
     $('div#debug .BtnMinimize').click(function () {
         if ($(this).parent().height() > '21') {
             $(this).parent().animate({ 'height': '20px' });
@@ -63,8 +67,15 @@ function InitPage() {
 
     })
 
+    // $("#swim-header li").hover(function (e) { Log("suona bastardo" ); sndFlush.play(); } );
+
     $("#TotalAccess").click(function () {
         window.open('/cgi-bin/print-counter-log.pl');
+        return false;
+    });
+
+    $("#CallLooseBytes").click(function () {
+        window.open('http://loose-bytes.blogspot.com/','other');
         return false;
     });
 
@@ -92,7 +103,7 @@ function InitPage() {
     
     UpdateForm_TotalAccess('TotalAccess');
     
-    // InitPageSwimLogin();
+    InitPageSwimLogin();
 
 } // ________ function InitPage()
 

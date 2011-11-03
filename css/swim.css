@@ -32,6 +32,7 @@ a:hover {
 	align: center;
 	color: #8699a4;
 	background-color: #0d3349;
+    background: url(/SwimmingPool/images/swim/swim12.jpg) repeat top center;
 	width: 96%;
 	left: 2%;
 	height: 4em;
@@ -41,11 +42,16 @@ a:hover {
 	opacity: 0.9;
 }
 
+
 #swim-footer { 	position: fixed; bottom: 0px; }
 
 
-#swim-header li { width: 120px; height: 20px; text-align: center; list-style: none; }
-#swim-header li:hover { font-style: italic; background-position: bottom center; }
+#swim-header li { width: 120px; height: 20px; text-align: center; list-style: none; color: AliceBlue; 
+                  opacity: 0.6;  cursor: pointer;
+	              border-radius: 10px;  -moz-border-radius: 10px;	-webkit-border-radius: 10px; }
+#swim-header li:hover { font-style: italic; color: yellow;  opacity: 1.0;
+	                    border-radius: 10px;  -moz-border-radius: 10px;	-webkit-border-radius: 10px;
+                        background-position: bottom center; }
 
 #swim-header ul { padding: 0; margin: 0; }
 
@@ -53,46 +59,13 @@ a:hover {
 #swim-header > ul > li > ul { position: relative; top: 3px; visibility : hidden; }
 #swim-header > ul > li:hover ul{ visibility : visible; }
 
-#swim-header > ul > li:first-child { font-size: x-medium;	font-style: bold; padding: 2px 1em; position: relative; top: 0px; }
+#swim-header > ul > li:first-child { font-size: x-medium;	font-style: bold; padding: 2px 1em; 
+                                     cursor: crosshair;
+                                     color: navy; opacity: 1.0;    position: relative; top: 0px; }
 #swim-header > ul > li:first-child:hover { 	color: green; font-weight: normal; }
 
-/*
-#swim-header > ul > li { postion: relative;  float: left; list-style: none; display: block;    }
 
-#swim-header > ul, #swim-footer > ul {  postion: relative; float:left; list-style: none; display: block; }
-#swim-header  li, #swim-footer  li { list-style: none; font: 12px Tahoma, Arial; padding: 8px 1em; }
-
-#swim-header > ul > li, #swim-footer > ul > li { float: left; }
-
-#swim-header > ul > li:first-child { font-size: medium;	font-style: bold; padding: 2px 1em; }
-#swim-header > ul > li:first-child:hover { 	color: green; font-weight: normal; }
-
-#swim-header ul li:hover { 	color: yellow; font-weight: normal;	font-style: bold; }
-
-#swim-header ul ul { position: absolute; top: 30px; width: 120px; visibility: hidden; }
-#swim-header ul li:hover ul { visibility:visible;	}
-* ===========================
-* 
-#swim-header li { width: 120px; height: 20px; text-align: center; }
-#swim-header li:hover { font-style: italic; background-position: bottom center; }
-#swim-header ul { padding: 0; margin: 0; }
-#swim-header >ul > li > ul > li  { float: bottom; list-style: none; display: block;  }
-#swim-header >ul > li > ul { position: relative; top: 3px; visibility : hidden; }
-#swim-header >ul > li:hover ul{ visibility : visible; }
-*/
-
-/*
-#menu2 li { width: 120px; height: 20px; text-align: center; }
-#menu2 li:hover { font-style: italic; background-position: bottom center; }
-#menu2 ul { padding: 0; margin: 0; }
-#menu2 >ul > li { postion: relative;  float: left; list-style: none; display: block;    }
-#menu2 >ul > li > ul > li  { float: bottom; list-style: none; display: block;  }
-#menu2 >ul > li > ul { position: relative; top: 3px; visibility : hidden; }
-#menu2 >ul > li:hover ul{ visibility : visible; }
-*/
-
-
-
+.water1 { background: url(/img/water1.jpg) no-repeat top center;   color: #006600; }
 .green { background: url(/img/green.jpg) no-repeat top center;   color: #006600; }
 .orange{ background: url(/img/orange.jpg) no-repeat top center;  color: #CC3300; }
 .blu   { background: url(/img/blu.jpg) no-repeat top center;     color: #006699; }
@@ -110,7 +83,7 @@ div#debug {
 	bottom: 0;
 	left: 1%;
 	overflow: auto;
-	z-index: 7;
+	z-index: 5;
 }
 
 div#debug .BtnMinimize {
@@ -152,6 +125,27 @@ div#error {
 	z-index: 9;
 }
 
+div#info {
+	background-image: url(../images/swim/swim9.jpg);
+	color: black;
+	background-color: #66aa66;
+	position: fixed;
+	width: 400px;
+	height: 200px;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: medium;
+	font-weight: bolder;
+	opacity: 0.9;
+	border: thick groove green;
+	-moz-border-radius: 16px;
+	-webkit-border-radius: 16px;
+	border-radius: 16px;
+	padding: 10px;
+	overflow: auto;
+	z-index: 8;
+}
+
 div#HelpBox {
 	font-size: small;
 	font-style: italic;
@@ -166,9 +160,10 @@ div#HelpBox {
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 	overflow: auto;
-	background-color: #ffff99;
 	z-index: 9;
 }
+
+
 
 a#mailme {
 	position: fixed;
@@ -246,14 +241,13 @@ span#TotalAccess {
 
 div#ChildBox {
 	background-image: url(../images/nuoto1.jpg);
-	color: #000000;
+	color: blue;
 	position: absolute;
 	width: 400px;
 	height: 350px;
 	margin-left: auto;
 	margin-right: auto;
 	font-size: small;
-	color: blue;
 	opacity: 0.9;
 	border: thick groove green;
 	-moz-border-radius: 16px;
@@ -261,6 +255,7 @@ div#ChildBox {
 	border-radius: 16px;
 	padding: 10px;
 	overflow: auto;
+	z-index: 6;
 }
 
 div#InnerChildBox {

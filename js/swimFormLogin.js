@@ -21,13 +21,13 @@ function InitPageSwimLogin() {
 		}
 	});
 	
-	$('#CallRegister').click(function() {
-		LoadFormRegister();
-	});
+	$('#CallRegister').click(function() {	LoadFormRegister();	});
+	$('#CallDeletePwd').click(function() {	LoadFormResetPwd();	});
+	$('#CallEnableUser').click(function() {	LoadFormEnableUser(); });
 
 	LoginProcedure();
 
-} // ________ function InitPageSwimLogin()
+}  // ________ function InitPageSwimLogin()
 
 
 // ==============================================
@@ -61,7 +61,7 @@ function LoadFormResetPwd()
 function LoadFormEnableUser() 
 {
 	Log( " LoadFormEnableUser .... " );
-	ChildBox('/SwimmingPool/lib/swim.pl?prog=enableusr', null, InitEnableUser );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=formEnableUser', null, InitEnableUser );
 			
 }  // _______  function LoadFormEnableUser()
 
@@ -143,10 +143,12 @@ function JsonCommonCompleteStatus( jqxhr, _headerLog, formStsName, urlQuery, par
 			Log( HeaderLog + " complete info: " + param['info']);
 			Log( HeaderLog + " complete error: " + param['error']);
 			$('#' + formStsName ).html('<p>' + param['info']);
+			
 			if( param['error'] != undefined  &&  param['error'].length > 3 )
 			{
 				Error( HeaderLog + " complete error: " + param['error'] );
-				}
+			}
+			else { Info( param['info'] ); }
 		});	
 	
 }  // ______________ function JsonCommonCompleteStatus( jqxhr, headerLog, ... )

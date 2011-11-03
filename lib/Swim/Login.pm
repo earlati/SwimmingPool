@@ -248,6 +248,41 @@ sub BuildHtmlResetPwd
 
 
 # ===================================
+sub BuildHtmlEnableUser
+{
+	my ($self)       = @_;
+	my ($sres)       = "";
+	my ($currEmail)  = '';
+	my ($currPwd)    = '';
+	my ( $readonly ) = 0;
+	
+	$currEmail = 'enzo.arlati@libero.it';
+	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
+	
+	$sres .= $self->GetLoadingDiv();
+	$sres .= $self->{cgiObj}->h2("Abilita utente");
+
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlEdit( 'password', 'Password', $currPwd, 20, 30, $readonly );
+
+	$sres .= "<p> ";
+	$sres .= $self->BuildHtmlBtnOk();
+	$sres .= $self->BuildHtmlBtnCancel();
+	$sres .= "<p> ";
+
+	$sres .= "<div id=\"StatusFormEnableUser\"> </div>";
+	$sres = "<div id=\"FormEnableuser\"> $sres </div>";
+	$self->{html} .= "$sres";
+
+	return "$sres";
+
+}    ## ___________ sub BuildHtmlEnableUser
+
+
+
+# ===================================
 sub BuildHtmlBtnLogin
 {
 	my ($self) = @_;
@@ -477,7 +512,8 @@ sub PerformRequestRemoteCmd
     $message .= sprintf "per attivare il comando remoto %s \n", $paramsOut->{operation};
     $message .= sprintf "per l' utente %s \n", $paramsOut->{username};
     
-    $paramsOut->{info} =  "$subject";
+    $paramsOut->{info} = sprintf "Inviato comando remoto %s per utente %s", 
+                                 $paramsOut->{operation}, $paramsOut->{username} ;
 
     Swim::SendMail::BasicSendMail( $from, $to, undef, undef, $subject, $message );
 
