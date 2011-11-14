@@ -17,6 +17,7 @@ use lib '.';
 use lib './lib';
 use Swim::DBCommon;
 use Swim::Login;
+use Swim::Log;
 
 =head1   debug
 
@@ -26,7 +27,7 @@ use Swim::Login;
 
 eval {
 
-	my ( $obj1,   $s1,      $qstring );
+	my ( $obj1,   $s1, $log,   $qstring );
 	my ( $params, $strpara, $hjson,   $k, $v, $ll, $ll2 );
 	my ($base) = basename $0;
 	my ( $cmd ) = '';
@@ -35,6 +36,12 @@ eval {
 	$qstring = $ENV{QUERY_STRING};
 	$qstring = ''  if ! defined $qstring;
 	warn("$base : query => $qstring ");
+
+	$log  = new Swim::Log( '../logs/SwimmingPool.log' );
+
+	$log->Log("first row ");
+	$log->Log("second row ");
+	$log->Trace( " test trace " );
 
 	@$ll = split( '&', $qstring );
 	foreach $s1 (@$ll)
@@ -45,6 +52,14 @@ eval {
 		$params->{$k} = "$v" if defined $k;
 	}
 	
+	# ==============================================
+	# ==============================================
+	$s1 = "";
+	foreach $k ( keys %ENV )
+	{
+		$log->Log( sprintf "ENV [%-20s] => [%s] ", $k, $ENV{$k} );
+	}
+
 	# ==============================================
 	# swim.pl?prog=reqResetPwd&email=enzo.arlati@libero.it'
 	# $params->{prog}  = 'reqResetPwd';
@@ -58,6 +73,7 @@ eval {
 		warn "[$base] Param [$k] => [$params->{$k}]";
 		$strpara .= sprintf "%s=%s&", $k, $params->{$k};
 	}
+
 	$strpara =~ s/&$//;
 	$cmd = "$params->{prog}" if defined $params->{prog};
 

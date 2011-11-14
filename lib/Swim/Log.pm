@@ -25,15 +25,14 @@ package Swim::Log;
 
 =cut
 
+package Swim::Log;
+
 use 5.006;
 use strict;
 use warnings;
 use File::Basename;
 
-use lib '.';
-use lib './Swim';
-use Swim::GlobalData;
-use base qw( Swim::CommonParent );
+
 
 our $VERSION = '0.01';
 
@@ -74,19 +73,29 @@ sub new {
 
 	bless $self, $class;
 
-	$self->{rootPath} = $self->GetRootPath();
+	# $self->{rootPath} = $self->GetRootPath();
 	$self->{logFilename} = $fname if defined $fname;
 
-	$self->{logFilename} = sprintf "%s/logs/%s", $self->{rootPath},
-	  $self->{logFilename};
+	# $self->{logFilename} = sprintf "%s%s", $self->{rootPath}, $self->{logFilename};
 
 	$self->{logFilename} = $self->GetUntaint( $self->{logFilename} );
 
-	# printf "logfilename: %s \n", $self->{logFilename};
+	warn sprintf "logfilename: %s \n", $self->{logFilename};
 
 	return $self;
 
 }    # _________ sub new
+
+
+# =============================================
+# =============================================
+sub GetRootPath {
+	my ( $self ) = @_;
+	my ($rootPath ) = '/tmp/';
+	
+	if( defined $ENV{SERVER_ADDR} )	{  $rootPath = '/cgi-bin/dati/';	}
+    return $rootPath;	
+}
 
 # =============================================
 # =============================================
@@ -100,8 +109,7 @@ sub Log {
 	my (@ll);
 	my ($funName);
 	my ($log_filename) = $self->{logFilename};
-	( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
-	  localtime(time);
+	( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime(time);
 	$year += 1900;
 	$mon  += 1;
 
@@ -231,10 +239,20 @@ sub AddInfoMessage
 }    # _____ AddInfoMessage
 
 
-
-
-
-
+# ======================================
+# ======================================
+sub GetUntaint {
+	my ( $self, $msgin ) = @_;
+	my ($msgout);
+	unless ( $msgin =~ m/^(\S+)$/ ) { die("Tainted => [$msgin]"); }
+	$msgout = $1;
+	if( $msgin ne $msgout )
+	{
+		die "[GetUntaint] FAILED [$msgin] [$msgout] ";
+	}
+	
+	return $msgout;
+}
 
 1;
 
