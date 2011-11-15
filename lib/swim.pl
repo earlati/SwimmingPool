@@ -35,13 +35,10 @@ eval {
 	# env QUERY_STRING : prog=login&user=enzo
 	$qstring = $ENV{QUERY_STRING};
 	$qstring = ''  if ! defined $qstring;
-	warn("$base : query => $qstring ");
 
 	$log  = new Swim::Log( '../logs/SwimmingPool.log' );
 
-	$log->Log("first row ");
-	$log->Log("second row ");
-	$log->Trace( " test trace " );
+	$log->Log( "$base : query => $qstring " );
 
 	@$ll = split( '&', $qstring );
 	foreach $s1 (@$ll)
@@ -54,11 +51,8 @@ eval {
 	
 	# ==============================================
 	# ==============================================
-	$s1 = "";
-	foreach $k ( keys %ENV )
-	{
-		$log->Log( sprintf "ENV [%-20s] => [%s] ", $k, $ENV{$k} );
-	}
+	# $s1 = "";
+	# foreach $k ( keys %ENV ) {	$log->Log( sprintf "ENV [%-20s] => [%s] ", $k, $ENV{$k} );	}
 
 	# ==============================================
 	# swim.pl?prog=reqResetPwd&email=enzo.arlati@libero.it'
@@ -70,14 +64,14 @@ eval {
 	foreach $k ( keys %$params )
 	{
 		if ( "$k" eq "prog " ) { next; }
-		warn "[$base] Param [$k] => [$params->{$k}]";
+		$log->Log( "[$base] Param [$k] => [$params->{$k}]" );
 		$strpara .= sprintf "%s=%s&", $k, $params->{$k};
 	}
 
 	$strpara =~ s/&$//;
 	$cmd = "$params->{prog}" if defined $params->{prog};
 
-	warn "CMD => [$cmd] param=>[$strpara]\n";
+	$log->Log( "CMD => [$cmd] param=>[$strpara]" );
 
 	# ==============================================
 	if ( $cmd eq 'formLogin' )

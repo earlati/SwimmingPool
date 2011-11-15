@@ -1,0 +1,86 @@
+<!--
+   log.html
+   
+   Copyright 2011 enzo <enzo@enzo7>
+   
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+   MA 02110-1301, USA.
+   
+   
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Log report</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="generator" content="Geany 0.21" />
+    <script src="/js/jquery.min.js" type="text/javascript"></script>
+
+<!-- =================================== -->
+
+<style type="text/css" >
+#LoadLog { cursor: pointer; background-color : gray; font-weight: bolder; }
+#LogArea { background-color : #99cccc ; }
+</style>	
+
+<!-- =================================== -->
+<script>
+	
+function LoadLogData( urlQuery ) {
+	var len, obj1, objTarget;
+	objTarget = $("#LogArea" );	
+
+	$.ajax({ url : urlQuery, cache : false, 
+	   beforeSend : function() {
+		 objTarget.css({ "color" : "#0000AA", "font" : "20px auto" });
+		 objTarget.val( "Loading data ..." );
+	   }, 
+	   success : function(data, stato) {
+		 objTarget.css({ "color" : "#006600", "font" : "13px auto" });
+		 objTarget.val(  data );
+	   }, 
+	   error : function(richiesta, stato, errori) {
+		 objTarget.css({ "color" : "#AA0000", "font" : "20px auto" });
+		 objTarget.val("E' avvenuto un errore => [" + stato + "]" + errori);
+	   } 
+	});
+}
+
+  $(document).ready( function() {
+      $( '#LoadLog' ).click( function(){  LoadLogData( 'lib/loadlog.pl' );  });
+      $( '#LogArea' ).dblclick( function(){  LoadLogData( 'lib/loadlog.pl' ); return false; });
+      
+	  LoadLogData( 'lib/loadlog.pl' ); 
+  });
+  
+</script>
+<!-- =================================== -->
+
+</head>
+
+<body>
+	
+<div id="LoadLog"> Refresh Log data </div> 	
+	
+<textarea id="LogArea" rows="80" cols="130">
+
+</textarea> 
+	
+</body>
+
+</html>
