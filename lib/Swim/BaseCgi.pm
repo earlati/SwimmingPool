@@ -14,6 +14,7 @@ use warnings;
 
 use Data::Dumper;
 use CGI;
+use Swim::Log;
 
 require Exporter;
 our @ISA = qw( Exporter );
@@ -53,6 +54,7 @@ sub new
 	my $self   = {
 		cgiObj     => undef,
 		dbObj      => undef,
+		logObj     => undef,
 		cmd        => "$cmd",
 		params     => "$params",
 		html       => '',
@@ -60,8 +62,9 @@ sub new
 	};
 
 	bless $self, $class;
-	warn "[BaseCgi.NEW] params: $params \n";
+	
 	$self->InitObject($params);
+	$self->Log( "Params: $params " );
 
 	return $self;
 
@@ -79,6 +82,8 @@ sub InitObject
 {
 	my ( $self, $params ) = @_;
 	my ($s1);
+
+	$self->{logObj} = new Swim::Log( '../logs/SwimmingPool.log' );
 
 	$self->{cgiObj} = new CGI($params);
 	$self->{params} = $self->{cgiObj}->Vars;
@@ -106,6 +111,14 @@ sub GetHtml
 	my ($sres) = $self->{html};
 	return $sres;
 }
+
+# ===================================
+sub Log
+{
+	my ($self, $msg ) = @_;
+	$self->{logObj}->Log( $msg );
+}
+
 
 # ===================================
 sub Command
@@ -227,6 +240,27 @@ sub BuildHtmlEdit
 	return $sres;
 
 }    ## ________ sub BuildHtmlEdit
+
+
+
+# ===================================
+sub BuildHtmlCheck
+{
+	my ( $self, $name, $label, $value, $checked, $readonly ) = @_;
+	my ( $sres, $params );	
+
+	$params = {
+		-name      => "$name",
+		-value     => "$value",
+		-label     => "$label", 
+		-checked   =>  $checked
+	};
+	$params->{-readonly} = 'readonly' if "$readonly" eq "1";
+	$sres = $self->{cgiObj}->checkbox($params);
+	return $sres;
+
+}    ## ________ sub BuildHtmlCheck
+
 
 
 # ===================================

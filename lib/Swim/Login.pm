@@ -19,6 +19,7 @@ use lib '../';
 use Swim::DBUser;
 use base qw( Swim::BaseCgi );
 use Swim::SendMail;
+use Swim::Log;
 
 
 RunTest() unless caller;
@@ -43,26 +44,6 @@ sub RunTest
 	
 
 
-# =====================================
-sub mylog
-{
-	my ($msg) = @_;
-	my ( $s1, $ll );
-	my @call = caller(1);
-	if ( "$call[3]" eq "(eval)" )
-	{
-		@call = caller(2);
-	}
-
-	# print "Dumer call: " . Dumper( \@call ) . "\n";
-	$s1 = sprintf "[%s] %s", $call[3], $msg;
-	warn ( sprintf "$s1 \n" );
-
-}  ## __________ sub mylog
-
-
-
-
 # ===================================
 # ===================================
 sub BuildHtmlLogin
@@ -74,6 +55,7 @@ sub BuildHtmlLogin
 	my ($sres)     = "";
 	my ($readonly) = 0;
 
+    $self->Log( "Build Html login " );
 	$sres .= $self->GetLoadingDiv();
 	$sres .= $self->{cgiObj}->h2("Login ");
 
@@ -123,22 +105,22 @@ sub BuildAnswerCheckLogin
 	my ($sres)    = "";
 	my ($ctxType) = $self->GetContentJson();
 
-	mylog("BuildAnswerCheckLogin ... ");
+	$self->Log("BuildAnswerCheckLogin ... ");
 
 	# $self->{params} = $self->{cgiObj}->Vars;
 	$params = $self->{params};
 	foreach my $k ( keys %$params )
 	{
 		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
-		mylog("$s1 ");
+		$self->Log("$s1 ");
 		$dataUser->{$k} = "$params->{$k}";
 	}
 
 	$s1 = "$self->{params}->{user}" || "";
 	$objUser = new Swim::DBUser();
-	warn( "dataUser : " . Dumper($dataUser) );
+	$self->Log( "dataUser : " . Dumper($dataUser) );
 	$resUser = $objUser->CheckLogin($dataUser);
-	warn( "resUser : " . Dumper($resUser) );
+	$self->Log( "resUser : " . Dumper($resUser) );
 
 	$json = ' ';
 	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resUser->{error}";
@@ -146,8 +128,7 @@ sub BuildAnswerCheckLogin
 	if ( $resUser->{error} == 0 )
 	{
 		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resUser->{data}->{user}" if defined $resUser->{data}->{user};
-		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resUser->{data}->{id}"
-		  if defined $resUser->{data}->{id};
+		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resUser->{data}->{id}" if defined $resUser->{data}->{id};
 		$json .= sprintf " \"%s\" : \"%s\" ,", "idSession", "$resUser->{data}->{idSession}"
 		  if defined $resUser->{data}->{idSession};
 	}
@@ -192,8 +173,9 @@ sub BuildHtmlRegister
 	$sres .= '<p> ';
 	$sres .= $self->BuildHtmlEdit( 'password', 'Password', $currPwd, 20, 30, $readonly );
 
-	# $sres .= '<p> ';
-	# $sres .= $self->BuildHtmlCheckboxUser( $checked, 1 );
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlCheckboxUser( $checked, 1 );
+	
 	$sres .= '<p> ';
 	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
 	$sres .= '<p> ';
@@ -254,10 +236,12 @@ sub BuildHtmlEnableUser
 	my ($sres)       = "";
 	my ($currEmail)  = '';
 	my ($currPwd)    = '';
-	my ( $readonly ) = 0;
+	my ($readonly )  = 0;
+	my ($enabled)    = 0;
 	
 	$currEmail = 'enzo.arlati@libero.it';
 	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
+	$enabled   = $self->{params}->{enabled} if defined $self->{params}->{enabled};
 	
 	$sres .= $self->GetLoadingDiv();
 	$sres .= $self->{cgiObj}->h2("Abilita utente");
@@ -265,8 +249,8 @@ sub BuildHtmlEnableUser
 	$sres .= '<p> ';
 	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
 	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'password', 'Password', $currPwd, 20, 30, $readonly );
-
+	$sres .= $self->BuildHtmlCheckboxUser( $enabled, 1 );
+	
 	$sres .= "<p> ";
 	$sres .= $self->BuildHtmlBtnOk();
 	$sres .= $self->BuildHtmlBtnCancel();
@@ -490,16 +474,16 @@ sub PerformRequestRemoteCmd
     $snow    = localtime();
 
 	$params = $self->{params};
-	mylog( sprintf( "PARAMS: %s ", Dumper( $params )));
+	$self->Log( sprintf( "PARAMS: %s ", Dumper( $params )));
 
 	# Build resetpwd record and store it on db
     %$paramsInp = ();
     $paramsInp->{operation} = $params->{prog};
     $paramsInp->{email} = $params->{email};
 
-	# mylog( sprintf( "paramsInp: %s ", Dumper( $paramsInp )));
+	# $self->Log( sprintf( "paramsInp: %s ", Dumper( $paramsInp )));
     $paramsOut = $self->BuildRemoteCommand( $paramsInp );
-	# mylog( sprintf( "paramsOut: %s ", Dumper( $paramsOut )));
+	# $self->Log( sprintf( "paramsOut: %s ", Dumper( $paramsOut )));
     
 
 	# Send ResetPwd command to user e-mail
@@ -568,7 +552,7 @@ sub BuildRemoteCommand
 
     $paramsOut->{error} = "";
     $paramsOut->{info}  =  "";
-	# mylog( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
+	# $self->mylog( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
 
 	$objStore = new Swim::DBUser(); 
 	

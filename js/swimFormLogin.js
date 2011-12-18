@@ -343,6 +343,7 @@ function InitResetPwd() {
 			});
 		});
 
+        $( "#StatusFormResetPwd" ).empty().html('<img src="/images/loading3.gif" width="300px"/> ');
         JsonCommonCompleteStatus( jqxhr, "ResetPwd", 'StatusFormResetPwd', urlQuery, param );
 		return false;
 	});

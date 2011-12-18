@@ -80,8 +80,6 @@ sub new {
 
 	$self->{logFilename} = $self->GetUntaint( $self->{logFilename} );
 
-	warn sprintf "logfilename: %s \n", $self->{logFilename};
-
 	return $self;
 
 }    # _________ sub new
@@ -128,8 +126,7 @@ sub Log {
 	$funName = sprintf( "%-20s", $funName );
 
 	$stmp = uc( basename($0) );
-	$msg  = sprintf( "[%04s.%02s.%02s %02s:%02s:%02s] ",
-		$year, $mon, $mday, $hour, $min, $sec );
+	$msg  = sprintf( "[%04s.%02s.%02s %02s:%02s:%02s] ", $year, $mon, $mday, $hour, $min, $sec );
 	$msg .= sprintf( "[%s.%05s] ", $stmp, $$ );
 	$msg .= "[${funName}] ";
 	$msg .= $strmsg;
@@ -142,7 +139,6 @@ sub Log {
 		close F;
 	} ## end if ( defined $log_filename...
 
-	warn "$msg \n";
 	
 } ## end sub log
 

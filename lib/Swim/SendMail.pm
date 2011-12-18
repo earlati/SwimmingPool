@@ -25,22 +25,24 @@ sub Run
 
 		$snow    = localtime();
 		$from    = 'swimmingpool@earlati.com';
+		$from    = 'enzo.arlati@gmail.com';
 		$to      = 'enzo.arlati@gmail.com';
 		$subject = "[$snow] Test send mail";
 		$message = "Messaggio di prova inviato il $snow \n\n";
 
 		# foreach my $k ( keys %ENV ) { $s1 .= sprintf "[%s] => [%s] \n", "$k", "$ENV{$k}"; }
 
-#		$params->{to}      = 'enzo.arlati@gmail.com';
-#		$params->{from}    = $from;
-#		$params->{cc}      = $cc;
-#		$params->{bcc}     = $bcc;
-#		$params->{subject} = $subject;
-#		$params->{message} = $message;
-#		$obj1              = new Swim::SendMail($params);
-#		$obj1->Send();
+		$params->{to}      = 'enzo.arlati@gmail.com';
+		$params->{from}    = $from;
+		$params->{cc}      = $cc;
+		$params->{bcc}     = $bcc;
+		$params->{subject} = $subject;
+		$params->{message} = $message;
 
-		BasicSendMail( $from, $to, $cc, $bcc, $subject, $message );
+		$obj1              = new Swim::SendMail($params);
+		$obj1->Send();
+
+		# BasicSendMail( $from, $to, $cc, $bcc, $subject, $message );
 
 	};
 
@@ -82,14 +84,24 @@ sub new
   {
 	  my $class  = shift;
 	  my $params = shift;
-	  my $self   = { lastUpdate => '23.05.2011' };
+	  my $self   = { lastUpdate => '20.11.2011' 
+	               };
 
 	  bless $self, $class;
-
+	  
 	  foreach my $k ( keys %$params )
 	  {
 		  $self->{$k} = "$params->{$k}";
 	  }
+
+      if ( defined $ENV{SERVER_NAME} &&  $ENV{SERVER_NAME} eq "earlati.com"  )
+      {
+         $self->{from}    = 'swimmingpool@earlati.com';
+      }
+      else
+      {
+         $self->{from}    = 'enzo.arlati@libero.it';
+      }	  
 
 	  return $self;
 
@@ -101,6 +113,9 @@ sub DESTROY
 	  my ($self) = @_;
 
   }    ## ________  sub DESTROY
+
+
+
 
 # ===================================
 sub Send

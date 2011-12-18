@@ -38,6 +38,7 @@ eval {
 
 	$log  = new Swim::Log( '../logs/SwimmingPool.log' );
 
+	$log->Log( "=========================== " );
 	$log->Log( "$base : query => $qstring " );
 
 	@$ll = split( '&', $qstring );
@@ -45,7 +46,7 @@ eval {
 	{
 		@$ll2 = split( '=', $s1 );
 		$k    = @$ll2[0];
-		$v    = @$ll2[1];
+		$v    = @$ll2[1] || "";
 		$params->{$k} = "$v" if defined $k;
 	}
 	

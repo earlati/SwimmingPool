@@ -20,11 +20,8 @@ use Data::Dumper;
 use DBI;
 use POSIX 'WNOHANG';
 
-# use lib '.';
-# use lib './lib';
 
-# use Swim::Log;
-# use base qw( Swim::CommonParent );
+use Swim::Log;
 
 our $VERSION = '0.01';
 require Exporter;
@@ -85,6 +82,7 @@ sub new
 
 	bless $self, $class;
 
+	$self->{logObj} = new Swim::Log( '../logs/SwimmingPool.log' );
 	$self->CheckLocalServer();
 	if ( $self->{localserver} eq "1" ) { $self->{servername} = 'localhost'; }
 	$self->{dsn} = sprintf "DBI:mysql:database=%s;host=%s", $self->{database}, $self->{servername};
@@ -105,15 +103,15 @@ sub Log
 {
 	my ( $self, $msg ) = @_;
 
-	warn "$msg \n" if defined $msg;
-
+    if( ! defined $msg ) { return; }
+    
 	if ( defined $self->{logObj} )
 	{
-		$self->{logObj}->Log($msg) if defined $msg;
+		$self->{logObj}->Log($msg);
 	}
 	else
 	{
-		warn "$msg \n" if defined $msg;
+		warn "$msg \n";
 	}
 
 }    ## __________ sub Log
@@ -123,15 +121,19 @@ sub CheckLocalServer
 {
 	my ($self)  = @_;
 	my ($local) = 0;
+	my ( $s1 );
 	
-	if ( defined $ENV{SERVER_ADDR}
-		&& ( $ENV{SERVER_ADDR} eq "127.0.0.1" || $ENV{SERVER_ADDR} eq "::1" || 
-		     $ENV{SERVER_ADDR} eq "192.168.100.1" ) )
+	$self->Log( sprintf "serverName: [%s]", $ENV{SERVER_NAME} );
+	
+	if ( defined $ENV{SERVER_NAME} &&  $ENV{SERVER_NAME} eq "earlati.com"  )
+	{
+		$local = 0;
+	}
+	else
 	{
 		$local = 1;
 	}
-	if ( defined $ENV{SHELL} ) { $local = 1; }
-
+	
 	$self->{localserver} = $local;
 
 }    ## ______ sub CheckLocalServer
@@ -150,6 +152,7 @@ sub OpenDB
 
 	$nretry   = 0;
 	$maxretry = 10;
+	# $self->Log( "open DB " );
 
 	while ( $nretry < $maxretry )
 	{

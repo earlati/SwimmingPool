@@ -166,21 +166,17 @@ div#HelpBox {
 
 
 a#mailme {
-	position: fixed;
-	top: 100%;
+	position: relative;
 	left: 100%;
-	margin-top: -80px;
-	margin-left: -90px;
-	right: 10;
-	bottom: 10;
+	bottom: 0;
+	margin-top: -40px;
+	margin-left: -50px;
 	display: block;
-	height: 80px;
-	width: 80px;
+	height: 40px;
+	width: 40px;
 	background: url(/images/3demail-2.gif) bottom right no-repeat;
-	text-indent: -98em;
 	text-decoration: none;
 }
-
 
 
 div.titolo {
