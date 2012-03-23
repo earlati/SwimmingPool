@@ -25,20 +25,37 @@ use Swim::Log;
 RunTest() unless caller;
 
 # =====================================
+=head some test
+
+	$params  = 'cmd=000001520000004700resetPwd';
+	$obj1 = new Swim::Login( 'execRemoteCmd', $params );
+	$s1 = $obj1->PerformExecRemoteCmd();  
+	print "$s1 \n";
+    ===============================================
+
+    $params = 'email=enzo.arlati@libero.it&prog=resetPwd'; 
+    $obj1 = new Swim::Login( 'reqRemoteResetPwd', $params );
+    $s1 = $obj1->PerformRequestRemoteCmd();
+    print "$s1 \n";
+    ===============================================
+
+    $params = 'email=enzo.arlati@libero.it&prog=enableUsr'; 
+    $obj1 = new Swim::Login( 'reqEnableUsr', $params );
+    $s1 = $obj1->PerformRequestRemoteCmd();
+    print "$s1 \n";
+    ===============================================
+
+=cut
+# =====================================
 sub RunTest
 {
 	my ( $obj1, $s1, $params );
+	 
+	$params  = 'cmd=000001520000004700resetPwd';
+	$obj1 = new Swim::Login( 'execRemoteCmd', $params );
+	$s1 = $obj1->PerformExecRemoteCmd();  
+	print "$s1 \n";
 
-   $params = 'email=enzo.arlati@libero.it&prog=resetPwd'; 
-   $obj1 = new Swim::Login( 'reqResetPwd', $params );
-   $s1 = $obj1->PerformRequestRemoteCmd();
-   print "$s1 \n";
-   print "====================== \n";
-
-   $params = 'email=enzo.arlati@libero.it&prog=enableUsr'; 
-   $obj1 = new Swim::Login( 'reqEnableUsr', $params );
-   $s1 = $obj1->PerformRequestRemoteCmd();
-   print "$s1 \n";
 	
 }  # ______ sub RunTest
 	
@@ -437,7 +454,7 @@ sub BuildAnswerStoreRegister
 
    PARAMS  INP: 
       'email' => 'enzo.arlati@libero.it' 
-       'prog' => 'reqResetPwd'
+       'prog' => 'reqRemoteResetPwd'
   
   
   
@@ -447,14 +464,14 @@ sub BuildAnswerStoreRegister
           'cmdid' => 70 
           'username' => 'enzo' 
           'email' => 'enzo.arlati@libero.it' 
-          'crypto' => '0000007000000047reqResetPwd' 
+          'crypto' => '0000007000000047reqRemoteResetPwd' 
           'error' => '' 
-          'operation' => 'reqResetPwd', 
+          'operation' => 'reqRemoteResetPwd', 
 
 
    Result:
       Content-type: application/json
-      {   "error" : "" , "info" : "Validazione comando remoto reqResetPwd per utente enzo"  } 
+      {   "error" : "" , "info" : "Validazione comando remoto reqRemoteResetPwd per utente enzo"  } 
 
 
    malformed header from script. Bad header=enzo.arlati@libero.it... Conne: swim.pl, 
@@ -466,12 +483,14 @@ sub BuildAnswerStoreRegister
 sub PerformRequestRemoteCmd
 {
 	my ($self) = @_;
-	my ( $s1, $json, $paramsInp, $paramsOut, $params );
+	my ( $s1, $json, $paramsInp, $paramsOut, $params, $command );
 	my ( $from, $to, $subject, $message, $snow );
-	my ($sres)    = "";
-	my ($ctxType) = $self->GetContentJson();
+	my ( $sres )    = "";
+	my ( $ctxType ) = $self->GetContentJson();
+	my ( $server )  = '127.0.0.1';
 
     $snow    = localtime();
+    $server = $ENV{SERVER_NAME} if defined $ENV{SERVER_NAME} ;
 
 	$params = $self->{params};
 	$self->Log( sprintf( "PARAMS: %s ", Dumper( $params )));
@@ -479,7 +498,7 @@ sub PerformRequestRemoteCmd
 	# Build resetpwd record and store it on db
     %$paramsInp = ();
     $paramsInp->{operation} = $params->{prog};
-    $paramsInp->{email} = $params->{email};
+    $paramsInp->{email}     = $params->{email};
 
 	# $self->Log( sprintf( "paramsInp: %s ", Dumper( $paramsInp )));
     $paramsOut = $self->BuildRemoteCommand( $paramsInp );
@@ -487,12 +506,13 @@ sub PerformRequestRemoteCmd
     
 
 	# Send ResetPwd command to user e-mail
+	$command = sprintf "http://%s/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=%s", $server, $paramsOut->{crypto};
 	
 	$from    = 'swimmingpool@earlati.com';
 	$to      = $paramsOut->{email};
 	$subject = sprintf "Validazione comando remoto %s per utente %s", $paramsOut->{operation}, $paramsOut->{username} ;
 	$message = "Validazione comando remoto inviato il $snow \n\n";
-	$message .= sprintf "Digitare il seguente comando %s dal browser\n", $paramsOut->{crypto};
+	$message .= sprintf "Digitare il seguente comando %s dal browser\n", $command;
     $message .= sprintf "per attivare il comando remoto %s \n", $paramsOut->{operation};
     $message .= sprintf "per l' utente %s \n", $paramsOut->{username};
     
@@ -513,7 +533,6 @@ sub PerformRequestRemoteCmd
 	return "$sres";
 
 }    ## ___________ sub PerformRequestRemoteCmd
-
 
 
 # ===================================
@@ -552,7 +571,7 @@ sub BuildRemoteCommand
 
     $paramsOut->{error} = "";
     $paramsOut->{info}  =  "";
-	# $self->mylog( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
+	$self->Log( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
 
 	$objStore = new Swim::DBUser(); 
 	
@@ -581,15 +600,77 @@ sub BuildRemoteCommand
     $paramsOut->{crypto} = sprintf "%08d%08d%010s", $paramsOut->{cmdid}, $paramsOut->{userid}, $paramsOut->{operation}; 
     # $paramsOut->{crypto} => '000000450000004700resetPwd'
 
-    $sqlcmd = 'update remote_cmd set crypto_command = ? where idremote_cmd = ? ';
+    $sqlcmd = 'update remote_cmd set crypto_command = ? , dt_mod = now(), ';
+    $sqlcmd .= ' dt_expire = date_add( now(), interval 3 day )  where idremote_cmd = ? ';
 	@$sqlparams = ( $paramsOut->{crypto}, $paramsOut->{cmdid} );  
     $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
     
-	# mylog( sprintf( "ParamsOut: %s ", Dumper( $paramsOut )));    
+	$self->Log( sprintf( "ParamsOut: %s ", Dumper( $paramsOut )));    
 
     return $paramsOut;
 	
 }   ## ______________  sub BuildRemoteCommand
+
+
+
+
+# ===================================
+
+=head2 sub PerformExecRemoteCmd
+
+	http://earlati.com/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005800000021reqRemoteResetPwd
+	http://enzo6/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005800000021reqRemoteResetPwd
+	
+	$params->{prog}  = 'execRemoteCmd';
+	$params->{cmd}   = '0000005600000021reqRemoteResetPwd';
+
+
+	$obj1 = new Swim::Login( $cmd, $strpara );
+	$s1 = $obj1->PerformExecRemoteCmd();  
+	print "$s1 \n";
+	
+	Params Input: 
+          'cmd' => '0000005600000021reqRemoteResetPwd'
+
+
+=cut
+# ===================================
+sub PerformExecRemoteCmd
+{
+	my ($self ) = @_;
+	my ( $data, $paramsInp, $rsltRec, $objStore );
+    my ( $homePage ) = $self->GetHomePage();
+    # $homePage = 'http://enzo6/SwimmingPool/index.html';
+
+    $objStore = new Swim::DBUser(); 
+
+    $paramsInp = $self->{params};
+	$self->Log( sprintf( "Inp params: %s ", Dumper( $paramsInp )));
+    
+    $rsltRec = $objStore->GetRemoteCmdRecord( $paramsInp->{cmd} );
+	# $self->Log( sprintf( "Remote Cmd record params: %s ", Dumper( $rsltRec )));
+    
+    if( $rsltRec->{error} == 0 )
+    {
+		if ( "$rsltRec" eq "resetpwd" )
+		{
+			$objStore->ResetPassword( $rsltRec );
+		}
+		$data = $self->RedirectHomePage( $homePage );
+        $data  = "Content-type: text/html\n\n <html>  <head> ";
+        $data .= '<meta HTTP-EQUIV="REFRESH" content="1; url=' . $homePage .'">';
+        $data .= "</head>   <body> redirecting ... </body>  </html>";
+    }
+    else
+    {
+        $data  = "Content-type: text/plain\n\n";
+		$data .= sprintf "ERRORE [%d] %s \n", $rsltRec->{error}, $rsltRec->{errordata};
+	}
+
+    # warn "[PerformExecRemoteCmd] DATA: $data";
+    return $data;
+	
+}  ## _________ sub PerformExecRemoteCmd
 
 
      

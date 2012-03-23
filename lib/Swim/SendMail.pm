@@ -13,6 +13,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use Swim::Log;
 
 Run() unless caller();
 
@@ -30,7 +31,7 @@ sub Run
 		$subject = "[$snow] Test send mail";
 		$message = "Messaggio di prova inviato il $snow \n\n";
 
-		# foreach my $k ( keys %ENV ) { $s1 .= sprintf "[%s] => [%s] \n", "$k", "$ENV{$k}"; }
+		# foreach my $k ( keys %ENV ) { $message .= sprintf "[%s] => [%s] \n", "$k", "$ENV{$k}"; }
 
 		$params->{to}      = 'enzo.arlati@gmail.com';
 		$params->{from}    = $from;
@@ -72,8 +73,15 @@ sub BasicSendMail
 	  $params->{cc}      = $cc if defined $cc;
 	  $params->{bcc}     = $cc if defined $bcc;
 	  $params->{subject} = $subject;
-	  $params->{message} = "$message";
 
+	  #foreach my $k ( keys %ENV ) { $message .= sprintf "[%s] => [%s] \n", "$k", "$ENV{$k}"; }
+	  
+	  # [REMOTE_ADDR] => [151.55.75.117]
+	  $message .= "\n\n";
+	  $message .= sprintf "Messaggio inviato da un utente connesso dall' indirizzo IP %s\n", $ENV{REMOTE_ADDR};
+	  
+	  $params->{message} = "$message";
+	  
 	  $obj1 = new Swim::SendMail($params);
 	  $obj1->Send();
 
@@ -86,6 +94,7 @@ sub new
 	  my $params = shift;
 	  my $self   = { lastUpdate => '20.11.2011' 
 	               };
+      my ( $logPath );
 
 	  bless $self, $class;
 	  
@@ -93,6 +102,13 @@ sub new
 	  {
 		  $self->{$k} = "$params->{$k}";
 	  }
+	  
+      if( -d '../logs/' ) { $logPath = '../logs/' }
+	  elsif( -d '../../logs/' ) { $logPath = '../../logs/' }
+	  else { $logPath = '/tmp/' }
+
+	  $self->{logObj} = new Swim::Log(  "$logPath/SwimmingPool.log" );
+	  	  
 
       if ( defined $ENV{SERVER_NAME} &&  $ENV{SERVER_NAME} eq "earlati.com"  )
       {
@@ -100,7 +116,8 @@ sub new
       }
       else
       {
-         $self->{from}    = 'enzo.arlati@libero.it';
+         $self->{from}  = 'enzo@test.it';
+         $self->{to}    = 'usermail@localhost';
       }	  
 
 	  return $self;
@@ -121,17 +138,19 @@ sub DESTROY
 sub Send
   {
 	  my ($self) = @_;
+	  my ( $msg ) = "";
 
+	  $msg .= "To: $self->{to}\n";
+	  $msg .= "From: $self->{from}\n";
+	  $msg .= "Cc: $self->{cc}\n"  if defined $self->{cc};
+	  $msg .= "Bcc: $self->{cc}\n" if defined $self->{bcc};
+	  $msg .= "Subject: $self->{subject}\n\n";
+	  $msg .= " $self->{message} \n";
+
+      $self->{logObj}->Log( "[SendMail::Send] msg: $msg " ); 
 	  # printf "[SendMail::Send] Dumper: %s ", Dumper( $self );
 	  open( MAIL, "|/usr/sbin/sendmail -t" );
-
-	  print MAIL "To: $self->{to}\n";
-	  print MAIL "From: $self->{from}\n";
-	  print MAIL "Cc: $self->{cc}\n"  if defined $self->{cc};
-	  print MAIL "Bcc: $self->{cc}\n" if defined $self->{bcc};
-	  print MAIL "Subject: $self->{subject}\n\n";
-	  print MAIL " $self->{message} \n";
-
+      print MAIL "$msg"; 
 	  close(MAIL);
 
   }    ## ________  sub Send

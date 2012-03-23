@@ -20,6 +20,7 @@ use Data::Dumper;
 use DBI;
 use POSIX 'WNOHANG';
 
+use lib '../';
 use base qw( Swim::DBCommon );
 
 RunTest() unless caller;
@@ -39,18 +40,18 @@ sub RunTest
 {
 	my ( $obj1, $sres, $param );
 
-	# $obj1 = new Swim::DBUser();
-	# $sres = $obj1->GetUser( "test1c" );
-	# mylog ( "Dump result: " . Dumper($sres) );
+	$obj1 = new Swim::DBUser();
+	$sres = $obj1->GetUserList( );
+	print "Dump result: " . Dumper($sres) ;
 
-	TestCheckLogin();
+	# TestCheckLogin();
 
 }
 
 # =====================================
 sub mylog
 {
-	my ($msg) = @_;
+	my ( $self, $msg ) = @_;
 	my ( $s1, $ll );
 	my @call = caller(1);
 	if ( "$call[3]" eq "(eval)" )
@@ -60,7 +61,8 @@ sub mylog
 
 	# print "Dumer call: " . Dumper( \@call ) . "\n";
 	$s1 = sprintf "[%s] %s", $call[3], $msg;
-	warn sprintf "$s1 \n";
+	# warn sprintf "$s1 \n";
+	$self->Log( "$s1" );
 
 }
 
@@ -77,7 +79,7 @@ sub TestSaveUser
 	$param->{email}   = 'user1@swimming.it';
 	$param->{email2}   = 'user1@polonord.it';
 	$sres             = $obj1->SaveUser($param);
-	mylog "Dump res: " . Dumper($sres) . " \n";
+	$obj1->mylog( "Dump res: " . Dumper($sres) );
 
 	$sres = $obj1->GetDumpUsers();
 	mylog "$sres \n";
@@ -99,9 +101,9 @@ sub TestCheckLogin
 	$param->{user}      = '';
 	$param->{pwd}       = '';
 
-	mylog "Dump input: " . Dumper($param);
+	$obj1->mylog( "Dump input: " . Dumper($param));
 	$sres = $obj1->CheckLogin($param);
-	mylog "Dump result: " . Dumper($sres);
+	$obj1->mylog( "Dump result: " . Dumper($sres));
 
 	# $sres = $obj1->GetDumpUsers();
 	# mylog " DumpUser: $sres \n";
@@ -138,6 +140,44 @@ sub GetDumpUsers
 	$sth->finish();
 
 }    ## __________  sub GetDumpUsers
+
+
+
+# ===================================================
+
+# ===================================================
+sub GetUserList
+{
+	my ( $self ) = @_;
+	my ( $sqlcmd, $params, $rsltTmp, $htmp );
+	my ($rslt) = ();
+
+	eval {
+
+		$sqlcmd  = "select id, user, email from users ";
+		@$params = ();
+		$rsltTmp = $self->ExecuteSelectCommand( $sqlcmd, $params );
+		$rsltTmp->{numrows} = 0 if ! defined $rsltTmp->{numrows};
+
+        # print Dumper( $rsltTmp );
+		$rslt->{numrows}   = $rsltTmp->{numrows};
+		
+		$rslt->{errordata} = $rsltTmp->{errordata};
+		$rslt->{error}     = $rsltTmp->{error};
+		$rslt->{users}     = $rsltTmp->{rows};
+		
+	};
+	if ($@)
+	{
+		$self->mylog( "Error $@ " );
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	return $rslt;
+
+}    ## _________  sub GetUser
+
 
 # ===================================================
 
@@ -217,12 +257,11 @@ sub GetUser
 			{
 				$rslt->{$k} = $htmp->{$k};
 			}
-
 		}
 	};
 	if ($@)
 	{
-		warn "[GetUser] error $@ ";
+		$self->mylog( "Error $@ " );
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
@@ -259,7 +298,8 @@ sub GetUserById
 	};
 	if ($@)
 	{
-		warn "[$fun] error $@ ";
+		$self->mylog( sprintf "Error user=[%s] rsltTmp=[%s] ", $iduser, Dump($rsltTmp) );
+		$self->mylog( "Error $@ " );
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 		$rslt->{numrows}   = 0;
@@ -297,7 +337,7 @@ sub GetUserByEmail
 	};
 	if ($@)
 	{
-		warn "[$fun] error $@ ";
+		$self->mylog( "Error $@ " );
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 		$rslt->{numrows}   = 0;
@@ -372,8 +412,8 @@ sub SaveUser
 			if   ( $param->{checked} eq "true" ) { $param->{enabled} = 1; }
 			else                                 { $param->{enabled} = 0; }
 
-			warn sprintf "[SaveUser] user=%s enabled=[%s] checked=[%s]",
-			  $param->{user}, $param->{enabled}, $param->{checked};
+			$self->mylog( sprintf "[SaveUser] user=%s enabled=[%s] checked=[%s]",
+			  $param->{user}, $param->{enabled}, $param->{checked} );
 			$crypwd = crypt( "$param->{pwd}", "$param->{user}" );
 			$sqlcmd = "insert into users ( user, pwd, enabled, email, email2 ) values (?,?,?,?,?)";
 			$sth    = $self->{dbh}->prepare("$sqlcmd");
@@ -398,7 +438,7 @@ sub SaveUser
 
 	if ($@)
 	{
-		warn "[SaveUser] error $@ ";
+		$self->mylog( "Error $@ " );
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
@@ -526,7 +566,7 @@ sub CheckLogin
 
 	if ($@)
 	{
-		warn "[CheckLogin] error $@ ";
+		$self->mylog( "Error $@ " );
 		$rslt->{info}  = "$@";
 		$rslt->{error} = 1;
 	}
@@ -577,7 +617,7 @@ sub BuildIdSession
 
 	if ($@)
 	{
-		warn "[BuildIdConnection] error $@ ";
+		$self->mylog( "Error $@ " );
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
@@ -632,8 +672,8 @@ sub SaveSessionConnection
 
 	if ($@)
 	{
-		warn "[SaveSessionConnection] error $@ ";
-		warn "[SaveSessionConnection] SQL = $sqlcmd  Params: " . Dumper( $params ) ;
+		$self->mylog( "Error: $@ " );
+		$self->mylog( "Error: SQL = $sqlcmd  Params: " . Dumper( $params )) ;
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
@@ -706,7 +746,7 @@ sub GetIdSession
 
 	if ($@)
 	{
-		warn "[NewSessionConnection] error $@ ";
+		$self->mylog( "Error $@ " );
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}
@@ -715,6 +755,103 @@ sub GetIdSession
 	return $rslt;
 
 }    ## _________  sub GetIdSession
+
+
+
+# ===================================================
+=head2 sub GetRemoteCmdRecord
+
+   Dump RSLT :
+          'dt_expire' => '2012-01-04 15:16:34',
+          'dt_mod' => '2012-01-01 15:16:34',
+          'crypto_command' => '000001520000004700resetPwd',
+          'id_user' => '0',
+          'email' => 'enzo.arlati@libero.it',
+          'numrows' => 1,
+          'idremote_cmd' => '152',
+          'errordata' => '',
+          'error' => 0,
+          'command' => 'resetPwd'
+
+
+=cut
+# ===================================================
+sub GetRemoteCmdRecord
+{
+	my ( $self, $cryptocmd ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $sqlparams, $rsltTmp, $htmp, $s1 );
+	my ( $rslt ) = ();
+
+
+	eval {
+		$sqlcmd     = "select * from remote_cmd where crypto_command like ? ";
+		@$sqlparams = ( "$cryptocmd" );
+		$rsltTmp    = $self->ExecuteSelectCommand( $sqlcmd, $sqlparams );
+
+		$rslt->{numrows}   = $rsltTmp->{numrows};
+		$rslt->{errordata} = $rsltTmp->{errordata};
+		$rslt->{error}     = $rsltTmp->{error};
+		if ( ! defined $rsltTmp->{numrows} )
+		{
+			$rslt->{error}  = 2; 
+			$rslt->{errordata}  = "Non record found"; 
+		}
+		elsif ( $rsltTmp->{numrows} == 1 )
+		{
+			$htmp = $rsltTmp->{rows}->{1};
+			foreach my $k ( keys %$htmp )
+			{
+				$rslt->{$k} = $htmp->{$k};
+			}
+		}
+	};
+
+	if ($@)
+	{
+		$self->mylog( "Error $@ " );
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	# $self->mylog( "Dump RSLT : " . Dumper($rslt) );
+	return $rslt;
+
+}    ## _________  sub GetRemoteCmdRecord
+
+
+
+# ===================================================
+=head 2 sub ResetPassword
+
+=cut
+# ===================================================
+sub ResetPassword
+{
+	my ( $self, $params ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $sqlparams );
+	my ($rslt) = ();
+
+	eval {
+		
+	  $self->mylog( "Dump Input Params : " . Dumper($params) );
+
+      $sqlcmd = 'update users set pwd = "" , dt_mod = now(), ';
+      $sqlcmd .= ' where email = ? ';
+	  @$sqlparams = ( $params->{email} );  
+      # $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+
+	};
+
+	if ($@)
+	{
+		$self->mylog( "Error $@ " );
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	return $rslt;
+
+}    ## _________  sub ResetPassword
 
 # ===================================================
 sub Template
@@ -729,7 +866,7 @@ sub Template
 
 	if ($@)
 	{
-		warn "[Template] error $@ ";
+		$self->mylog( "Error $@ " );
 		$rslt->{errordata} = "$@";
 		$rslt->{error}     = 1;
 	}

@@ -20,7 +20,7 @@ use Data::Dumper;
 use DBI;
 use POSIX 'WNOHANG';
 
-
+use lib '../';
 use Swim::Log;
 
 our $VERSION = '0.01';
@@ -69,6 +69,7 @@ sub RunTest
 sub new
 {
 	my ($class) = shift;
+	my ($logPath);
 	my ($self)  = {
 		dsn         => '',
 		servername  => 'mysql0.freehostia.com',
@@ -82,7 +83,12 @@ sub new
 
 	bless $self, $class;
 
-	$self->{logObj} = new Swim::Log( '../logs/SwimmingPool.log' );
+	if( -d '../logs/' ) { $logPath = '../logs/' }
+	elsif( -d '../../logs/' ) { $logPath = '../../logs/' }
+	else { $logPath = '/tmp/' }
+
+	$self->{logObj} = new Swim::Log(  "$logPath/SwimmingPool.log" );
+
 	$self->CheckLocalServer();
 	if ( $self->{localserver} eq "1" ) { $self->{servername} = 'localhost'; }
 	$self->{dsn} = sprintf "DBI:mysql:database=%s;host=%s", $self->{database}, $self->{servername};
@@ -121,9 +127,10 @@ sub CheckLocalServer
 {
 	my ($self)  = @_;
 	my ($local) = 0;
-	my ( $s1 );
+	my ( $s1 ) = "";
 	
-	$self->Log( sprintf "serverName: [%s]", $ENV{SERVER_NAME} );
+	$s1 = $ENV{SERVER_NAME} if defined $ENV{SERVER_NAME};
+	$self->Log( sprintf "serverName: [%s]", $s1 );
 	
 	if ( defined $ENV{SERVER_NAME} &&  $ENV{SERVER_NAME} eq "earlati.com"  )
 	{
@@ -283,13 +290,17 @@ sub ExecuteSelectCommand
 {
 	my ( $self, $sqlCmd, $params, $nofetchrow ) = @_;
 	my ( $sqlcmd, $sth, $numRows, $ref, $idrow, $sts, $serr );
-	my ($rslt) = ();
+	my ( $rslt ) = ();
+	my ( $s1 )   = "";
 
 	eval {
 
 		$rslt->{errordata} = "";
 		$rslt->{error}     = 0;
 
+        $s1 = join "=", @$params if defined $params;
+        $self->Log( "Sqlcmd: $sqlCmd  params => $s1" ); 
+        
 		$sth = $self->{dbh}->prepare("$sqlCmd");
 		$sts     = $sth->execute(@$params);
 	    $numRows = $sth->rows;

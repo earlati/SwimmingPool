@@ -1,10 +1,14 @@
  
 
-<p>  User list </p>
+<b>  [% stash.title %] </b>
+<p> Updated : [% stash.dt_update %] </p>
+
+[% stash.users.1.user %]  [% stash.users.1.id %] [% stash.users.1.email %]
+
 
 <ul>
-[% FOREACH user IN stash.data.users %]
-     <li>User => [% user.name %]  id => [% user.id %]
+[% FOREACH user IN stash.users %]
+     <li> User => [% user.user %]  id => [% user.id %] </li>
 [% END %]
 </ul>
 

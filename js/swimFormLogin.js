@@ -22,7 +22,7 @@ function InitPageSwimLogin() {
 	});
 	
 	$('#CallRegister').click(function() {	LoadFormRegister();	});
-	$('#CallDeletePwd').click(function() {	LoadFormResetPwd();	});
+	$('#CallResetPwd').click(function() {	LoadFormResetPwd();	});
 	$('#CallEnableUser').click(function() {	LoadFormEnableUser(); });
 
 	LoginProcedure();
@@ -325,13 +325,13 @@ function InitResetPwd() {
 		Log('[ResetPwd] Pressed OK : email=' + email);
 
 		/***********************************************************************
-		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqResetPwd'; 
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqRemoteResetPwd'; 
 		 * urlData = "&email=" + email; 
 		 * $('#HelpBox').load(urlQuery + urlData );
 		 * $('#HelpBox').show();
 		 **********************************************************************/
 
-		urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqResetPwd';
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqRemoteResetPwd';
 		urlData  = "email=" + email;
 
 		Log("[ResetPwd] UrlQuery : " + urlQuery + ' ' + urlData);
@@ -376,8 +376,8 @@ function InitEnableUser() {
 		Log('[EnableUser] Pressed OK : email=' + email);
 
 		/***********************************************************************
-		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqResetPwd'; urlData =
-		 * "&email=" + email; 
+		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqRemoteResetPwd'; 
+		 * urlData = "&email=" + email; 
 		 * $('#HelpBox').load(urlQuery + urlData );
 		 * $('#HelpBox').show();
 		 **********************************************************************/

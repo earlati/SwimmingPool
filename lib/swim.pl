@@ -21,25 +21,35 @@ use Swim::Log;
 
 =head1   debug
 
-	curl  'http://enzo7/SwimmingPool/lib/swim.pl?prog=reqResetPwd&email=enzo.arlati@libero.it'
+	curl  'http://earlati.com/SwimmingPool/lib/swim.pl?prog=reqRemoteResetPwd&email=enzo.arlati@libero.it'
+	curl 'http://earlati.com/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005600000021reqRemoteResetPwd'
+	
+	curl 'http://enzo6/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005600000021reqRemoteResetPwd'
 
 =cut
 
 eval {
 
-	my ( $obj1,   $s1, $log,   $qstring );
-	my ( $params, $strpara, $hjson,   $k, $v, $ll, $ll2 );
+	my ( $obj1,   $s1, $log,   $qstring, $logPath );
+	my ( $params, $strpara, $hjson, $k, $v, $ll, $ll2, $now, $t1, $diff );
 	my ($base) = basename $0;
 	my ( $cmd ) = '';
+	$now = localtime;
+	$t1  = time;
 
 	# env QUERY_STRING : prog=login&user=enzo
 	$qstring = $ENV{QUERY_STRING};
 	$qstring = ''  if ! defined $qstring;
 
-	$log  = new Swim::Log( '../logs/SwimmingPool.log' );
+	if( -d '../logs/' ) { $logPath = '../logs/' }
+	elsif( -d '../../logs/' ) { $logPath = '../../logs/' }
+	else { $logPath = '/tmp/' }
+
+	$log = new Swim::Log(  "$logPath/SwimmingPool.log" );
 
 	$log->Log( "=========================== " );
-	$log->Log( "$base : query => $qstring " );
+	$log->Log( "[$base] query => $qstring   " );
+	$log->Log( "=========================== " );
 
 	@$ll = split( '&', $qstring );
 	foreach $s1 (@$ll)
@@ -56,15 +66,19 @@ eval {
 	# foreach $k ( keys %ENV ) {	$log->Log( sprintf "ENV [%-20s] => [%s] ", $k, $ENV{$k} );	}
 
 	# ==============================================
-	# swim.pl?prog=reqResetPwd&email=enzo.arlati@libero.it'
-	# $params->{prog}  = 'reqResetPwd';
+	# swim.pl?prog=reqRemoteResetPwd&email=enzo.arlati@libero.it'
+	# $params->{prog}  = 'reqRemoteResetPwd';
     # $params->{email} = 'enzo.arlati@libero.it';
     
+	# ==============================================
+	# http://earlati.com/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005800000021reqRemoteResetPwd
+	# $params->{prog}  = 'execRemoteCmd';
+	# $params->{cmd}   = '0000005600000021reqRemoteResetPwd';
 	# ==============================================
 	$strpara = "";
 	foreach $k ( keys %$params )
 	{
-		if ( "$k" eq "prog " ) { next; }
+		if ( "$k" eq "prog" ) { next; }
 		$log->Log( "[$base] Param [$k] => [$params->{$k}]" );
 		$strpara .= sprintf "%s=%s&", $k, $params->{$k};
 	}
@@ -72,7 +86,7 @@ eval {
 	$strpara =~ s/&$//;
 	$cmd = "$params->{prog}" if defined $params->{prog};
 
-	$log->Log( "CMD => [$cmd] param=>[$strpara]" );
+	$log->Log( "[$base] cmd=[$cmd] param=>[$strpara]" );
 
 	# ==============================================
 	if ( $cmd eq 'formLogin' )
@@ -123,12 +137,24 @@ eval {
 		print "$s1 \n";
 	}
 	# ==============================================
-	elsif ( $cmd eq 'reqResetPwd' )
+	elsif ( $cmd eq 'reqRemoteResetPwd' )
 	{
 		my ( $obj1, $s1 );
-		# CMD => [reqResetPwd] param=>[email=enzo.arlati@libero.it&prog=reqResetPwd]
+		# CMD => [reqResetPwd] param=>[email=enzo.arlati@libero.it&prog=reqRemoteResetPwd]
 		$obj1 = new Swim::Login( $cmd, $strpara );
 		$s1 = $obj1->PerformRequestRemoteCmd();
+		print "$s1 \n";
+	}
+	# ==============================================
+	# curl 'http://enzo6/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005600000021reqRemoteResetPwd'
+	# ==============================================
+	elsif ( $cmd eq 'execRemoteCmd' )
+	{
+		my ( $obj1, $s1 );
+		# CMD => [execRemoteCmd] param=>[cmd=0000005600000021reqRemoteResetPwd]
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$s1 = $obj1->PerformExecRemoteCmd();  
+		$log->Log( "CMD: [$cmd] => res: $s1 " );
 		print "$s1 \n";
 	}
 	
@@ -154,14 +180,22 @@ eval {
 	
 	
 	
-	# ==============================================
+	# ============================================== 
 	else
 	{
+		my ( $s1 ) = "";
 		$cmd = "*****" if ! defined $cmd;
 		warn "CMD : $cmd **** sconosciuto **** \n";
-		print "Content-type: text/plain\n\n";
-		print "ERRORE : Query string : $qstring : CMD = [$cmd] sconosciuto \n";
+		$s1 = sprintf "Content-type: text/plain\n\n";
+		$s1 .= sprintf "ERRORE : Query string : $qstring : CMD = [$cmd] sconosciuto \n";
+		$diff = time - $t1;
+		$s1 .= sprintf "Date $now  : call lasted $diff seconds \n";
+		$log->Log( "CMD: [$cmd] => res: $s1 " );
+		print "$s1";
 	}
+	
+	$diff = time - $t1;
+	$log->Log( " last $diff seconds " ); 
 };
 
 if ($@)

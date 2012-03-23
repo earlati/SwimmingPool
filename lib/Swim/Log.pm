@@ -114,6 +114,11 @@ sub Log {
 	@ll = caller(2);
 	if (@ll) {
 		$funName = (@ll)[3];
+		if( "$funName" eq "(eval)" )
+		{
+		    @ll = caller(3);
+            $funName = (@ll)[3];
+		}
 	}
 	else {
 		@ll = caller(1);
@@ -134,7 +139,7 @@ sub Log {
 	if ( defined $log_filename ) {
 		open( F, ">>$log_filename" )
 		  or open( F, ">$log_filename" )
-		  or warn "..Non posso aprire il file $log_filename ($!) \n";
+		  or $self->TraceWarn( "..Non posso aprire il file $log_filename ($!) " );
 		print F "$msg \n";
 		close F;
 	} ## end if ( defined $log_filename...
@@ -188,6 +193,24 @@ sub Trace {
 		redo;
 	}
 }    # end sub Trace
+# =============================================
+sub TraceWarn {
+	my ( $self, $text ) = @_;
+
+	warn "------------------------------------------------------------";
+	warn "TRACING: $text";
+	warn "------------------------------------------------------------";
+	
+	my $count = 0;
+	{
+		my ( $package, $filename, $line, $sub ) = caller($count);
+		last unless defined $line;
+		warn sprintf( "%02i %5i %-35s %-20s", $count++, $line, $sub, $filename );
+		redo;
+	}
+}    # end sub TraceWarn
+
+
 
 # =============================================
 # $objLog->AddErrorMessage( $errmsg );

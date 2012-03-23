@@ -64,7 +64,7 @@ sub new
 	bless $self, $class;
 	
 	$self->InitObject($params);
-	$self->Log( "Params: $params " );
+	$self->Log( "Cmd=[$cmd] Params=[$params] " );
 
 	return $self;
 
@@ -81,9 +81,13 @@ sub DESTROY
 sub InitObject
 {
 	my ( $self, $params ) = @_;
-	my ($s1);
+	my ($s1, $logPath );
+	
+	if( -d '../logs/' ) { $logPath = '../logs/' }
+	elsif( -d '../../logs/' ) { $logPath = '../../logs/' }
+	else { $logPath = '/tmp/' }
 
-	$self->{logObj} = new Swim::Log( '../logs/SwimmingPool.log' );
+	$self->{logObj} = new Swim::Log(  "$logPath/SwimmingPool.log" );
 
 	$self->{cgiObj} = new CGI($params);
 	$self->{params} = $self->{cgiObj}->Vars;
@@ -166,6 +170,13 @@ sub BuildBaseHtml
 
 }    ## _______  sub BuildBaseHtml
 
+# ===================================
+sub GetHomePage
+{
+	my ($self)    = @_;
+	my ($homePage) = '/SwimmingPool/index.html';
+	return $homePage;
+}
 # ===================================
 sub GetContentJson
 {
@@ -276,6 +287,19 @@ sub BuildHtmlWrapLabel
 	
 }  ## ______ sub BuildHtmlWrapLabel
 
+# ===================================
+sub RedirectHomePage
+{
+	my( $self, $homePage ) = @_;
+	my ( $sres ) = "";
+	
+    $sres  = "Content-type: text/html\n\n <html>  <head> ";
+    $sres .= '<meta HTTP-EQUIV="REFRESH" content="1; url=' . $homePage .'">';
+    $sres .= "</head>   <body> redirecting ... </body>  </html>";
+
+    return $sres;
+    
+}  ## _________  sub RedirectHomePage
 
 
 1;

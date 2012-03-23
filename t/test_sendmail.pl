@@ -13,6 +13,7 @@ eval
 {
 use Data::Dumper;
 use Mail::Sendmail;
+use lib './lib';
 use lib '../lib';
 use Swim::SendMail;
 
@@ -45,6 +46,10 @@ $params->{message} = "hello test [$snow]";
  $k = 'PWD';
  $params->{message} .= sprintf "\n [%s] => [%s] \n", "$k", "$ENV{$k}";
  $params->{message} .= sprintf " PID $$ \n";
+
+ $params->{message} .= "\n\n";
+ $params->{message} .= sprintf "Messaggio inviato da un utente connesso dall' indirizzo IP %s\n", $ENV{REMOTE_ADDR};
+	  
 
  my ( %mail ) = ( To      => $params->{to},
                   From    => 'enzo.arlati@libero.it',
