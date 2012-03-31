@@ -823,6 +823,18 @@ sub GetRemoteCmdRecord
 # ===================================================
 =head 2 sub ResetPassword
 
+   Input params: 
+          'dt_expire' => '2012-04-02 23:31:32',
+          'dt_mod' => '2012-03-30 23:31:32',
+          'crypto_command' => '0000000200000047reqRemoteResetPwd',
+          'id_user' => '0',
+          'email' => 'enzo.arlati@libero.it',
+          'numrows' => 1,
+          'idremote_cmd' => '2',
+          'errordata' => '',
+          'error' => 0,
+          'command' => 'reqRemoteResetPwd'
+
 =cut
 # ===================================================
 sub ResetPassword
@@ -834,11 +846,17 @@ sub ResetPassword
 	eval {
 		
 	  $self->mylog( "Dump Input Params : " . Dumper($params) );
+	  
+	  if( ! defined $params->{email} )
+	  {
+		  $rslt->{errordata} = "ERROR : email is NULL";
+		  return $rslt;
+	  }
 
-      $sqlcmd = 'update users set pwd = "" , dt_mod = now(), ';
+      $sqlcmd = 'update users set pwd = "" , dt_mod = now() ';
       $sqlcmd .= ' where email = ? ';
 	  @$sqlparams = ( $params->{email} );  
-      # $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+      $rslt = $self->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
 
 	};
 

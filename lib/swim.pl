@@ -146,6 +146,16 @@ eval {
 		print "$s1 \n";
 	}
 	# ==============================================
+	elsif ( $cmd eq 'reqRemoteEnableUser' )
+	{
+		my ( $obj1, $s1 );
+		# CMD => [reqRemoteEnableUser] param=>[email=enzo.arlati@libero.it&prog=reqRemoteEnableUser]
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$s1 = $obj1->PerformRequestRemoteCmd();
+		print "$s1 \n";
+	}
+
+	# ==============================================
 	# curl 'http://enzo6/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005600000021reqRemoteResetPwd'
 	# ==============================================
 	elsif ( $cmd eq 'execRemoteCmd' )
@@ -169,10 +179,10 @@ eval {
 		print "$s1 \n";
 	}
 	# ==============================================
-	elsif ( $cmd eq 'reqEnableUser' )
+	elsif ( $cmd eq 'reqRemoteEnableUser' )
 	{
 		my ( $obj1, $s1 );
-		# CMD => [reqEnableUser] param=>[email=enzo.arlati@libero.it&prog=reqEnableUser]
+		# CMD => [reqRemoteEnableUser] param=>[email=enzo.arlati@libero.it&prog=reqRemoteEnableUser]
 		$obj1 = new Swim::Login( $cmd, $strpara );
 		$s1 = $obj1->PerformRequestRemoteCmd();
 		print "$s1 \n";

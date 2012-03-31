@@ -3,6 +3,8 @@
 # FILE: add-file2git.sh 1.003 11.07.2011
 # ======================================
 
+
+
 git add geany.project
 git add appunti.swimmingpool.txt
 

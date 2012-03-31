@@ -337,16 +337,31 @@ sub ExecuteSelectCommand
 sub GetLastInsertId
 {
 	my ( $self ) = @_;
-	my ( $rslt, $lastid );
-	my ( $sqlCmd ) = 'select last_insert_id() lastid ';
+	my ( $rslt, $lastid, $connid );
+	my ( $sqlCmd ) = 'select last_insert_id() lastid';
 	
     $rslt = $self->ExecuteSelectCommand( $sqlCmd, undef );
     $lastid = $rslt->{rows}->{1}->{lastid};
+    $lastid = 0 if ! defined $lastid;
+    $self->Log( "ERROR : lastid : $lastid " ) if $lastid < 1;; 
     
 	return $lastid;
 
 }    ## _________  sub GetLastInsertId
 
+# ===================================================
+sub GetConnectionId
+{
+	my ( $self ) = @_;
+	my ( $rslt, $connid );
+	my ( $sqlCmd ) = 'select connection_id() connid ';
+	
+    $rslt = $self->ExecuteSelectCommand( $sqlCmd, undef );
+    $connid = $rslt->{rows}->{1}->{connid};
+        
+	return $connid;
+
+}    ## _________  sub GetConnectionId
 
 
 1;

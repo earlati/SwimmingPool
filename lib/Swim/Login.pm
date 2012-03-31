@@ -266,7 +266,7 @@ sub BuildHtmlEnableUser
 	$sres .= '<p> ';
 	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
 	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlCheckboxUser( $enabled, 1 );
+	$sres .= $self->BuildHtmlCheckboxUser( $enabled, 0 );
 	
 	$sres .= "<p> ";
 	$sres .= $self->BuildHtmlBtnOk();
@@ -274,7 +274,7 @@ sub BuildHtmlEnableUser
 	$sres .= "<p> ";
 
 	$sres .= "<div id=\"StatusFormEnableUser\"> </div>";
-	$sres = "<div id=\"FormEnableuser\"> $sres </div>";
+	$sres = "<div id=\"FormEnableUser\"> $sres </div>";
 	$self->{html} .= "$sres";
 
 	return "$sres";
@@ -451,14 +451,17 @@ sub BuildAnswerStoreRegister
 
 =head2 sub PerformRequestResetPassword
 
+   InputParams: 
+       'email'       => 'enzo.arlati@libero.it' 
+       'operation'   => 'reqRemoteResetPwd'
 
-   PARAMS  INP: 
-      'email' => 'enzo.arlati@libero.it' 
-       'prog' => 'reqRemoteResetPwd'
-  
-  
+       'email'       => 'enzo.arlati@libero.it',
+       'enable_user' => 'true',
+       'operation'   => 'reqRemoteEnableUser'
+
   
    After BuildRemoteCommand paramsOut: 
+   
           'info' => '' 
           'userid' => 47 
           'cmdid' => 70 
@@ -483,7 +486,7 @@ sub BuildAnswerStoreRegister
 sub PerformRequestRemoteCmd
 {
 	my ($self) = @_;
-	my ( $s1, $json, $paramsInp, $paramsOut, $params, $command );
+	my ( $s1, $json, $paramsInp, $paramsOut, $command );
 	my ( $from, $to, $subject, $message, $snow );
 	my ( $sres )    = "";
 	my ( $ctxType ) = $self->GetContentJson();
@@ -492,13 +495,11 @@ sub PerformRequestRemoteCmd
     $snow    = localtime();
     $server = $ENV{SERVER_NAME} if defined $ENV{SERVER_NAME} ;
 
-	$params = $self->{params};
-	$self->Log( sprintf( "PARAMS: %s ", Dumper( $params )));
-
 	# Build resetpwd record and store it on db
     %$paramsInp = ();
-    $paramsInp->{operation} = $params->{prog};
-    $paramsInp->{email}     = $params->{email};
+	$paramsInp = $self->{params};
+    $paramsInp->{operation} = $self->Command();
+	$self->Log( sprintf( "InputParams: %s ", Dumper( $paramsInp )));
 
 	# $self->Log( sprintf( "paramsInp: %s ", Dumper( $paramsInp )));
     $paramsOut = $self->BuildRemoteCommand( $paramsInp );
@@ -573,6 +574,21 @@ sub BuildRemoteCommand
     $paramsOut->{info}  =  "";
 	$self->Log( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
 
+    if( ! defined $paramsInp->{operation} )
+    {
+	    $paramsOut->{error} =  "BuildRemoteCommand with operation NULL";	
+	    return $paramsOut;
+	}
+    
+    if( $paramsInp->{enable_user} == 'true' )
+    {
+		 $paramsOut->{enable_user} = '1'; 
+	}
+	else
+	{
+		 $paramsOut->{enable_user} = '0'; 
+	}
+
 	$objStore = new Swim::DBUser(); 
 	
 	# get user data
@@ -590,9 +606,9 @@ sub BuildRemoteCommand
 	@$sqlparams = ( $paramsInp->{email}, $paramsInp->{operation} );  
     $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
 
-	$sqlcmd  = 'INSERT INTO remote_cmd (`command`, `email`,`dt_mod`,`dt_expire`) '; 
-	$sqlcmd .= ' VALUES ( ?, ?, now(), date_add( now(), interval 3 day ) )';
-	@$sqlparams = ( $paramsInp->{operation}, $paramsInp->{email} );  
+	$sqlcmd  = 'INSERT INTO remote_cmd (`command`, id_user,  `email`,`dt_mod`,`dt_expire`) '; 
+	$sqlcmd .= ' VALUES ( ?, ?, ?, now(), date_add( now(), interval 3 day ) )';
+	@$sqlparams = ( $paramsInp->{operation}, $paramsOut->{userid},  $paramsInp->{email} );  
     $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
 
     $paramsOut->{cmdid} = $objStore->GetLastInsertId();
@@ -601,15 +617,17 @@ sub BuildRemoteCommand
     # $paramsOut->{crypto} => '000000450000004700resetPwd'
 
     $sqlcmd = 'update remote_cmd set crypto_command = ? , dt_mod = now(), ';
+    $sqlcmd .= ' enabled_user = ? ,';
     $sqlcmd .= ' dt_expire = date_add( now(), interval 3 day )  where idremote_cmd = ? ';
-	@$sqlparams = ( $paramsOut->{crypto}, $paramsOut->{cmdid} );  
+	@$sqlparams = ( $paramsOut->{crypto}, $paramsOut->{enable_user}, $paramsOut->{cmdid} ); 	
+	 
     $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
     
 	$self->Log( sprintf( "ParamsOut: %s ", Dumper( $paramsOut )));    
 
     return $paramsOut;
 	
-}   ## ______________  sub BuildRemoteCommand
+}   ## _________  sub BuildRemoteCommand
 
 
 
@@ -621,17 +639,21 @@ sub BuildRemoteCommand
 	http://earlati.com/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005800000021reqRemoteResetPwd
 	http://enzo6/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005800000021reqRemoteResetPwd
 	
-	$params->{prog}  = 'execRemoteCmd';
-	$params->{cmd}   = '0000005600000021reqRemoteResetPwd';
+	Inp params: 
+          'cmd' => '0000000200000047reqRemoteResetPwd'
 
 
-	$obj1 = new Swim::Login( $cmd, $strpara );
-	$s1 = $obj1->PerformExecRemoteCmd();  
-	print "$s1 \n";
-	
-	Params Input: 
-          'cmd' => '0000005600000021reqRemoteResetPwd'
-
+    Remote Cmd record params: 
+          'dt_expire' => '2012-04-02 23:31:32',
+          'dt_mod' => '2012-03-30 23:31:32',
+          'crypto_command' => '0000000200000047reqRemoteResetPwd',
+          'id_user' => '0',
+          'email' => 'enzo.arlati@libero.it',
+          'numrows' => 1,
+          'idremote_cmd' => '2',
+          'errordata' => '',
+          'error' => 0,
+          'command' => 'reqRemoteResetPwd'
 
 =cut
 # ===================================
@@ -652,10 +674,11 @@ sub PerformExecRemoteCmd
     
     if( $rsltRec->{error} == 0 )
     {
-		if ( "$rsltRec" eq "resetpwd" )
+		if ( $rsltRec->{command} eq 'reqRemoteResetPwd' )
 		{
 			$objStore->ResetPassword( $rsltRec );
 		}
+		
 		$data = $self->RedirectHomePage( $homePage );
         $data  = "Content-type: text/html\n\n <html>  <head> ";
         $data .= '<meta HTTP-EQUIV="REFRESH" content="1; url=' . $homePage .'">';

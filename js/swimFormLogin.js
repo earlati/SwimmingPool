@@ -356,7 +356,7 @@ function InitResetPwd() {
 
 // ==============================================
 function InitEnableUser() {
-	var user, pwd, enabled, email;
+	var user, pwd, enable_user, email, obj1;
 	var idForm = '#FormEnableUser';
 
     Log( '[InitEnableUser]' );
@@ -372,8 +372,9 @@ function InitEnableUser() {
 		var param = new Array();
 
 		email = $( idForm + ' input[name="email"]').val();
-
-		Log('[EnableUser] Pressed OK : email=' + email);
+		enable_user = $( idForm + ' input[name="enabled_user"]').is(':checked');
+		
+		Log('[EnableUser] Pressed OK : email=' + email + ' enabled: ' + enable_user );
 
 		/***********************************************************************
 		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqRemoteResetPwd'; 
@@ -382,8 +383,8 @@ function InitEnableUser() {
 		 * $('#HelpBox').show();
 		 **********************************************************************/
 
-		urlQuery = '/SwimmingPool/lib/swim.pl?prog=enableUser';
-		urlData = "user=" + user;
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqRemoteEnableUser';
+		urlData = "enable_user=" + enable_user;
 		urlData += "&email=" + email;
 
 		Log("[EnableUser] UrlQuery : " + urlQuery);

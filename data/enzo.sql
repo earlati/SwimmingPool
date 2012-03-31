@@ -39,4 +39,11 @@ VALUES ( 'resetPwd', 'enzo.arlati@libero.it',
          date_add( now(), interval 3 day ) );
 
 
+select * from remote_cmd ; 
+/* where crypto_command; like "00000000000000470000000000"; */
+
+select last_insert_id() lastid ;
+
+ALTER TABLE remote_cmd ADD COLUMN enabled_user INT  DEFAULT 0  AFTER id_user ;
+select * from remote_cmd;
 
