@@ -69,8 +69,8 @@ function LoadFormEnableUser()
 // ==============================================
 function LoginProcedure() {
 	var jqxhr, urlQuery, urlData;
-	var param = new Array();
-	var user = $.cookie('CurrentUser');
+	var param  = new Array();
+	var user   = $.cookie('CurrentUser');
 	var idconn = $.cookie('IdConnection');
 
 	Log("[LoginProcedure] Current user=" + user + " IdConn=" + idconn);
@@ -384,7 +384,7 @@ function InitEnableUser() {
 		 **********************************************************************/
 
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqRemoteEnableUser';
-		urlData = "enable_user=" + enable_user;
+		urlData  = "enable_user=" + enable_user;
 		urlData += "&email=" + email;
 
 		Log("[EnableUser] UrlQuery : " + urlQuery);

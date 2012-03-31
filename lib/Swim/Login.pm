@@ -215,6 +215,52 @@ sub BuildHtmlRegister
 
 
 # ===================================
+sub BuildHtmlChangeUserData
+{
+	my ($self)      = @_;
+	my ($sres)      = "";
+	my ($currUser)  = "";
+	my ($usrsts);
+
+    # determina login user
+    
+    # if not login user show error : return with error
+    
+    # if login user retrieve all info of the current user
+
+    $usrsts = 
+
+	$sres .= $self->GetLoadingDiv();
+	$sres .= $self->{cgiObj}->h2("Modifica parametri utente");
+
+	#$sres .= '<p> ';
+	#$sres .= $self->BuildHtmlEdit( 'user_name', 'Utente', $currUser, 20, 30, 1 );
+	#$sres .= '<p> ';
+	#$sres .= $self->BuildHtmlEdit( 'password', 'Password', $currPwd, 20, 30, 0 );
+
+	#$sres .= '<p> ';
+	#$sres .= $self->BuildHtmlCheckboxUser( $checked, 1 );
+	
+	#$sres .= '<p> ';
+	#$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, 0 );
+	#$sres .= '<p> ';
+	#$sres .= $self->BuildHtmlEdit( 'email2', 'Seconda E-mail', $currEmail2, 20, 100, 0 );
+
+	$sres .= "<p> ";
+	$sres .= $self->BuildHtmlBtnOk();
+	$sres .= $self->BuildHtmlBtnCancel();
+	$sres .= $self->BuildHtmlBtnLogin();
+	$sres .= "<p> ";
+
+	$sres .= "<div id=\"StatusFormChangeUser\"> </div>";
+	$sres = "<div id=\"FormChangeUser\"> $sres </div>";
+	$self->{html} .= "$sres";
+
+	return "$sres";
+
+}    ## ___________ sub BuildHtmlChangeUserData
+
+# ===================================
 sub BuildHtmlResetPwd
 {
 	my ($self)      = @_;
@@ -677,6 +723,10 @@ sub PerformExecRemoteCmd
 		if ( $rsltRec->{command} eq 'reqRemoteResetPwd' )
 		{
 			$objStore->ResetPassword( $rsltRec );
+		}
+		elsif ( $rsltRec->{command} eq 'reqRemoteEnableUser' )
+		{
+			$objStore->EnableUser( $rsltRec );
 		}
 		
 		$data = $self->RedirectHomePage( $homePage );

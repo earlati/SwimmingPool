@@ -871,6 +871,53 @@ sub ResetPassword
 
 }    ## _________  sub ResetPassword
 
+
+
+# ===================================================
+
+=head2 sub EnableUser
+
+
+
+=cut
+
+# ===================================================
+sub EnableUser
+{
+	my ( $self, $params ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $sqlparams );
+	my ($rslt) = ();
+
+	eval {
+		
+	  $self->mylog( "Dump Input Params : " . Dumper($params) );
+	  
+	  if( ! defined $params->{email} )
+	  {
+		  $rslt->{errordata} = "ERROR : email is NULL";
+		  return $rslt;
+	  }
+
+      $sqlcmd = 'update users set enabled_user = ? , dt_mod = now() where email = ? ';
+	  @$sqlparams = ( $params->{enable_user}, $params->{email} );  
+      $rslt = $self->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+
+	};
+
+	if ($@)
+	{
+		$self->mylog( "Error $@ " );
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	  $self->mylog( "Dump rslt : " . Dumper($rslt) );
+
+	return $rslt;
+
+}    ## _________  sub EnableUser
+
+
 # ===================================================
 sub Template
 {
