@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content="HTML Tidy for Linux/x86 (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
+  <meta name="Keywords" content="perl, C, C++, linux, appunti, notes">
+
+  <title>Volantini corse podistiche</title>
+  <link rel="stylesheet" href="/css/global.css" type="text/css">
+  <script language="JavaScript" src="/js/fall.js" type="text/javascript" ></script>
+
+  <script type="text/javascript" src="/js/jquery.min.js" ></script>
+  <script language="JavaScript" src="/js/fall.js" type="text/javascript" ></script>
+  <script type="text/javascript" src="/js/enzo.js" ></script>
+  <script src="../js/swimUtility.js">    </script>  
+
+
+  <script type="text/javascript">  
+	  
+$(document).ready( function()
+   {
+	  var oldcol; 
+      loadInitScript(); 
+	  $("#PreviewBox").hide();
+	  $( '#update_list' ).click( function() { AjaxLoadIamgesList( "images_list" ); } );
+ 
+ // ================================================================
+// AjaxLoadIamgesList( "images_list");
+// ================================================================
+function AjaxLoadIamgesList( idOutput1 ) {
+	var len, obj1, obj2, urlQuery, idOutput;
+	
+	urlQuery = '../lib/loadListImages.pl';
+	idOutput = 'images_list';
+	obj1 = $("#" + idOutput);
+
+	$.ajax({ url : urlQuery, cache : false, 
+	beforeSend : function() {
+		obj1.css({ "color" : "#0000AA", "font" : "30px auto" });
+		obj1.text('');
+		obj1.html('Processing request ....');
+		obj1.fadeTo("slow", 0.3);
+	}, 
+	success : function(data, stato) {
+		obj1.css({ "color" : "#006600", "font" : "13px auto" });
+		obj1.text('');
+	    obj1.html( data );
+		obj1.fadeTo("slow", 1);
+		$( '.volantino' ).hover( 
+	         function() {
+				 var href, imgname;
+				 imgname = $(this).find( 'a' ).attr( 'href' );
+				 PreviewImage( imgname );
+				 },
+	         function() { 
+				  // $("#InnerPreviewBox").empty();
+				  // $("#PreviewBox").hide();
+				  }
+		);
+		$( '.volantino' ).click( 
+	         function() {
+				 var urlname, imgname;
+				 imgname = $(this).find( 'a' ).attr( 'href' );
+                 window.open(imgname, imgname, null );
+             	}); 
+    },    	
+	error : function(richiesta, stato, errori) {
+		obj1.css({ "color" : "#FF0000", "font" : "30px auto" });
+		obj1.html( 'ERRORE. Codice errore:[' + stato + ']  ' + errori + ' <p></p>' + data );
+		obj1.fadeTo("slow", 1);
+	} });
+}
+
+	  AjaxLoadIamgesList( "images_list" );
+      
+      return false; 
+   });
+                
+  </script>
+  
+  <style type="text/css">
+	  
+	  #update_list {
+        position: relative;
+        width: 160px;
+        left: 90px;
+        border-bottom: 1px solid black;
+        cursor: pointer;
+        font-size: small;
+        color: navy;
+      }
+	  #images_list {
+        position: relative;
+        width: 30%;
+        left: 90px;
+      }
+      
+      .volantino_month {
+		  font_weight: bold;
+          width: 100px;
+		  border: 1px solid black;
+		  }
+		  	  
+	 .volantino:hover { 
+		  cursor: pointer; 
+		  color: blue; 
+		  text-decoration: underline;
+		  }	  
+		  
+      body {
+         background: #667766;
+         background-image: url(/SwimmingPool/images/scarpa2.jpg);  
+         background-position: center;
+         background-attachment: fixed;
+         background-size: 60% Auto;
+     }		  
+     .old_data {  color: gray; font_weight: lighter; }
+     .current_data { color: red; font_weight: 900; border-bottom: 1px dotted gray; }
+     .future_data { color: green; font_weight: normal;}
+     
+  </style>  
+  
+</head>
+
+<body >
+  <div class="titolo">
+    Podismo prossimo venturo
+  </div>
+
+  <div class="pleonastico zoom">
+    <b>Podismo prossimo venturo</b> <u>ultimo aggiornamento: 15.09.2012</u> 
+     Podismo prossimo venturo : ovvero una lista di volantini inerente a corse podestiche
+     che si terranno nelle terre di Potaland ( leggi BG ) e dintorni.
+     
+     Perche' la Domenica e' bene mangiarsi un secondo piatto di lasagne senza sensi di colpa
+     o pendenze in sospeso con la bilancia ed il colesterolo.
+  </div><br>
+  <br>
+
+
+
+  <div id="update_list"> Aggiorna lista volantini   </div>
+  <br/><br/>
+
+  <div id="images_list">
+  </div>
+
+
+  <b> </b>
+
+  <div id="bottom_section">  </div>
+<br>
+
+  <table id="table_bottom">
+    <tr id="table_bottom_row1">
+      <td></td>
+    </tr>
+  </table>
+
+  <br>
+  <br>
+  
+    <div id="PreviewBox"> <div id="InnerPreviewBox"></div> </div>
+
+ 
+  <br>
+  <br>
+  <br>
+
+     <img src="./currImg.jpg" width="6" height="6" />
+  
+</body>
+</html>

@@ -7,13 +7,19 @@ use Data::Dumper;
 
 use lib '.';
 use lib './lib';
-use Swim::DBCommon;
+use lib '../lib';
 
 eval {
-	my ( $obj1, $s1 );
-	$obj1 = new Swim::StorageDB();
-	$s1   = $obj1->GetJsonTables();
+	my ( $obj1, $a, $s1 );
+	print "Content-type: text/plain\n\n";
+        open ( F, "df | " );
+        @$a = <F>;
+        close F; 
+        chomp @$a;
+
+        foreach $s1 ( @$a ) {
 	print "$s1 \n";
+        }
 };
 
 if ($@) {
@@ -23,6 +29,7 @@ if ($@) {
 	print " $@ \n";
 	print "INC:  @INC  \n";
 }
+
 
 
 

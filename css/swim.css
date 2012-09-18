@@ -40,10 +40,14 @@ a:hover {
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	opacity: 0.9;
+	z-index: 2;
 }
 
 
+
 #swim-footer { 	position: fixed; bottom: 0px; }
+
+#swim-header { 	position: fixed; top: 2px; }
 
 
 #swim-header li { width: 120px; height: 20px; text-align: center; list-style: none; color: AliceBlue; 
@@ -65,12 +69,77 @@ a:hover {
 #swim-header > ul > li:first-child:hover { 	color: green; font-weight: normal; }
 
 
-.water1 { background: url(/img/water1.jpg) no-repeat top center;   color: #006600; }
-.green { background: url(/img/green.jpg) no-repeat top center;   color: #006600; }
-.orange{ background: url(/img/orange.jpg) no-repeat top center;  color: #CC3300; }
-.blu   { background: url(/img/blu.jpg) no-repeat top center;     color: #006699; }
-.yellow{ background: url(/img/yellow.jpg) no-repeat top center;  color: #FF9900; }
-.purple{ background: url(/img/purple.jpg) no-repeat top center;  color: #990066; }
+
+#TitoloListato1 {
+	position: absolute;
+	width: 360px;
+	left: 90px;
+	top: 60px;
+	/* border-bottom: 1px solid black; */
+	cursor: pointer;
+	font-size: medium;
+	color: navy;
+	margin-bottom: 4px;
+}
+#Listato1 {
+	position: absolute;
+	width: 30%;
+	left: 90px;
+	top: 80px;
+}
+
+.water1 { background: url(/img/water1.jpg) no-repeat top center;  color: #006600; }
+.green  { background: url(/img/green.jpg) no-repeat top center;   color: #006600; }
+.orange { background: url(/img/orange.jpg) no-repeat top center;  color: #CC3300; }
+.blu    { background: url(/img/blu.jpg) no-repeat top center;     color: #006699; }
+.yellow { background: url(/img/yellow.jpg) no-repeat top center;  color: #FF9900; }
+.purple { background: url(/img/purple.jpg) no-repeat top center;  color: #990066; }
+
+
+.rgreen { background: url(/img/green.jpg)  repeat top center;  color: #006600; }
+.rorange{ background: url(/img/orange.jpg) repeat top center;  color: #CC3300; }
+.rblu   { background: url(/img/blu.jpg)    repeat top center;  color: #006699; }
+.ryellow{ background: url(/img/yellow.jpg) repeat top center;  color: #FF9900; }
+.rpurple{ background: url(/img/purple.jpg) repeat top center;  color: #990066; }
+
+
+div#PreviewBox {
+        background: #AAAAAA;
+        color: #000000;
+        position: fixed;
+        width: 46%;
+        height : 80%;
+        left: 50%;
+        bottom: 5%;
+        font-size: small;
+        font-color: blue;
+        opacity: 0.8;
+        border: thick groove green;   
+        -webkit-border-radius: 16px;
+         border-radius: 16px;
+        padding: 10px;
+        overflow: auto;
+        z-index: 3;
+}
+
+div#InnerPreviewBox {
+        background: #AAAAAA;
+        color: #000000;
+        position: relative;
+        width: 92%;
+        height : 92%;
+        left: 4%;
+        top: 4%;
+        bottom: 10;
+        font-size: small;
+        font-color: blue;
+        opacity: 0.8;
+        padding: 10px;
+        overflow: auto;
+}
+
+
+
 			
 div#debug {
 	font-size: small;
@@ -138,7 +207,6 @@ div#info {
 	font-weight: bolder;
 	opacity: 0.9;
 	border: thick groove green;
-	-moz-border-radius: 16px;
 	-webkit-border-radius: 16px;
 	border-radius: 16px;
 	padding: 10px;
@@ -157,7 +225,6 @@ div#HelpBox {
 	position: absolute;
 	padding: 10px;
 	overflow: auto;
-	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 	overflow: auto;
 	z-index: 9;
@@ -238,7 +305,7 @@ span#TotalAccess {
 div#ChildBox {
 	background-image: url(../images/nuoto1.jpg);
 	color: blue;
-	position: absolute;
+	position: fixed;
 	width: 400px;
 	height: 350px;
 	margin-left: auto;
@@ -246,7 +313,6 @@ div#ChildBox {
 	font-size: small;
 	opacity: 0.9;
 	border: thick groove green;
-	-moz-border-radius: 16px;
 	-webkit-border-radius: 16px;
 	border-radius: 16px;
 	padding: 10px;
@@ -281,6 +347,26 @@ div#InnerChildBox label {
 }
 
 
+      
+      
+.volantino_month {
+		  font_weight: bold;
+          width: 100px;
+		  /* border-bottom: 1px solid black; */
+		  margin-top: 3px;
+		  }
+		  	  
+ .volantino:hover { 
+		  cursor: pointer; 
+		  color: blue; 
+		  text-decoration: underline;
+		  }	
+.old_data {  color: gray; font_weight: lighter; }
+.current_data { color: red; font_weight: 900; border-bottom: 1px dotted gray; }
+.future_data { color: green; font_weight: normal;}
+     
+     
+		  
 
     
     

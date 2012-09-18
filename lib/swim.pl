@@ -47,6 +47,7 @@ eval {
 
 	$log = new Swim::Log(  "$logPath/SwimmingPool.log" );
 
+    warn "LogPath $logPath " ;
 	$log->Log( "=========================== " );
 	$log->Log( "[$base] query => $qstring   " );
 	$log->Log( "=========================== " );

@@ -79,6 +79,8 @@ function InitPage() {
         return false;
     });
 
+ 
+
     $('[class="hint"]').hover(function (e) {
         var objHelp = $("#HelpBox");
         if (objHelp.is(':visible')) {
@@ -104,6 +106,13 @@ function InitPage() {
     UpdateForm_TotalAccess('TotalAccess');
     
     InitPageSwimLogin();
+    InitPagePodismo();
+    
+    $("#PreviewBox").hide();
+    
+    $("div#ChildBox").hide();
+    LoadListatoVolantini();
+
 
 } // ________ function InitPage()
 

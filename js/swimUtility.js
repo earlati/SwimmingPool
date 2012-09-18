@@ -278,7 +278,15 @@ function CenterBox( objBox ) {
     var left, top;
 	left = ( $(window).width() - objBox.width() ) / 2;
 	top  = ( $(window).height() - objBox.height() ) / 2;
+	if( top < 0 ) 
+	{
+        Log( "[CenterBox] window.height " + $(window).height() + " objBox.height " + objBox.height()  );
+        Log( "[CenterBox] objBox. top " + top + " ** FORCE to 1 ** " );
+		top = 1;
+    }
+
 	objBox.css( { 'left': left + 'px', 'top' : top + 'px' });
+	
 }  // ________ function CenterBox( objBox )
 
 
@@ -292,23 +300,18 @@ function ChildBox(queryUrl, queryParam, callback ) {
 
 	Log("[ChildBox] queryUrl => " + queryUrl );
 
-	// left = ( $(window).width() - objChild.width() ) / 2;
-	// top  = ( $(window).height() - objChild.height() ) / 2;
-	// objChild.css( { 'left': left + 'px', 'top' : top + 'px' });
 	CenterBox( objChild );
 	objChild.show();
 	
 	objInnerChild.empty().html('<img src="/images/loading2.gif" /> ');
 
 	fullQuery = queryUrl;
-	objInnerChild.load(fullQuery, function(response, status, xhr)  {
-    // Log( "[ChildBox] " + xhr.status + " " + xhr.statusText);
-    
+	objInnerChild.load(fullQuery, function(response, status, xhr)  
+	{    
       if (status == "error") 
       {
          var msg = "Sorry but there was an error: ";
          Log( "[ChildBox] ERRORE " + msg );
-         // $("#error").html(msg + xhr.status + " " + xhr.statusText);
          Error( "[ChildBox] ERRORE [" + xhr.status + "]" + response );
       }
       else

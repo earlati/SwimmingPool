@@ -46,4 +46,7 @@ select last_insert_id() lastid ;
 
 ALTER TABLE remote_cmd ADD COLUMN enabled_user INT  DEFAULT 0  AFTER id_user ;
 select * from remote_cmd;
+select * from users;
+select * from session_connect;
+
 

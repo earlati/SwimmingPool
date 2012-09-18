@@ -2,6 +2,8 @@
 $(document).ready(function() 
 {
 
+   $("#testSimple").click( function(){ QueryAjax("/SwimmingPool/t/testSimple.pl", "OutputCommand", "pre" ); })
+
    $("#testLogin").click( function(){ QueryAjax("/SwimmingPool/lib/test.pl?formLogin", "OutputCommand", "pre" ); })
 
    $("#testMail").click( function(){ QueryAjax("/SwimmingPool/t/test_sendmail.pl", "OutputCommand", "pre"); })
