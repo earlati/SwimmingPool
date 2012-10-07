@@ -121,7 +121,8 @@ sub getDateValue( )
 {
     my ($dd, $mm, $yy) = @_;
     my ($dt);
-    $dd = $dd - 1;
+    $dd = $dd;
+    # print " DD $dd MM $mm YY $yy \n";
     $dt = timelocal(0, 0, 0, $dd, $mm, $yy);
     return $dt;
 }
