@@ -104,13 +104,14 @@ sub main()
 
     if ($@)
     {
-        $sres = '<pre>';
+        $sres = "Content-type: text/html\n\n";
+        $sres .= '<pre>';
         $sres .= " ERRORE : \n";
         $sres .= " $@  $serr";
         $sres .= '</pre>';
         warn "TEST: $sres ";
     }
-    if (length $serr > 0) { $sres .= $serr; }
+    # if (length $serr > 0) { $sres .= $serr; }
     print "$sres \n";
 
 }
@@ -123,6 +124,7 @@ sub getDateValue( )
     my ($dt);
     $dd = $dd;
     # print " DD $dd MM $mm YY $yy \n";
+    if( $yy > 2030 ) { $yy = 2030; }
     $dt = timelocal(0, 0, 0, $dd, $mm, $yy);
     return $dt;
 }

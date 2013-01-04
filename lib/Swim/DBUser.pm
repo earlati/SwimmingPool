@@ -242,14 +242,12 @@ sub GetUser
 		@$params = ("$username");
 		$rsltTmp = $self->ExecuteSelectCommand( $sqlcmd, $params );
 
-		$rslt->{numrows}   = $rsltTmp->{numrows};
 		$rsltTmp->{numrows} = 0 if ! defined $rsltTmp->{numrows};
+		$rslt->{numrows}    = $rsltTmp->{numrows};
 		
 		$rslt->{errordata} = $rsltTmp->{errordata};
 		$rslt->{error}     = $rsltTmp->{error};
 		
-		warn sprintf "error %d [%s] ", $rslt->{error} , $rslt->{errordata};
-
 		if ( $rsltTmp->{numrows} == 1 )
 		{
 			$htmp = $rsltTmp->{rows}->{1};
@@ -885,7 +883,7 @@ sub ResetPassword
 sub EnableUser
 {
 	my ( $self, $params ) = @_;
-	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $sqlparams );
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $sqlparams, $enableUser );
 	my ($rslt) = ();
 
 	eval {
@@ -898,8 +896,10 @@ sub EnableUser
 		  return $rslt;
 	  }
 
-      $sqlcmd = 'update users set enabled_user = ? , dt_mod = now() where email = ? ';
-	  @$sqlparams = ( $params->{enable_user}, $params->{email} );  
+      $enableUser = $params->{enable_user} || $params->{enabled_user};
+      
+      $sqlcmd = 'update users set enabled = ? , dt_mod = now() where email = ? ';
+	  @$sqlparams = ( $enableUser, $params->{email} );  
       $rslt = $self->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
 
 	};

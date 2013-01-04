@@ -79,7 +79,7 @@ sub TestRequestResetPassword
 {
 	my ( $obj1, $s1, $cmd, $params );
 
-   $params = 'email=enzo.arlati@libero.it&prog=reqResetPwd'; 
+   $params = 'email=enzo@enzo7.localdomain&prog=reqResetPwd'; 
    $cmd    = 'reqResetPwd';
    $obj1 = new Swim::Login( $cmd, $params );
    $s1   = $obj1->PerformRequestResetPassword();

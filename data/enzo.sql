@@ -13,10 +13,10 @@ ALTER TABLE `enzarl7_swim`.`session_connect` CHANGE COLUMN `id` `id` INT(11) NOT
 
 
 grant all privileges on enzarl7_swim.*  
-to 'enzarl7_swim'@'enzo7' identified by 'davidone'
+to 'enzarl7_swim'@'enzo7' identified by 'xxxxxxxxx'
 with grant option;
 
-grant all privileges on zeoslib.* to zeos@'%' identified by 'davidone';
+grant all privileges on zeoslib.* to zeos@'%' identified by 'xxxxxxxxxx';
 
 insert into location ( name ) values ( 'Milano' );
 select last_insert_id() lastid, l.* from location l;
@@ -49,4 +49,30 @@ select * from remote_cmd;
 select * from users;
 select * from session_connect;
 
+/* ========== Natale MadoneCalcioA5 ============ */
+SELECT * FROM natale.wp_posts where post_title like "%1° giornata%";
+select post_title, count(post_title) from wp_posts group by post_title;
+select post_title, count(post_title) from wp_posts group by post_title ;
+select * from wp_comments;
+select  from wp_term_relationships;
 
+select * from wp_posts ;
+ 
+SELECT ID, post_parent, post_date, post_type, comment_count, menu_order,
+post_modified, post_title, post_name,
+length( post_content ),
+post_content
+FROM  wp_posts  order by ID, post_parent ;
+
+SELECT ID, post_parent, post_date, post_type, comment_count, menu_order,
+post_modified, post_title, post_name,
+length( post_content ) len_content, post_content
+FROM  wp_posts  order by ID, post_parent ;
+
+
+select guid, count(guid) count from wp_posts group by guid having count > 1;
+
+select comment_post_ID, comment_ID, comment_date,
+comment_author, comment_content from wp_comments order by comment_post_ID, comment_ID;
+
+select * from wp_comments order by comment_post_ID, comment_ID;

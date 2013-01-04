@@ -97,7 +97,7 @@ function LoadListatoVolantini() {
 // ==============================================
 function InitPagePodismo() {
 
-	var user = $.cookie('CurrentUser');
+	var user   = $.cookie('CurrentUser');
 	var idconn = $.cookie('IdConnection');
 
     $( '#TitoloListato1' ).click( function() {  LoadListatoVolantini(); return false; });

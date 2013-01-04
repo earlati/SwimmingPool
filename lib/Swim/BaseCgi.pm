@@ -144,7 +144,7 @@ sub BuildBaseHtml
 
 	$sres .= $self->{cgiObj}->start_html(
 		-title  => " SwimminPool program  ",
-		-author => 'enzo.arlati@aesys.it',
+		-author => 'enzo.arlati@libero.it',
 		-style  => { -src => '/SwimmingPool/css/swim.css', -media => 'screen' },
 		-script => [
 			{ -src => '/js/jquery.min.js',    -language => 'javascript' },
@@ -279,10 +279,24 @@ sub BuildHtmlWrapLabel
 {
 	my ( $self, $name, $label, $data ) = @_;
 	my ( $sres ) = "";
+	my ( $mylabel );
 	
 	#  <label for="user_name">Utente</label>
+	# $sres .= sprintf "<label for=\"%s\" > %s </label> %s", $name, $label, $data;
 
-	$sres = sprintf "<label for=\"%s\"> %s </label> %s", $name, $label, $data;
+	$mylabel = sprintf "<label for=\"%s\" > %s </label> ", $name, $label;
+	
+	$sres .=  sprintf( '<table cellspacing="0" cellpadding="0" >' );
+	$sres .=  sprintf( '<tr>' );
+	$sres .=  sprintf( '<td width="35%">' );
+	$sres .=  "$mylabel";
+	$sres .=  sprintf( '</td>' );
+	$sres .=  sprintf( '<td width="50%">' );
+	$sres .=  "$data";
+	$sres .=  sprintf( '</td>' );
+	$sres .=  sprintf( '</tr>' );
+	$sres .=  sprintf( '</table>' );
+	
 	return $sres;
 	
 }  ## ______ sub BuildHtmlWrapLabel

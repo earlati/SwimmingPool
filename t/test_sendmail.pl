@@ -33,7 +33,6 @@ else
 }
 
 $params->{to}      = 'enzo.arlati@gmail.com';
-# $params->{cc}      = 'suppiluliumae@libero.it,enzo.arlati@gmail.com,enzoarlati@tiscali.it';
 $params->{cc}      = 'enzoarlati@tiscali.it,suppiluliumae@libero.it';
 $params->{subject} = "Test send on date $snow ";
 $params->{message} = "hello test [$snow]";

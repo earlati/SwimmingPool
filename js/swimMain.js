@@ -110,8 +110,8 @@ function InitPage() {
     
     $("#PreviewBox").hide();
     
-    $("div#ChildBox").hide();
-    LoadListatoVolantini();
+    // $("div#ChildBox").hide();
+    // LoadListatoVolantini();
 
 
 } // ________ function InitPage()

@@ -268,7 +268,7 @@ sub BuildHtmlResetPwd
 	my ($currEmail) = '';
 	my ( $readonly ) = 0;
 	
-	$currEmail = 'enzo.arlati@libero.it';
+	$currEmail = '';
 	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
 	
 	$sres .= $self->GetLoadingDiv();
@@ -292,6 +292,52 @@ sub BuildHtmlResetPwd
 
 
 
+
+# ===================================
+sub BuildHtmlChangePwd
+{
+	my ($self)      = @_;
+	my ($sres)      = "";
+	my ($currEmail) = '';
+	my ($currUser)  = '';
+	my ( $readonly ) = 1;
+	
+	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
+	$currUser  = $self->{params}->{user_name} if defined $self->{params}->{user_name};
+	
+	$sres .= $self->GetLoadingDiv();
+	$sres .= $self->{cgiObj}->h2("Change Password");
+
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlEdit( 'user_name', 'User', $currUser, 20, 100, $readonly );
+
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
+
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlEdit( 'password', 'Old Password', '', 20, 100, 0 );
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlEdit( 'newpassword1', 'New Password  ', '', 20, 100, 0 );
+	$sres .= '<p> ';
+	$sres .= $self->BuildHtmlEdit( 'newpassword2', 'New Password 2', '', 20, 100, 0 );
+
+	$sres .= "<p> ";
+	$sres .= $self->BuildHtmlBtnOk();
+	$sres .= $self->BuildHtmlBtnCancel();
+	$sres .= "<p> ";
+
+	$sres .= "<div id=\"StatusFormChangePwd\"> </div>";
+	$sres = "<div id=\"FormChangePwd\"> $sres </div>";
+	$self->{html} .= "$sres";
+
+	return "$sres";
+
+}    ## ___________ sub BuildHtmlChangePwd
+
+
+
+
+
 # ===================================
 sub BuildHtmlEnableUser
 {
@@ -302,7 +348,7 @@ sub BuildHtmlEnableUser
 	my ($readonly )  = 0;
 	my ($enabled)    = 0;
 	
-	$currEmail = 'enzo.arlati@libero.it';
+	$currEmail = 'suppiluliumae@libero.it';
 	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
 	$enabled   = $self->{params}->{enabled} if defined $self->{params}->{enabled};
 	
@@ -465,8 +511,7 @@ sub BuildAnswerStoreRegister
 	foreach my $k ( keys %$params )
 	{
 		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
-		warn "[StoreRegister] $s1 ";
-		$dataStore->{$k} = "$params->{$k}";
+        $dataStore->{$k} = "$params->{$k}";
 	}
 
 	$objStore = new Swim::DBUser();

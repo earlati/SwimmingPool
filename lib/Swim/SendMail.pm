@@ -116,8 +116,8 @@ sub new
       }
       else
       {
-         $self->{from}  = 'enzo@test.it';
-         $self->{to}    = 'usermail@localhost';
+         $self->{from}  = 'enzo@enzo7.localdomain';
+         $self->{to}    = 'enzo@enzo7.localdomain';
       }	  
 
 	  return $self;
@@ -147,9 +147,9 @@ sub Send
 	  $msg .= "Subject: $self->{subject}\n\n";
 	  $msg .= " $self->{message} \n";
 
-      $self->{logObj}->Log( "[SendMail::Send] msg: $msg " ); 
+      $self->{logObj}->Log( "msg: $msg " ); 
 	  # printf "[SendMail::Send] Dumper: %s ", Dumper( $self );
-	  open( MAIL, "|/usr/sbin/sendmail -t" );
+	  open( MAIL, "| /usr/sbin/sendmail -t" );
       print MAIL "$msg"; 
 	  close(MAIL);
 

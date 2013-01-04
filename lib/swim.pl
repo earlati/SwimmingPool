@@ -19,12 +19,29 @@ use Swim::DBCommon;
 use Swim::Login;
 use Swim::Log;
 
+=head1   Register new user
+  
+   The register new user command send to swim.pl the folowing query
+   which 
+
+  query => prog=storeRegister&user=enzo&pwd=davide&checked=checked&email=enzo.arlati@libero.it&email2=enzoarlati@tiscalinet.it
+
+   [swim.pl] Param [email] => [enzo.arlati@libero.it]
+   [swim.pl] Param [checked] => [checked]
+   [swim.pl] Param [pwd] => [davide]
+   [swim.pl] Param [email2] => [enzoarlati@tiscalinet.it]
+   [swim.pl] Param [user] => [enzo]
+
+=head1   Enable user
+
+    http://enzo7/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000000000000048reqRemoteEnableUser
+
 =head1   debug
 
-	curl  'http://earlati.com/SwimmingPool/lib/swim.pl?prog=reqRemoteResetPwd&email=enzo.arlati@libero.it'
-	curl 'http://earlati.com/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005600000021reqRemoteResetPwd'
+	curl  'http://localhost/SwimmingPool/lib/swim.pl?prog=reqRemoteResetPwd&email=enzo.arlati@libero.it'
+	curl 'http://enzo7/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005600000021reqRemoteResetPwd'
 	
-	curl 'http://enzo6/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005600000021reqRemoteResetPwd'
+	curl 'http://enzo7/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000005600000021reqRemoteResetPwd'
 
 =cut
 
@@ -125,7 +142,23 @@ eval {
 		$obj1 = new Swim::Login( $cmd, $strpara );
 		$s1 = $obj1->BuildAnswerStoreRegister();
 		print "$s1 \n";
+
+		$obj1 = new Swim::Login( 'reqRemoteEnableUser', $strpara );
+		$s1 = $obj1->PerformRequestRemoteCmd();
+		
 	}
+
+	# ==============================================
+	elsif ( $cmd eq 'formChangePwd' )
+	{
+		my ( $obj1, $s1 );
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$obj1->BuildHtmlChangePwd();
+		$obj1->EndHtml();
+		$s1 = $obj1->GetHtml();
+		print "$s1 \n";
+	}
+
 
 	# ==============================================
 	elsif ( $cmd eq 'formResetPwd' )
@@ -201,7 +234,7 @@ eval {
 		$s1 .= sprintf "ERRORE : Query string : $qstring : CMD = [$cmd] sconosciuto \n";
 		$diff = time - $t1;
 		$s1 .= sprintf "Date $now  : call lasted $diff seconds \n";
-		$log->Log( "CMD: [$cmd] => res: $s1 " );
+		$log->Log( "CMD: [$cmd] => res: $s1  params: $strpara " );
 		print "$s1";
 	}
 	

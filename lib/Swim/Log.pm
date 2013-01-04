@@ -114,16 +114,18 @@ sub Log {
 	@ll = caller(2);
 	if (@ll) {
 		$funName = (@ll)[3];
-		if( "$funName" eq "(eval)" )
+		while( "$funName" =~ /(eval)/ )
 		{
 		    @ll = caller(3);
-            $funName = (@ll)[3];
+			$funName = sprintf "%s:%s", (@ll)[3], (@ll)[2];
 		}
 	}
 	else {
 		@ll = caller(1);
 		if (@ll) {
-			$funName = "-+-:" . (@ll)[3];
+			$stmp = (@ll)[1];
+			$stmp = basename( $stmp );
+			$funName = sprintf "%s:%s", $stmp, (@ll)[2];
 		}
 	} ## end else [ if (@ll)
 

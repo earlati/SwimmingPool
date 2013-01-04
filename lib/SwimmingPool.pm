@@ -128,7 +128,7 @@ sub PrintHeaderHtml {
 
 	$sres .= $self->{cgi}->start_html(
 		-title  => "$self->{titleCgi}",
-		-author => 'enzo.arlati@aesys.it',
+		-author => 'enzo.arlati@libero.it',
 		-style  => {
 			-src   => $self->{rootPath} . '/css/config_bcm.css',
 			-media => 'screen'

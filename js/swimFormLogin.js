@@ -21,8 +21,9 @@ function InitPageSwimLogin() {
 		}
 	});
 	
-	$('#CallRegister').click(function() {	LoadFormRegister();	});
-	$('#CallResetPwd').click(function() {	LoadFormResetPwd();	});
+	$('#CallRegister').click(function()   {	LoadFormRegister();	  });
+	$('#CallResetPwd').click(function()   {	LoadFormResetPwd();	  });
+	$('#CallChangePwd').click(function()  {	LoadFormChangePwd();  });
 	$('#CallEnableUser').click(function() {	LoadFormEnableUser(); });
 
 	LoginProcedure();
@@ -55,6 +56,16 @@ function LoadFormResetPwd()
 	ChildBox('/SwimmingPool/lib/swim.pl?prog=formResetPwd', null, InitResetPwd );
 			
 }  // _______  function LoadFormResetPwd()
+
+
+// ==============================================
+function LoadFormChangePwd() 
+{
+	Log( " LoadFormChangePwd .... " );
+	ChildBox('/SwimmingPool/lib/swim.pl?prog=formChangePwd', null, InitChangePwd );
+			
+}  // _______  function LoadFormResetPwd()
+
 
 
 // ==============================================
@@ -221,6 +232,10 @@ function InitLogin() {
 			// $('#StatusFormLogin').html('<p> ' + param['info']);
 			$.cookie('IdConnection', param['idSession'], { espires : 20 });
 			idsess = $.cookie('IdConnection');
+			
+			Log( Fun + 'CurrentUser: ' + $.cookie('CurrentUser') );
+			Log( Fun + 'IdConnection: ' + $.cookie('IdConnection') );
+			
 			if (idsess != undefined) {
 				$("#ChildBox").hide('slow');
 				window.location.reload();
@@ -309,7 +324,7 @@ function InitResetPwd() {
 
     Log( '[InitResetPwd]' );
 
-	$( idForm + ' #buttonCancel').click(function() {
+	$( idForm + '#buttonCancel').click(function() {
 		Log('[ResetPwd] Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');
 		return false;
@@ -319,7 +334,6 @@ function InitResetPwd() {
 		var jqxhr, urlQuery, urlData;
 		var param = new Array();
 
-		// user = $(idForm + ' input[name="user_name"]').val();
 		email = $( idForm + ' input[name="email"]').val();
 
 		Log('[ResetPwd] Pressed OK : email=' + email);
@@ -353,6 +367,67 @@ function InitResetPwd() {
 } // ________ function InitResetPwd()
 
 
+
+
+
+// ==============================================
+function InitChangePwd() {
+	var user, email, oldpwd, newpwd, newpwd2, obj;
+	var fun = '[InitChangePwd]';
+	var idForm = '#InitChangePwd';
+
+	user = $.cookie('CurrentUser');
+	obj = $( idForm + ' input[name="user_name"]');
+	obj.val(user);
+
+    $( idForm + ' input[name="password"]').val(user );
+
+    Log( fun + 'Starting  currUser: ' + user );
+    Log( fun + ' obj: ' + obj.text() );
+	/***********************************************************************
+	 **********************************************************************/
+
+	$( idForm + '#buttonCancel').click(function() {
+		Log( fun + 'Pressed buttonCancel ');
+		$("#ChildBox").hide('slow');
+		return false;
+	});
+
+	$( idForm + ' #buttonOk').click(function() {
+		var jqxhr, urlQuery, urlData;
+		var param = new Array();
+
+		user    = $( idForm + ' input[name="user_name"]').val();
+		email   = $( idForm + ' input[name="email"]').val();
+		oldpwd  = $( idForm + ' input[name="password"]').val();
+		newpwd  = $( idForm + ' input[name="newpasswd1"]').val();
+		newpwd2 = $( idForm + ' input[name="newpasswd2"]').val();
+
+        // in newpwd != newpwd2 then error  goto to input pwd
+
+		urlQuery = '/SwimmingPool/lib/swim.pl?prog=changePwd';
+		urlData  = "email=" + email;
+		urlData += "&oldpwd=" + oldpwd;
+		urlData += "&newpwd=" + newpwd;
+
+
+		Log( fun + "CLICK: UrlQuery : " + urlQuery + ' ' + urlData);
+
+		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
+			$.each(data, function(key, val) {
+				Log( fun + "key=" + key + " : val=" + val);
+				param[key] = val;
+			});
+		});
+
+        $( "#StatusFormChangePwd" ).empty().html('<img src="/images/loading3.gif" width="300px"/> ');
+        JsonCommonCompleteStatus( jqxhr, "ChangePwd", 'StatusFormChangePwd', urlQuery, param );
+		return false;
+	});
+
+    $( '.Loading' ).hide( 'slow' );
+
+} // ________ function InitChangePwd()
 
 // ==============================================
 function InitEnableUser() {

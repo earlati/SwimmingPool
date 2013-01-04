@@ -11,7 +11,7 @@ print "Content-type: text/plain\n\n";
 
 $smtp    = 'mbox.freehostia.com';
 $from    = 'swimmingpool@earlati.com';
-$to      = 'enzo.arlati@libero.it';
+$to      = 'suppiluliumae@libero.it';
 $s1      = localtime();
 $subject = "[$s1] Letterina personalissima dal tuo sito di allenamento peferito ";
 $message = "
