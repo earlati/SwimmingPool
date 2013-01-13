@@ -34,4 +34,5 @@ select * from session_connect;
 
 select * from users where email = 'enzo@enzo7.localdomain';
 
-
+update users set pwd = '';
+commit;

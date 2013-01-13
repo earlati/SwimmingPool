@@ -401,7 +401,7 @@ function InitChangePwd() {
 		Log( fun + "user : " + user + ' oldpwd:' + oldpwd + ' npwd:' + newpwd + ' npwd2:' + newpwd2);
 
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=changePwd';
-		urlData  = "user_name=" + user;
+		urlData  = "user=" + user;
 		urlData += "&oldpwd=" + oldpwd;
 		urlData += "&newpwd=" + newpwd;
 

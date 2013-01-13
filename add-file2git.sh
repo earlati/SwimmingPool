@@ -29,3 +29,6 @@ find . -type f -name "*.html" -exec git add {} \;
 
 )
 
+echo "NOW: git commit -am '<comment here>' "
+echo "   : git push origin "
+echo "   : git push gitorious "
