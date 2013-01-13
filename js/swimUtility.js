@@ -280,8 +280,8 @@ function CenterBox( objBox ) {
 	top  = ( $(window).height() - objBox.height() ) / 2;
 	if( top < 0 ) 
 	{
-        Log( "[CenterBox] window.height " + $(window).height() + " objBox.height " + objBox.height()  );
-        Log( "[CenterBox] objBox. top " + top + " ** FORCE to 1 ** " );
+        // Log( "[CenterBox] window.height " + $(window).height() + " objBox.height " + objBox.height()  );
+        // Log( "[CenterBox] objBox. top " + top + " ** FORCE to 1 ** " );
 		top = 1;
     }
 
@@ -298,7 +298,7 @@ function ChildBox(queryUrl, queryParam, callback ) {
 	objChild = $("#ChildBox");
 	objInnerChild = $("#InnerChildBox");
 
-	Log("[ChildBox] queryUrl => " + queryUrl );
+	// Log("[ChildBox] queryUrl => " + queryUrl );
 
 	CenterBox( objChild );
 	objChild.show();

@@ -18,61 +18,20 @@ with grant option;
 
 grant all privileges on zeoslib.* to zeos@'%' identified by 'xxxxxxxxxx';
 
-insert into location ( name ) values ( 'Milano' );
-select last_insert_id() lastid, l.* from location l;
-
-insert into users ( user ) values ( 'Pino' );
-select last_insert_id() lastid, u.*  from users u;
-
-select last_insert_id();
-
-DELETE FROM remote_cmd 
-WHERE email = 'enzo.arlati@libero.it' and command = 'resetPwd';
 
 DELETE FROM remote_cmd where dt_expire < now()  limit 10;
 
 select * from remote_cmd order by dt_mod desc;
 
-INSERT INTO remote_cmd (`command`, `email`,`dt_mod`,`dt_expire`)
-VALUES ( 'resetPwd', 'enzo.arlati@libero.it', 
-         now(), 
-         date_add( now(), interval 3 day ) );
-
-
-select * from remote_cmd ; 
-/* where crypto_command; like "00000000000000470000000000"; */
-
 select last_insert_id() lastid ;
 
 ALTER TABLE remote_cmd ADD COLUMN enabled_user INT  DEFAULT 0  AFTER id_user ;
-select * from remote_cmd;
+
 select * from users;
+select * from user_profile;
+select * from remote_cmd;
 select * from session_connect;
 
-/* ========== Natale MadoneCalcioA5 ============ */
-SELECT * FROM natale.wp_posts where post_title like "%1° giornata%";
-select post_title, count(post_title) from wp_posts group by post_title;
-select post_title, count(post_title) from wp_posts group by post_title ;
-select * from wp_comments;
-select  from wp_term_relationships;
-
-select * from wp_posts ;
- 
-SELECT ID, post_parent, post_date, post_type, comment_count, menu_order,
-post_modified, post_title, post_name,
-length( post_content ),
-post_content
-FROM  wp_posts  order by ID, post_parent ;
-
-SELECT ID, post_parent, post_date, post_type, comment_count, menu_order,
-post_modified, post_title, post_name,
-length( post_content ) len_content, post_content
-FROM  wp_posts  order by ID, post_parent ;
+select * from users where email = 'enzo@enzo7.localdomain';
 
 
-select guid, count(guid) count from wp_posts group by guid having count > 1;
-
-select comment_post_ID, comment_ID, comment_date,
-comment_author, comment_content from wp_comments order by comment_post_ID, comment_ID;
-
-select * from wp_comments order by comment_post_ID, comment_ID;

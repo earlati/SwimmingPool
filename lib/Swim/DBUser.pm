@@ -317,8 +317,10 @@ sub GetUserByEmail
 
 	eval {
 
-		$sqlcmd  = "select * from users where email = ? ";
-		@$params = ("$email");
+		$sqlcmd  = "select * from users where email = '$email' ";
+		# $sqlcmd  = "select * from users where email = ? ";
+		# @$params = ("$email");
+		@$params = ( );
 		$rsltTmp = $self->ExecuteSelectCommand( $sqlcmd, $params );
 
 		$rslt->{numrows}   = $rsltTmp->{numrows};
@@ -918,6 +920,53 @@ sub EnableUser
 }    ## _________  sub EnableUser
 
 
+
+# ===================================================
+
+=head1  ChangePassword
+
+   Input Params 
+          'newpwd' => 'abc',
+          'operation' => 'changePwd',
+          'oldpwd' => '',
+          'user_name' => 'enzo'
+
+=cut
+
+# ===================================================
+sub ChangePassword
+{
+	my ( $self, $params ) = @_;
+	my ( $sqlcmd, $sth, $numRows, $refUser, $crypwd, $sqlparams, $enableUser );
+	my ($rslt) = ();
+
+	eval {
+		
+	  $self->mylog( "Dump Input Params : " . Dumper($params) );
+	  
+
+     # $sqlcmd = 'update users set pwd = ? , dt_mod = now() where user = ? ';
+	 # @$sqlparams = ( $enableUser, $params->{user} );  
+     # $rslt = $self->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+
+	};
+
+	if ($@)
+	{
+		$self->mylog( "Error $@ " );
+		$rslt->{errordata} = "$@";
+		$rslt->{error}     = 1;
+	}
+
+	  $self->mylog( "Dump rslt : " . Dumper($rslt) );
+
+	return $rslt;
+
+}    ## _________  sub ChangePassword
+
+
+
+
 # ===================================================
 sub Template
 {
@@ -939,5 +988,8 @@ sub Template
 	return $rslt;
 
 }    ## _________  sub Template
+
+
+
 
 1;

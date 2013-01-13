@@ -32,6 +32,11 @@ use Swim::Log;
    [swim.pl] Param [email2] => [enzoarlati@tiscalinet.it]
    [swim.pl] Param [user] => [enzo]
 
+=head1  Request Remote Enable User  
+
+    query => prog=reqRemoteEnableUser&enable_user=true&email=enzo@enzo7.localdomain    
+
+
 =head1   Enable user
 
     http://enzo7/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=0000000000000048reqRemoteEnableUser
@@ -140,7 +145,7 @@ eval {
 	{
 		my ( $obj1, $s1 );
 		$obj1 = new Swim::Login( $cmd, $strpara );
-		$s1 = $obj1->BuildAnswerStoreRegister();
+		$s1 = $obj1->PerformSaveUser();
 		print "$s1 \n";
 
 		$obj1 = new Swim::Login( 'reqRemoteEnableUser', $strpara );
@@ -158,6 +163,16 @@ eval {
 		$s1 = $obj1->GetHtml();
 		print "$s1 \n";
 	}
+	# ==============================================
+	elsif ( $cmd eq 'changePwd' )
+	{
+		my ( $obj1, $s1 );
+		# CMD => [changePwd] param=>[newpwd=abc&oldpwd=&user_name=enzo]
+		$obj1 = new Swim::Login( $cmd, $strpara );
+		$s1 = $obj1->PerformChangePassword();
+		print "$s1 \n";
+	}
+	# ==============================================
 
 
 	# ==============================================

@@ -97,7 +97,7 @@ eval {
 	{
 		my ( $obj1, $s1 );
 		$obj1 = new Swim::Login( $cmd, $strpara );
-		$s1 = $obj1->BuildAnswerStoreRegister();
+		$s1 = $obj1->PerformSaveUser();
 		print "$s1 \n";
 
 	}

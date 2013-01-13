@@ -21,11 +21,16 @@ use base qw( Swim::BaseCgi );
 use Swim::SendMail;
 use Swim::Log;
 
-
 RunTest() unless caller;
 
 # =====================================
+
 =head some test
+
+   path: /home/enzo/workspace/MYWEB/SwimmingPool/lib
+
+   [enzo@enzo7 lib]$ perl Swim/Login.pm 
+
 
 	$params  = 'cmd=000001520000004700resetPwd';
 	$obj1 = new Swim::Login( 'execRemoteCmd', $params );
@@ -44,56 +49,61 @@ RunTest() unless caller;
     $s1 = $obj1->PerformRequestRemoteCmd();
     print "$s1 \n";
     ===============================================
+    
+    $params = 'newpwd=abc&oldpwd=&user_name=enzo'; 
+    $obj1 = new Swim::Login( 'changePwd', $params );
+    $s1 = $obj1->PerformChangePassword();
+    print "$s1 \n";
+    ===============================================
+        
 
 =cut
+
 # =====================================
 sub RunTest
 {
-	my ( $obj1, $s1, $params );
-	 
-	$params  = 'cmd=000001520000004700resetPwd';
-	$obj1 = new Swim::Login( 'execRemoteCmd', $params );
-	$s1 = $obj1->PerformExecRemoteCmd();  
-	print "$s1 \n";
+    my ($obj1, $s1, $params);
 
-	
-}  # ______ sub RunTest
-	
+    $params = 'newpwd=abc&oldpwd=&user_name=enzo';
+    $obj1   = new Swim::Login('changePwd', $params);
+    $s1     = $obj1->PerformChangePassword();
+    print "$s1 \n";
 
+}    # ______ sub RunTest
 
 # ===================================
 # ===================================
 sub BuildHtmlLogin
 {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my ($currUser) = "";
-	my ($currPwd)  = "";
-	my ($sres)     = "";
-	my ($readonly) = 0;
+    my ($currUser) = "";
+    my ($currPwd)  = "";
+    my ($sres)     = "";
+    my ($readonly) = 0;
 
-    $self->Log( "Build Html login " );
-	$sres .= $self->GetLoadingDiv();
-	$sres .= $self->{cgiObj}->h2("Login ");
+    $self->Log("Build Html login ");
+    $sres .= $self->GetLoadingDiv();
+    $sres .= $self->{cgiObj}->h2("Login ");
 
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'user_name', 'Utente', $currUser, 20, 30, $readonly );
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'password', 'Password', $currPwd, 20, 30, $readonly );
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('user_name', 'Utente', $currUser, 20, 30, $readonly);
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('password', 'Password', $currPwd, 20, 30, $readonly);
 
-	$sres .= "<p> ";
-	$sres .= $self->BuildHtmlBtnOk();
-	$sres .= $self->BuildHtmlBtnCancel();
-	$sres .= "<p> ";
-	$sres .= $self->BuildHtmlBtnResetPassword();
-	$sres .= $self->BuildHtmlBtnRegister();
-	$sres .= "<p> ";
+    $sres .= "<p> ";
+    $sres .= $self->BuildHtmlBtnOk();
+    $sres .= $self->BuildHtmlBtnCancel();
+    $sres .= "<p> ";
+    $sres .= $self->BuildHtmlBtnResetPassword();
+    $sres .= $self->BuildHtmlBtnRegister();
+    $sres .= "<p> ";
 
-	$sres .= "<div id=\"StatusFormLogin\"> </div>";
-	$sres = "<div id=\"FormLogin\"> $sres </div>";
-	$self->{html} .= "$sres";
+    $sres .= "<div id=\"StatusFormLogin\"> </div>";
+    $sres = "<div id=\"FormLogin\"> $sres </div>";
+    $self->{html} .= "$sres";
 
-	return "$sres";
+    return "$sres";
 
 }    ## ___________ sub BuildHtmlLogin
 
@@ -117,43 +127,43 @@ sub BuildHtmlLogin
 # ===================================
 sub BuildAnswerCheckLogin
 {
-	my ($self) = @_;
-	my ( $s1, $json, $params, $objUser, $dataUser, $resUser );
-	my ($sres)    = "";
-	my ($ctxType) = $self->GetContentJson();
+    my ($self) = @_;
+    my ($s1, $json, $params, $objUser, $dataUser, $resUser);
+    my ($sres)    = "";
+    my ($ctxType) = $self->GetContentJson();
 
-	$self->Log("BuildAnswerCheckLogin ... ");
+    $self->Log("BuildAnswerCheckLogin ... ");
 
-	# $self->{params} = $self->{cgiObj}->Vars;
-	$params = $self->{params};
-	foreach my $k ( keys %$params )
-	{
-		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
-		$self->Log("$s1 ");
-		$dataUser->{$k} = "$params->{$k}";
-	}
+    # $self->{params} = $self->{cgiObj}->Vars;
+    $params = $self->{params};
+    foreach my $k (keys %$params)
+    {
+        $s1 = sprintf " Params: %s : %s", $k, $params->{$k};
+        $self->Log("$s1 ");
+        $dataUser->{$k} = "$params->{$k}";
+    }
 
-	$s1 = "$self->{params}->{user}" || "";
-	$objUser = new Swim::DBUser();
-	$self->Log( "dataUser : " . Dumper($dataUser) );
-	$resUser = $objUser->CheckLogin($dataUser);
-	$self->Log( "resUser : " . Dumper($resUser) );
+    $s1 = "$self->{params}->{user}" || "";
+    $objUser = new Swim::DBUser();
+    $self->Log("dataUser : " . Dumper($dataUser));
+    $resUser = $objUser->CheckLogin($dataUser);
+    $self->Log("resUser : " . Dumper($resUser));
 
-	$json = ' ';
-	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resUser->{error}";
-	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resUser->{info}";
-	if ( $resUser->{error} == 0 )
-	{
-		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resUser->{data}->{user}" if defined $resUser->{data}->{user};
-		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resUser->{data}->{id}" if defined $resUser->{data}->{id};
-		$json .= sprintf " \"%s\" : \"%s\" ,", "idSession", "$resUser->{data}->{idSession}"
-		  if defined $resUser->{data}->{idSession};
-	}
-	$json =~ s/\, *$//;
-	$json = sprintf " { %s } ", $json;
-	$sres = sprintf "%s %s", $ctxType, $json;
+    $json = ' ';
+    $json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resUser->{error}";
+    $json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resUser->{info}";
+    if ($resUser->{error} == 0)
+    {
+        $json .= sprintf " \"%s\" : \"%s\" ,", "user",   "$resUser->{data}->{user}" if defined $resUser->{data}->{user};
+        $json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resUser->{data}->{id}"   if defined $resUser->{data}->{id};
+        $json .= sprintf " \"%s\" : \"%s\" ,", "idSession", "$resUser->{data}->{idSession}"
+          if defined $resUser->{data}->{idSession};
+    }
+    $json =~ s/\, *$//;
+    $json = sprintf " { %s } ", $json;
+    $sres = sprintf "%s %s", $ctxType, $json;
 
-	return "$sres";
+    return "$sres";
 
 }    ## ___________ sub BuildAnswerCheckLogin
 
@@ -173,299 +183,275 @@ sub BuildAnswerCheckLogin
 # ===================================
 sub BuildHtmlRegister
 {
-	my ($self)      = @_;
-	my ($sres)      = "";
-	my ($currUser)  = "";
-	my ($currPwd)   = "";
-	my ($currEmail) = 'dummy@swimmingpool.org';
-	my ($currEmail2) = 'dummy@running.org';
-	my ($readonly)  = 0;
-	my ($checked)   = 0;
+    my ($self)       = @_;
+    my ($sres)       = "";
+    my ($currUser)   = "";
+    my ($currPwd)    = "";
+    my ($currEmail)  = 'dummy@swimmingpool.org';
+    my ($currEmail2) = 'dummy@running.org';
+    my ($readonly)   = 0;
+    my ($checked)    = 0;
 
-	$sres .= $self->GetLoadingDiv();
-	$sres .= $self->{cgiObj}->h2("Register");
+    $sres .= $self->GetLoadingDiv();
+    $sres .= $self->{cgiObj}->h2("Register");
 
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'user_name', 'Utente', $currUser, 20, 30, $readonly );
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'password', 'Password', $currPwd, 20, 30, $readonly );
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('user_name', 'Utente', $currUser, 20, 30, $readonly);
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('password', 'Password', $currPwd, 20, 30, $readonly);
 
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlCheckboxUser( $checked, 1 );
-	
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'email2', 'Seconda E-mail', $currEmail2, 20, 100, $readonly );
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlCheckboxUser($checked, 1);
 
-	$sres .= "<p> ";
-	$sres .= $self->BuildHtmlBtnOk();
-	$sres .= $self->BuildHtmlBtnCancel();
-	$sres .= $self->BuildHtmlBtnLogin();
-	$sres .= "<p> ";
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('email', 'E-mail', $currEmail, 20, 100, $readonly);
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('email2', 'Seconda E-mail', $currEmail2, 20, 100, $readonly);
 
-	$sres .= "<div id=\"StatusFormRegister\"> </div>";
-	$sres = "<div id=\"FormRegister\"> $sres </div>";
-	$self->{html} .= "$sres";
+    $sres .= "<p> ";
+    $sres .= $self->BuildHtmlBtnOk();
+    $sres .= $self->BuildHtmlBtnCancel();
+    $sres .= $self->BuildHtmlBtnLogin();
+    $sres .= "<p> ";
 
-	return "$sres";
+    $sres .= "<div id=\"StatusFormRegister\"> </div>";
+    $sres = "<div id=\"FormRegister\"> $sres </div>";
+    $self->{html} .= "$sres";
+
+    return "$sres";
 
 }    ## ___________ sub BuildHtmlRegister
-
-
 
 # ===================================
 sub BuildHtmlChangeUserData
 {
-	my ($self)      = @_;
-	my ($sres)      = "";
-	my ($currUser)  = "";
-	my ($usrsts);
+    my ($self)     = @_;
+    my ($sres)     = "";
+    my ($currUser) = "";
+    my ($usrsts);
 
     # determina login user
-    
+
     # if not login user show error : return with error
-    
+
     # if login user retrieve all info of the current user
 
-    $usrsts = 
+    $usrsts =
 
-	$sres .= $self->GetLoadingDiv();
-	$sres .= $self->{cgiObj}->h2("Modifica parametri utente");
+      $sres .= $self->GetLoadingDiv();
+    $sres .= $self->{cgiObj}->h2("Modifica parametri utente");
 
-	#$sres .= '<p> ';
-	#$sres .= $self->BuildHtmlEdit( 'user_name', 'Utente', $currUser, 20, 30, 1 );
-	#$sres .= '<p> ';
-	#$sres .= $self->BuildHtmlEdit( 'password', 'Password', $currPwd, 20, 30, 0 );
+    #$sres .= '<p> ';
+    #$sres .= $self->BuildHtmlEdit( 'user_name', 'Utente', $currUser, 20, 30, 1 );
+    #$sres .= '<p> ';
+    #$sres .= $self->BuildHtmlEdit( 'password', 'Password', $currPwd, 20, 30, 0 );
 
-	#$sres .= '<p> ';
-	#$sres .= $self->BuildHtmlCheckboxUser( $checked, 1 );
-	
-	#$sres .= '<p> ';
-	#$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, 0 );
-	#$sres .= '<p> ';
-	#$sres .= $self->BuildHtmlEdit( 'email2', 'Seconda E-mail', $currEmail2, 20, 100, 0 );
+    #$sres .= '<p> ';
+    #$sres .= $self->BuildHtmlCheckboxUser( $checked, 1 );
 
-	$sres .= "<p> ";
-	$sres .= $self->BuildHtmlBtnOk();
-	$sres .= $self->BuildHtmlBtnCancel();
-	$sres .= $self->BuildHtmlBtnLogin();
-	$sres .= "<p> ";
+    #$sres .= '<p> ';
+    #$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, 0 );
+    #$sres .= '<p> ';
+    #$sres .= $self->BuildHtmlEdit( 'email2', 'Seconda E-mail', $currEmail2, 20, 100, 0 );
 
-	$sres .= "<div id=\"StatusFormChangeUser\"> </div>";
-	$sres = "<div id=\"FormChangeUser\"> $sres </div>";
-	$self->{html} .= "$sres";
+    $sres .= "<p> ";
+    $sres .= $self->BuildHtmlBtnOk();
+    $sres .= $self->BuildHtmlBtnCancel();
+    $sres .= $self->BuildHtmlBtnLogin();
+    $sres .= "<p> ";
 
-	return "$sres";
+    $sres .= "<div id=\"StatusFormChangeUser\"> </div>";
+    $sres = "<div id=\"FormChangeUser\"> $sres </div>";
+    $self->{html} .= "$sres";
+
+    return "$sres";
 
 }    ## ___________ sub BuildHtmlChangeUserData
 
 # ===================================
 sub BuildHtmlResetPwd
 {
-	my ($self)      = @_;
-	my ($sres)      = "";
-	my ($currEmail) = '';
-	my ( $readonly ) = 0;
-	
-	$currEmail = '';
-	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
-	
-	$sres .= $self->GetLoadingDiv();
-	$sres .= $self->{cgiObj}->h2("Reset Password");
+    my ($self)      = @_;
+    my ($sres)      = "";
+    my ($currEmail) = '';
+    my ($readonly)  = 0;
 
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
+    $currEmail = '';
+    $currEmail = $self->{params}->{email} if defined $self->{params}->{email};
 
-	$sres .= "<p> ";
-	$sres .= $self->BuildHtmlBtnOk();
-	$sres .= $self->BuildHtmlBtnCancel();
-	$sres .= "<p> ";
+    $sres .= $self->GetLoadingDiv();
+    $sres .= $self->{cgiObj}->h2("Reset Password");
 
-	$sres .= "<div id=\"StatusFormResetPwd\"> </div>";
-	$sres = "<div id=\"FormResetPwd\"> $sres </div>";
-	$self->{html} .= "$sres";
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('email', 'E-mail', $currEmail, 20, 100, $readonly);
 
-	return "$sres";
+    $sres .= "<p> ";
+    $sres .= $self->BuildHtmlBtnOk();
+    $sres .= $self->BuildHtmlBtnCancel();
+    $sres .= "<p> ";
+
+    $sres .= "<div id=\"StatusFormResetPwd\"> </div>";
+    $sres = "<div id=\"FormResetPwd\"> $sres </div>";
+    $self->{html} .= "$sres";
+
+    return "$sres";
 
 }    ## ___________ sub BuildHtmlResetPwd
-
-
-
 
 # ===================================
 sub BuildHtmlChangePwd
 {
-	my ($self)      = @_;
-	my ($sres)      = "";
-	my ($currEmail) = '';
-	my ($currUser)  = '';
-	my ( $readonly ) = 1;
-	
-	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
-	$currUser  = $self->{params}->{user_name} if defined $self->{params}->{user_name};
-	
-	$sres .= $self->GetLoadingDiv();
-	$sres .= $self->{cgiObj}->h2("Change Password");
+    my ($self)     = @_;
+    my ($sres)     = "";
+    my ($currUser) = '';
+    my ($readonly) = 1;
 
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'user_name', 'User', $currUser, 20, 100, $readonly );
+    $currUser = $self->{params}->{user_name} if defined $self->{params}->{user_name};
 
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
+    $sres .= $self->GetLoadingDiv();
+    $sres .= $self->{cgiObj}->h2("Change Password");
 
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'password', 'Old Password', '', 20, 100, 0 );
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'newpassword1', 'New Password  ', '', 20, 100, 0 );
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'newpassword2', 'New Password 2', '', 20, 100, 0 );
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('user_name', 'User', $currUser, 20, 100, $readonly);
 
-	$sres .= "<p> ";
-	$sres .= $self->BuildHtmlBtnOk();
-	$sres .= $self->BuildHtmlBtnCancel();
-	$sres .= "<p> ";
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('password', 'Old Password', '', 20, 100, 0);
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('newpwd1', 'New Password  ', '', 20, 100, 0);
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('newpwd2', 'New Password 2', '', 20, 100, 0);
 
-	$sres .= "<div id=\"StatusFormChangePwd\"> </div>";
-	$sres = "<div id=\"FormChangePwd\"> $sres </div>";
-	$self->{html} .= "$sres";
+    $sres .= "<p> ";
+    $sres .= $self->BuildHtmlBtnOk();
+    $sres .= $self->BuildHtmlBtnCancel();
+    $sres .= "<p> ";
 
-	return "$sres";
+    $sres .= "<div id=\"StatusFormChangePwd\"> </div>";
+    $sres = "<div id=\"FormChangePwd\"> $sres </div>";
+    $self->{html} .= "$sres";
+
+    return "$sres";
 
 }    ## ___________ sub BuildHtmlChangePwd
-
-
-
-
 
 # ===================================
 sub BuildHtmlEnableUser
 {
-	my ($self)       = @_;
-	my ($sres)       = "";
-	my ($currEmail)  = '';
-	my ($currPwd)    = '';
-	my ($readonly )  = 0;
-	my ($enabled)    = 0;
-	
-	$currEmail = 'suppiluliumae@libero.it';
-	$currEmail = $self->{params}->{email} if defined $self->{params}->{email};
-	$enabled   = $self->{params}->{enabled} if defined $self->{params}->{enabled};
-	
-	$sres .= $self->GetLoadingDiv();
-	$sres .= $self->{cgiObj}->h2("Abilita utente");
+    my ($self)      = @_;
+    my ($sres)      = "";
+    my ($currEmail) = '';
+    my ($currPwd)   = '';
+    my ($readonly)  = 0;
+    my ($enabled)   = 0;
 
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlEdit( 'email', 'E-mail', $currEmail, 20, 100, $readonly );
-	$sres .= '<p> ';
-	$sres .= $self->BuildHtmlCheckboxUser( $enabled, 0 );
-	
-	$sres .= "<p> ";
-	$sres .= $self->BuildHtmlBtnOk();
-	$sres .= $self->BuildHtmlBtnCancel();
-	$sres .= "<p> ";
+    $currEmail = $self->{params}->{email}   if defined $self->{params}->{email};
+    $enabled   = $self->{params}->{enabled} if defined $self->{params}->{enabled};
 
-	$sres .= "<div id=\"StatusFormEnableUser\"> </div>";
-	$sres = "<div id=\"FormEnableUser\"> $sres </div>";
-	$self->{html} .= "$sres";
+    $sres .= $self->GetLoadingDiv();
+    $sres .= $self->{cgiObj}->h2("Abilita utente");
 
-	return "$sres";
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlEdit('email', 'E-mail', $currEmail, 20, 100, $readonly);
+    $sres .= '<p> ';
+    $sres .= $self->BuildHtmlCheckboxUser($enabled, 0);
+
+    $sres .= "<p> ";
+    $sres .= $self->BuildHtmlBtnOk();
+    $sres .= $self->BuildHtmlBtnCancel();
+    $sres .= "<p> ";
+
+    $sres .= "<div id=\"StatusFormEnableUser\"> </div>";
+    $sres = "<div id=\"FormEnableUser\"> $sres </div>";
+    $self->{html} .= "$sres";
+
+    return "$sres";
 
 }    ## ___________ sub BuildHtmlEnableUser
-
-
 
 # ===================================
 sub BuildHtmlBtnLogin
 {
-	my ($self) = @_;
-	my ($sres);
-	$sres = $self->{cgiObj}->button(
-		-name  => 'buttonLogin',
-		-id    => 'buttonLogin',
-		-value => 'Login utente'
-	);
-	return $sres;
+    my ($self) = @_;
+    my ($sres);
+    $sres = $self->{cgiObj}->button(
+                                    -name  => 'buttonLogin',
+                                    -id    => 'buttonLogin',
+                                    -value => 'Login utente'
+                                   );
+    return $sres;
 
 }    ## ________ sub BuildHtmlBtnLogin
 
 # ===================================
 sub BuildHtmlBtnRegister
 {
-	my ($self) = @_;
-	my ($sres);
-	$sres = $self->{cgiObj}->button(
-		-name  => 'buttonRegister',
-		-id    => 'buttonRegister',
-		-value => 'Registra utente'
-	);
-	return $sres;
+    my ($self) = @_;
+    my ($sres);
+    $sres = $self->{cgiObj}->button(
+                                    -name  => 'buttonRegister',
+                                    -id    => 'buttonRegister',
+                                    -value => 'Registra utente'
+                                   );
+    return $sres;
 
 }    ## ________ sub BuildHtmlBtnRegister
-
 
 # ===================================
 sub BuildHtmlBtnResetPassword
 {
-	my ($self) = @_;
-	my ($sres);
-	$sres = $self->{cgiObj}->button(
-		-name  => 'buttonResetPassword',
-		-id    => 'buttonResetPassword',
-		-value => 'Reset Password'
-	);
-	return $sres;
+    my ($self) = @_;
+    my ($sres);
+    $sres = $self->{cgiObj}->button(
+                                    -name  => 'buttonResetPassword',
+                                    -id    => 'buttonResetPassword',
+                                    -value => 'Reset Password'
+                                   );
+    return $sres;
 
 }    ## ________ sub BuildHtmlBtnResetPassword
-
-
 
 # ===================================
 sub BuildHtmlCheckboxUser
 {
-	my ( $self, $checked, $readonly ) = @_;
-	my ($sres, $params );
-	
-	$params = {
-		-name    => 'enabled_user',
-		-checked => $checked,
-		-value   => 'ON',
-		-label   => 'Enable user'		
-	};
-	$params->{-readonly} = 'readonly' if "$readonly" eq "1";
-	$sres = $self->{cgiObj}->checkbox( $params	);
-	return $sres;
+    my ($self, $checked, $readonly) = @_;
+    my ($sres, $params);
+
+    $params = {
+               -name    => 'enabled_user',
+               -checked => $checked,
+               -value   => 'ON',
+               -label   => 'Enable user'
+              };
+    $params->{-readonly} = 'readonly' if "$readonly" eq "1";
+    $sres = $self->{cgiObj}->checkbox($params);
+    return $sres;
 
 }    ## ________ sub BuildHtmlCheckboxUser
-
 
 # ===================================
 sub BuildHtmlEditUser
 {
-	my ( $self, $currUser, $readonly ) = @_;
-	my ($sres, $params );
+    my ($self, $currUser, $readonly) = @_;
+    my ($sres, $params);
     $params = {
-		-name      => "user_name",
-		-value     => "$currUser",
-		-size      => 20,
-		-maxlength => 30    	
-    };
-	$params->{-readonly} = 'readonly' if "$readonly" eq "1";
+               -name      => "user_name",
+               -value     => "$currUser",
+               -size      => 20,
+               -maxlength => 30
+              };
+    $params->{-readonly} = 'readonly' if "$readonly" eq "1";
 
-	$sres = "Utente";
-	$sres .= $self->{cgiObj}->textfield( $params );
+    $sres = "Utente";
+    $sres .= $self->{cgiObj}->textfield($params);
 
-	return $sres;
+    return $sres;
 
 }    ## ________ sub BuildHtmlEditUser
 
-
-
-
 # ===================================
 
-=head2 sub BuildAnswerStoreRegister
-
+=head2 sub PerformSaveUser
+            
 	$obj1 = new Swim::StorageDB();
 
 	$param->{user}    = ' user2 ';
@@ -499,48 +485,44 @@ sub BuildHtmlEditUser
 =cut
 
 # ===================================
-sub BuildAnswerStoreRegister
+sub PerformSaveUser
 {
-	my ($self) = @_;
-	my ( $s1, $json, $params, $objStore, $dataStore, $resStore );
-	my ($sres)    = "";
-	my ($ctxType) = $self->GetContentJson();
+    my ($self) = @_;
+    my ($s1, $json, $params, $objStore, $dataStore, $resStore);
+    my ($sres)    = "";
+    my ($ctxType) = $self->GetContentJson();
 
-	# $self->{params} = $self->{cgiObj}->Vars;
-	$params = $self->{params};
-	foreach my $k ( keys %$params )
-	{
-		$s1 = sprintf " Params: %s : %s", $k, $params->{$k};
+    $params = $self->{params};
+    foreach my $k (keys %$params)
+    {
+        $s1 = sprintf " Params: %s : %s", $k, $params->{$k};
         $dataStore->{$k} = "$params->{$k}";
-	}
+    }
 
-	$objStore = new Swim::DBUser();
-	$resStore = $objStore->SaveUser($dataStore);
+    $objStore = new Swim::DBUser();
+    $resStore = $objStore->SaveUser($dataStore);
 
-	$json = ' ';
-	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resStore->{error}";
-	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resStore->{info}";
-	if ( $resStore->{error} == 0 )
-	{
-		$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resStore->{data}->{user}"
-		  if defined $resStore->{data}->{user};
-		$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resStore->{data}->{id}"
-		  if defined $resStore->{data}->{id};
-	}
-	$json =~ s/\, *$//;
-	$json = sprintf " { %s } ", $json;
-	$sres = sprintf "%s %s", $ctxType, $json;
+    $json = ' ';
+    $json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resStore->{error}";
+    $json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resStore->{info}";
+    if ($resStore->{error} == 0)
+    {
+        $json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resStore->{data}->{user}"
+          if defined $resStore->{data}->{user};
+        $json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resStore->{data}->{id}"
+          if defined $resStore->{data}->{id};
+    }
+    $json =~ s/\, *$//;
+    $json = sprintf " { %s } ", $json;
+    $sres = sprintf "%s %s", $ctxType, $json;
 
-	return "$sres";
+    return "$sres";
 
-}    ## ___________ sub BuildAnswerStoreRegister
-
-
-
+}    ## ___________ sub PerformSaveUser
 
 # ===================================
 
-=head2 sub PerformRequestResetPassword
+=head2 sub PerformRequestRemoteCmd
 
    InputParams: 
        'email'       => 'enzo.arlati@libero.it' 
@@ -576,56 +558,68 @@ sub BuildAnswerStoreRegister
 # ===================================
 sub PerformRequestRemoteCmd
 {
-	my ($self) = @_;
-	my ( $s1, $json, $paramsInp, $paramsOut, $command );
-	my ( $from, $to, $subject, $message, $snow );
-	my ( $sres )    = "";
-	my ( $ctxType ) = $self->GetContentJson();
-	my ( $server )  = '127.0.0.1';
+    my ($self) = @_;
+    my ($s1,   $json, $paramsInp, $paramsOut, $command);
+    my ($from, $to,   $subject,   $message,   $snow);
+    my ($sres)    = "";
+    my ($ctxType) = $self->GetContentJson();
+    my ($server)  = '127.0.0.1';
 
-    $snow    = localtime();
-    $server = $ENV{SERVER_NAME} if defined $ENV{SERVER_NAME} ;
+    $snow = localtime();
+    $server = $ENV{SERVER_NAME} if defined $ENV{SERVER_NAME};
 
-	# Build resetpwd record and store it on db
-    %$paramsInp = ();
-	$paramsInp = $self->{params};
+    # Build resetpwd record and store it on db
+    %$paramsInp             = ();
+    $paramsInp              = $self->{params};
     $paramsInp->{operation} = $self->Command();
-	$self->Log( sprintf( "InputParams: %s ", Dumper( $paramsInp )));
+    $self->Log(sprintf("InputParams: %s ", Dumper($paramsInp)));
 
-	# $self->Log( sprintf( "paramsInp: %s ", Dumper( $paramsInp )));
-    $paramsOut = $self->BuildRemoteCommand( $paramsInp );
-	# $self->Log( sprintf( "paramsOut: %s ", Dumper( $paramsOut )));
-    
+    # $self->Log( sprintf( "paramsInp: %s ", Dumper( $paramsInp )));
+    $paramsOut = $self->BuildRemoteCommand($paramsInp);
 
-	# Send ResetPwd command to user e-mail
-	$command = sprintf "http://%s/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=%s", $server, $paramsOut->{crypto};
-	
-	$from    = 'swimmingpool@earlati.com';
-	$to      = $paramsOut->{email};
-	$subject = sprintf "Validazione comando remoto %s per utente %s", $paramsOut->{operation}, $paramsOut->{username} ;
-	$message = "Validazione comando remoto inviato il $snow \n\n";
-	$message .= sprintf "Digitare il seguente comando %s dal browser\n", $command;
-    $message .= sprintf "per attivare il comando remoto %s \n", $paramsOut->{operation};
-    $message .= sprintf "per l' utente %s \n", $paramsOut->{username};
-    
-    $paramsOut->{info} = sprintf "Inviato comando remoto %s per utente %s", 
-                                 $paramsOut->{operation}, $paramsOut->{username} ;
+    # $self->Log( sprintf( "paramsOut: %s ", Dumper( $paramsOut )));
 
-    Swim::SendMail::BasicSendMail( $from, $to, undef, undef, $subject, $message );
+    if ($paramsOut->{username} eq "")
+    {
+        $json = ' ';
+        $json .= sprintf " \"%s\" : \"%s\" ,", "error", "$paramsOut->{error}";
+        $json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$paramsOut->{info}";
+    }
+    else
+    {
 
-	$json = ' ';
-	$json .= sprintf " \"%s\" : \"%s\" ,", "error", "$paramsOut->{error}";
-	$json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$paramsOut->{info}";
-	$json .= sprintf " \"%s\" : \"%s\" ,", "crypto",  "$paramsOut->{crypto}";
-	$json .= sprintf " \"%s\" : \"%s\" ,", "username",  "$paramsOut->{username}";
-	$json =~ s/\, *$//;
-	$json = sprintf " { %s } ", $json;
-	$sres = sprintf "%s %s", $ctxType, $json;
+        # Send ResetPwd command to user e-mail
+        $command = sprintf "http://%s/SwimmingPool/lib/swim.pl?prog=execRemoteCmd&cmd=%s", $server,
+          $paramsOut->{crypto};
 
-	return "$sres";
+        $from    = 'swimmingpool@earlati.com';
+        $to      = $paramsOut->{email};
+        $subject = sprintf "Validazione comando remoto %s per utente %s", $paramsOut->{operation},
+          $paramsOut->{username};
+        $message = "Validazione comando remoto inviato il $snow \n\n";
+        $message .= sprintf "Digitare il seguente comando %s dal browser\n", $command;
+        $message .= sprintf "per attivare il comando remoto %s \n",          $paramsOut->{operation};
+        $message .= sprintf "per l' utente %s \n",                           $paramsOut->{username};
+
+        $paramsOut->{info} = sprintf "Inviato comando remoto %s per utente %s",
+          $paramsOut->{operation}, $paramsOut->{username};
+
+        Swim::SendMail::BasicSendMail($from, $to, undef, undef, $subject, $message);
+
+        $json = ' ';
+        $json .= sprintf " \"%s\" : \"%s\" ,", "error",    "$paramsOut->{error}";
+        $json .= sprintf " \"%s\" : \"%s\" ,", "info",     "$paramsOut->{info}";
+        $json .= sprintf " \"%s\" : \"%s\" ,", "crypto",   "$paramsOut->{crypto}";
+        $json .= sprintf " \"%s\" : \"%s\" ,", "username", "$paramsOut->{username}";
+    }
+
+    $json =~ s/\, *$//;
+    $json = sprintf " { %s } ", $json;
+    $sres = sprintf "%s %s", $ctxType, $json;
+
+    return "$sres";
 
 }    ## ___________ sub PerformRequestRemoteCmd
-
 
 # ===================================
 
@@ -656,72 +650,82 @@ sub PerformRequestRemoteCmd
 # ===================================
 sub BuildRemoteCommand
 {
-	my ($self, $paramsInp ) = @_;
-	my ( $s1, $rslt, $sqlcmd, $sqlparams, $paramsOut, $objStore, $resStore );
-	my ( @allowedOperations ) = qw( resetPwd enableUser );
-	%$paramsOut = %$paramsInp;
+    my ($self, $paramsInp) = @_;
+    my ($s1, $rslt, $sqlcmd, $sqlparams, $paramsOut, $objStore, $resStore);
+    my (@allowedOperations) = qw( resetPwd enableUser );
+    %$paramsOut = %$paramsInp;
 
     $paramsOut->{error} = "";
-    $paramsOut->{info}  =  "";
-	$self->Log( sprintf( "ParamsIn: %s ", Dumper( $paramsInp )));
+    $paramsOut->{info}  = "";
+    $self->Log(sprintf("ParamsIn: %s ", Dumper($paramsInp)));
 
-    if( ! defined $paramsInp->{operation} )
+    if (!defined $paramsInp->{operation})
     {
-	    $paramsOut->{error} =  "BuildRemoteCommand with operation NULL";	
-	    return $paramsOut;
-	}
-    
-    if( $paramsInp->{enable_user} == 'true' )
+        $paramsOut->{error} = "BuildRemoteCommand with operation NULL";
+        return $paramsOut;
+    }
+
+    if ($paramsInp->{enable_user} eq 'true')
     {
-		 $paramsOut->{enable_user} = '1'; 
-	}
-	else
-	{
-		 $paramsOut->{enable_user} = '0'; 
-	}
+        $paramsOut->{enable_user} = '1';
+    }
+    else
+    {
+        $paramsOut->{enable_user} = '0';
+    }
+    $self->Log(sprintf("EnbaledUser [%s] => [%s] ", $paramsInp->{enable_user}, $paramsOut->{enable_user}));
 
-	$objStore = new Swim::DBUser(); 
-	
-	# get user data
-    $rslt = $objStore->GetUserByEmail(  $paramsInp->{email} );
-    $paramsOut->{username} = $rslt->{user};
-    $paramsOut->{userid}   = $rslt->{id};
-    
-	# remove expired records
-	$sqlcmd = 'DELETE FROM remote_cmd where dt_expire < now() '; 
-	@$sqlparams = ( );  
-    $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
-	
-	# remove previous command type for the same email
-	$sqlcmd = 'DELETE FROM remote_cmd WHERE email = ? and command = ? '; 
-	@$sqlparams = ( $paramsInp->{email}, $paramsInp->{operation} );  
-    $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+    $objStore = new Swim::DBUser();
 
-	$sqlcmd  = 'INSERT INTO remote_cmd (`command`, id_user,  `email`,`dt_mod`,`dt_expire`) '; 
-	$sqlcmd .= ' VALUES ( ?, ?, ?, now(), date_add( now(), interval 3 day ) )';
-	@$sqlparams = ( $paramsInp->{operation}, $paramsOut->{userid},  $paramsInp->{email} );  
-    $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
+    # get user data
+    $rslt = $objStore->GetUserByEmail($paramsInp->{email});
 
-    $paramsOut->{cmdid} = $objStore->GetLastInsertId();
-    
-    $paramsOut->{crypto} = sprintf "%08d%08d%010s", $paramsOut->{cmdid}, $paramsOut->{userid}, $paramsOut->{operation}; 
-    # $paramsOut->{crypto} => '000000450000004700resetPwd'
+    if ($rslt->{user} eq "")
+    {
+        $paramsOut->{error} = "L' email inserita non esiste ";
+        $paramsOut->{info} = sprintf "L' email %s non esiste in archivio ", $paramsInp->{email};
+    }
+    else
+    {
+        $self->Log(sprintf("email=[%s] UserId=[%s] User=[%s] ", $paramsInp->{email}, $rslt->{id}, $rslt->{user}));
 
-    $sqlcmd = 'update remote_cmd set crypto_command = ? , dt_mod = now(), ';
-    $sqlcmd .= ' enabled_user = ? ,';
-    $sqlcmd .= ' dt_expire = date_add( now(), interval 3 day )  where idremote_cmd = ? ';
-	@$sqlparams = ( $paramsOut->{crypto}, $paramsOut->{enable_user}, $paramsOut->{cmdid} ); 	
-	 
-    $rslt = $objStore->ExecuteSelectCommand( $sqlcmd, $sqlparams, 1 );
-    
-	$self->Log( sprintf( "ParamsOut: %s ", Dumper( $paramsOut )));    
+        $paramsOut->{username} = $rslt->{user};
+        $paramsOut->{userid}   = $rslt->{id};
+
+        # remove expired records
+        $sqlcmd     = 'DELETE FROM remote_cmd where dt_expire < now() ';
+        @$sqlparams = ();
+        $rslt       = $objStore->ExecuteSelectCommand($sqlcmd, $sqlparams, 1);
+
+        # remove previous command type for the same email
+        $sqlcmd     = 'DELETE FROM remote_cmd WHERE email = ? and command = ? ';
+        @$sqlparams = ($paramsInp->{email}, $paramsInp->{operation});
+        $rslt       = $objStore->ExecuteSelectCommand($sqlcmd, $sqlparams, 1);
+
+        $sqlcmd = 'INSERT INTO remote_cmd (`command`, id_user,  `email`,`dt_mod`,`dt_expire`) ';
+        $sqlcmd .= ' VALUES ( ?, ?, ?, now(), date_add( now(), interval 3 day ) )';
+        @$sqlparams = ($paramsInp->{operation}, $paramsOut->{userid}, $paramsInp->{email});
+        $rslt = $objStore->ExecuteSelectCommand($sqlcmd, $sqlparams, 1);
+
+        $paramsOut->{cmdid} = $objStore->GetLastInsertId();
+
+        $paramsOut->{crypto} = sprintf "%08d%08d%010s", $paramsOut->{cmdid}, $paramsOut->{userid},
+          $paramsOut->{operation};
+
+        # $paramsOut->{crypto} => '000000450000004700resetPwd'
+
+        $sqlcmd = 'update remote_cmd set crypto_command = ? , dt_mod = now(), ';
+        $sqlcmd .= ' enabled_user = ? ,';
+        $sqlcmd .= ' dt_expire = date_add( now(), interval 3 day )  where idremote_cmd = ? ';
+        @$sqlparams = ($paramsOut->{crypto}, $paramsOut->{enable_user}, $paramsOut->{cmdid});
+
+        $rslt = $objStore->ExecuteSelectCommand($sqlcmd, $sqlparams, 1);
+    }
+    $self->Log(sprintf("ParamsOut: %s ", Dumper($paramsOut)));
 
     return $paramsOut;
-	
-}   ## _________  sub BuildRemoteCommand
 
-
-
+}    ## _________  sub BuildRemoteCommand
 
 # ===================================
 
@@ -747,52 +751,108 @@ sub BuildRemoteCommand
           'command' => 'reqRemoteResetPwd'
 
 =cut
+
 # ===================================
 sub PerformExecRemoteCmd
 {
-	my ($self ) = @_;
-	my ( $data, $paramsInp, $rsltRec, $objStore );
-    my ( $homePage ) = $self->GetHomePage();
+    my ($self) = @_;
+    my ($data, $paramsInp, $rsltRec, $objStore);
+    my ($homePage) = $self->GetHomePage();
+
     # $homePage = 'http://enzo6/SwimmingPool/index.html';
 
-    $objStore = new Swim::DBUser(); 
+    $objStore = new Swim::DBUser();
 
     $paramsInp = $self->{params};
-	$self->Log( sprintf( "Inp params: %s ", Dumper( $paramsInp )));
-    
-    $rsltRec = $objStore->GetRemoteCmdRecord( $paramsInp->{cmd} );
-	# $self->Log( sprintf( "Remote Cmd record params: %s ", Dumper( $rsltRec )));
-    
-    if( $rsltRec->{error} == 0 )
+    $self->Log(sprintf("Inp params: %s ", Dumper($paramsInp)));
+
+    $rsltRec = $objStore->GetRemoteCmdRecord($paramsInp->{cmd});
+
+    # $self->Log( sprintf( "Remote Cmd record params: %s ", Dumper( $rsltRec )));
+
+    if ($rsltRec->{error} == 0)
     {
-		if ( $rsltRec->{command} eq 'reqRemoteResetPwd' )
-		{
-			$objStore->ResetPassword( $rsltRec );
-		}
-		elsif ( $rsltRec->{command} eq 'reqRemoteEnableUser' )
-		{
-			$objStore->EnableUser( $rsltRec );
-		}
-		
-		$data = $self->RedirectHomePage( $homePage );
-        $data  = "Content-type: text/html\n\n <html>  <head> ";
-        $data .= '<meta HTTP-EQUIV="REFRESH" content="1; url=' . $homePage .'">';
+        if ($rsltRec->{command} eq 'reqRemoteResetPwd')
+        {
+            $objStore->ResetPassword($rsltRec);
+        }
+        elsif ($rsltRec->{command} eq 'reqRemoteEnableUser')
+        {
+            $objStore->EnableUser($rsltRec);
+        }
+
+        $data = $self->RedirectHomePage($homePage);
+        $data = "Content-type: text/html\n\n <html>  <head> ";
+        $data .= '<meta HTTP-EQUIV="REFRESH" content="1; url=' . $homePage . '">';
         $data .= "</head>   <body> redirecting ... </body>  </html>";
     }
     else
     {
-        $data  = "Content-type: text/plain\n\n";
-		$data .= sprintf "ERRORE [%d] %s \n", $rsltRec->{error}, $rsltRec->{errordata};
-	}
+        $data = "Content-type: text/plain\n\n";
+        $data .= sprintf "ERRORE [%d] %s \n", $rsltRec->{error}, $rsltRec->{errordata};
+    }
 
     # warn "[PerformExecRemoteCmd] DATA: $data";
     return $data;
-	
-}  ## _________ sub PerformExecRemoteCmd
+
+}    ## _________ sub PerformExecRemoteCmd
+
+# ===================================
+
+=head2  PerformChangePassword
+  
+   InputParams: 
+          'newpwd' => 'abc',
+          'oldpwd' => '',
+          'user_name' => 'enzo',
+          'operation' => 'changePwd'
 
 
-     
+=cut
 
+# ===================================
+sub PerformChangePassword
+{
+    my ($self) = @_;
+    my ($s1, $rslt, $json, $sqlcmd, $sqlparams, $paramsInp, $dataStore, $objStore, $resStore);
+    my (@allowedOperations) = qw( resetPwd enableUser );
+
+    my ($sres)    = "";
+    my ($ctxType) = $self->GetContentJson();
+
+    $paramsInp = $self->{params};
+    $paramsInp->{operation} = $self->Command();
+    $self->Log(sprintf("InputParams: %s ", Dumper($paramsInp)));
+
+    foreach my $k (keys %$paramsInp)
+    {
+        $s1 = sprintf " Params: %s : %s", $k, $paramsInp->{$k};
+        $dataStore->{$k} = "$paramsInp->{$k}";
+    }
+
+    $objStore = new Swim::DBUser();
+    $resStore = $objStore->ChangePassword($dataStore);
+
+    $json = ' ';
+    $json .= sprintf " \"%s\" : \"%s\" ,", "error", "$resStore->{error}";
+    $json .= sprintf " \"%s\" : \"%s\" ,", "info",  "$resStore->{info}";
+
+    #if ( $resStore->{error} == 0 )
+    #{
+    #$json .= sprintf " \"%s\" : \"%s\" ,", "user", "$resStore->{data}->{user}"
+    #if defined $resStore->{data}->{user};
+    #$json .= sprintf " \"%s\" : \"%s\" ,", "iduser", "$resStore->{data}->{id}"
+    #if defined $resStore->{data}->{id};
+    #}
+
+    $json =~ s/\, *$//;
+    $json = sprintf " { %s } ", $json;
+    $sres = sprintf "%s %s", $ctxType, $json;
+
+    $self->Log(sprintf "Result: %s ", $sres);
+    return "$sres";
+
+}    ## _________  sub PerformChangePassword
 
 1;
 

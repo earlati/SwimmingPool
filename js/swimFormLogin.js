@@ -324,8 +324,7 @@ function InitResetPwd() {
 
     Log( '[InitResetPwd]' );
 
-	$( idForm + '#buttonCancel').click(function() {
-		Log('[ResetPwd] Pressed buttonCancel ');
+	$( idForm + ' #buttonCancel').click(function() {
 		$("#ChildBox").hide('slow');
 		return false;
 	});
@@ -372,23 +371,19 @@ function InitResetPwd() {
 
 // ==============================================
 function InitChangePwd() {
-	var user, email, oldpwd, newpwd, newpwd2, obj;
-	var fun = '[InitChangePwd]';
-	var idForm = '#InitChangePwd';
+	var user, oldpwd, newpwd, newpwd2, obj;
+	var fun = '[ChangePwd]';
+	var idForm = '#FormChangePwd';
 
 	user = $.cookie('CurrentUser');
 	obj = $( idForm + ' input[name="user_name"]');
 	obj.val(user);
 
-    $( idForm + ' input[name="password"]').val(user );
-
     Log( fun + 'Starting  currUser: ' + user );
-    Log( fun + ' obj: ' + obj.text() );
 	/***********************************************************************
 	 **********************************************************************/
 
-	$( idForm + '#buttonCancel').click(function() {
-		Log( fun + 'Pressed buttonCancel ');
+	$( idForm + ' #buttonCancel').click(function() {
 		$("#ChildBox").hide('slow');
 		return false;
 	});
@@ -398,19 +393,19 @@ function InitChangePwd() {
 		var param = new Array();
 
 		user    = $( idForm + ' input[name="user_name"]').val();
-		email   = $( idForm + ' input[name="email"]').val();
 		oldpwd  = $( idForm + ' input[name="password"]').val();
-		newpwd  = $( idForm + ' input[name="newpasswd1"]').val();
-		newpwd2 = $( idForm + ' input[name="newpasswd2"]').val();
+		newpwd  = $( idForm + ' input[name="newpwd1"]').val();
+		newpwd2 = $( idForm + ' input[name="newpwd2"]').val();
 
         // in newpwd != newpwd2 then error  goto to input pwd
+		Log( fun + "user : " + user + ' oldpwd:' + oldpwd + ' npwd:' + newpwd + ' npwd2:' + newpwd2);
 
 		urlQuery = '/SwimmingPool/lib/swim.pl?prog=changePwd';
-		urlData  = "email=" + email;
+		urlData  = "user_name=" + user;
 		urlData += "&oldpwd=" + oldpwd;
 		urlData += "&newpwd=" + newpwd;
 
-
+        //  UrlQuery : /SwimmingPool/lib/swim.pl?prog=changePwd undefinedoldpwd=&newpwd=aaa
 		Log( fun + "CLICK: UrlQuery : " + urlQuery + ' ' + urlData);
 
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
@@ -432,12 +427,12 @@ function InitChangePwd() {
 // ==============================================
 function InitEnableUser() {
 	var user, pwd, enable_user, email, obj1;
+	var fun = '[EnableUser] ';
 	var idForm = '#FormEnableUser';
 
-    Log( '[InitEnableUser]' );
+    Log( "Init" + fun );
 
 	$( idForm + ' #buttonCancel').click(function() {
-		Log('[EnableUser] Pressed buttonCancel ');
 		$("#ChildBox").hide('slow');
 		return false;
 	});
@@ -449,7 +444,7 @@ function InitEnableUser() {
 		email = $( idForm + ' input[name="email"]').val();
 		enable_user = $( idForm + ' input[name="enabled_user"]').is(':checked');
 		
-		Log('[EnableUser] Pressed OK : email=' + email + ' enabled: ' + enable_user );
+		Log( fun + 'Pressed OK : email=' + email + ' enabled: ' + enable_user );
 
 		/***********************************************************************
 		 * urlQuery = '/SwimmingPool/lib/swim.pl?prog=reqRemoteResetPwd'; 
@@ -462,24 +457,21 @@ function InitEnableUser() {
 		urlData  = "enable_user=" + enable_user;
 		urlData += "&email=" + email;
 
-		Log("[EnableUser] UrlQuery : " + urlQuery);
+		Log( fun + "UrlQuery : " + urlQuery);
 
 		jqxhr = $.getJSON(urlQuery, urlData, function(data) {
 			$.each(data, function(key, val) {
-				Log("[EnableUser] key=" + key + " : val=" + val);
+				Log( fun + "key=" + key + " : val=" + val);
 				param[key] = val;
 			});
 		});
 
 		jqxhr.error(function() {
-			Error("[EnableUser] error " + "QueryJson on url: " + urlQuery);
+			Error(fun + "Error " + "QueryJson on url: " + urlQuery);
 		});
 
-		jqxhr.complete(function() {
-			Log("[EnableUser] complete info: " + param['info']);
-			Log("[EnableUser] complete error: " + param['error']);
-			$('#StatusFormEnableUser').html('<p>' + param['info']);
-		});
+        $( "#StatusFormEnableUser" ).empty().html('<img src="/images/loading3.gif" width="300px"/> ');
+        JsonCommonCompleteStatus( jqxhr, "EnableUser", 'StatusFormEnableUser', urlQuery, param );
 
 		return false;
 	});
