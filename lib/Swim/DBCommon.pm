@@ -61,7 +61,7 @@ sub RunTest
 #		user        => "enzarl_db1",
 #		pwd         => "22006829",
 # =====================================
-#		servername  => 'mysql0.freehostia.com',
+#		servername  => 'mysql18.freehostia.com',
 #		database    => "enzarl7_swim",
 #		user        => "enzarl7_swim",
 #		pwd         => "davidone",
@@ -72,7 +72,7 @@ sub new
 	my ($logPath);
 	my ($self)  = {
 		dsn         => '',
-		servername  => 'mysql0.freehostia.com',
+		servername  => 'mysql18.freehostia.com',
 		database    => "enzarl7_swim",
 		user        => "enzarl7_swim",
 		pwd         => "davidone",
